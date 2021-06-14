@@ -1,18 +1,41 @@
-﻿using Sandbox;
+using Sandbox;
 using System.Linq;
-using System.Threading.Tasks;
 
 partial class SandboxGame : GameManager
 {
-	public SandboxGame()
+	private SandboxHud _sandboxHud;
+
+	[Event.Hotload]
+	public async void hotload()
 	{
-		if ( Game.IsServer )
-		{
-			// Create the HUD
-			_ = new SandboxHud();
+		if ( Game.IsServer ) {
+			_sandboxHud?.Delete();
+			await Task.Delay( 500 ); // gotta wait for clients to hotreload too
+			Log.Info( "SandboxPlus: hotloading SandboxHud" );
+			_sandboxHud = new SandboxHud();
 		}
+
+		ReloadManager.ReloadAutoload();
 	}
 
+	public SandboxGame()
+	{
+		Log.Info( "Init SandboxPlus" );
+		if ( Game.IsServer ) {
+			Log.Info( "[Server] initting HUD" );
+			// Create the HUD
+			_sandboxHud = new SandboxHud();
+		}
+
+		ReloadManager.ReloadAutoload();
+
+	}
+	~SandboxGame()
+	{
+		_sandboxHud?.Delete();
+	}
+
+	[Event( "client.join" )]
 	public override void ClientJoined( IClient cl )
 	{
 		base.ClientJoined( cl );
