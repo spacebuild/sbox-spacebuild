@@ -16,9 +16,9 @@ partial class SandboxPlayer : Player
 	/// </summary>
 	public ClothingContainer Clothing = new();
 
-	/// <summary>
-	/// Default init
-	/// </summary>
+	public delegate void OnSimulateHandler(SandboxPlayer player);
+	public event OnSimulateHandler OnSimulate;
+
 	public SandboxPlayer()
 	{
 		Inventory = new Inventory( this );
@@ -135,6 +135,7 @@ partial class SandboxPlayer : Player
 
 		TickPlayerUse();
 		SimulateActiveChild( cl, ActiveChild );
+		OnSimulate?.Invoke(this);
 
 		if ( Input.Pressed( "view" ) )
 		{
