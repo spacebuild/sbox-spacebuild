@@ -16,7 +16,7 @@ partial class Tool : Carriable
 	{
 		base.Spawn();
 
-		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+		SetModel( "models/weapons/toolgun.vmdl" );
 	}
 
 	public override void CreateViewModel()
@@ -27,7 +27,7 @@ partial class Tool : Carriable
 		ViewModelEntity.Position = Position;
 		ViewModelEntity.Owner = Owner;
 		ViewModelEntity.EnableViewmodelRendering = true;
-		ViewModelEntity.Model = Cloud.Model( "https://asset.party/facepunch/v_toolgun" );
+		ViewModelEntity.Model = Model.Load( "models/weapons/v_toolgun.vmdl" );
 
 		ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
 		ViewModelArms.SetParent( ViewModelEntity, true );
@@ -153,9 +153,20 @@ namespace Sandbox.Tools
 			UpdatePreviews();
 		}
 
-		public virtual void CreateHitEffects( Vector3 pos )
+		public virtual void CreateHitEffects( Vector3 pos, Vector3 normal = new Vector3(), bool continuous = false )
 		{
-			Parent?.CreateHitEffects( pos );
+			Parent?.CreateHitEffects( pos, normal, continuous );
+		}
+
+		public virtual TraceResult DoTrace()
+		{
+			var startPos = Owner.EyePosition;
+			var dir = Owner.EyeRotation.Forward;
+
+			return Trace.Ray( startPos, startPos + ( dir * MaxTraceDistance ) )
+				.WithAllTags( "solid" )
+				.Ignore( Owner )
+				.Run();
 		}
 
 		public virtual TraceResult DoTrace()

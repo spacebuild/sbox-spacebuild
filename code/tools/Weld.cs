@@ -65,7 +65,7 @@
 					return;
 				}
 
-				CreateHitEffects( tr.EndPosition );
+				CreateHitEffects( tr.EndPosition, tr.Normal );
 			}
 		}
 

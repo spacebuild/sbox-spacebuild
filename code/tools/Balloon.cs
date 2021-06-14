@@ -63,7 +63,7 @@ public partial class BalloonTool : BaseTool
 			if ( !tr.Entity.IsValid() )
 				return;
 
-			CreateHitEffects( tr.EndPosition );
+			CreateHitEffects( tr.EndPosition, tr.Normal );
 
 			if ( tr.Entity is BalloonEntity )
 				return;

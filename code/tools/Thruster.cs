@@ -53,7 +53,7 @@
 				if ( attached && tr.Entity is not Prop )
 					return;
 
-				CreateHitEffects( tr.EndPosition );
+				CreateHitEffects( tr.EndPosition, tr.Normal );
 
 				if ( tr.Entity is ThrusterEntity )
 				{
