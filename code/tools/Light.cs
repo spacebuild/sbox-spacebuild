@@ -100,6 +100,8 @@ public partial class LightTool : BaseTool
 				rope?.Destroy( true );
 				spring.Remove();
 			};
+			
+			Sandbox.Hooks.Entities.TriggerOnSpawned(light, Owner);
 		}
 	}
 }

@@ -78,6 +78,8 @@
 				}
 
 				ent.SetModel( "models/thruster/thrusterprojector.vmdl" );
+
+				Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
 			}
 		}
 	}

@@ -45,6 +45,8 @@
 
 			ent.SetModel( modelToShoot );
 			ent.Velocity = Owner.EyeRotation.Forward * 1000;
+			
+			Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
 		}
 	}
 }

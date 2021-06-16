@@ -1,4 +1,5 @@
 using Sandbox;
+using System;
 using System.Linq;
 
 partial class SandboxGame : GameManager
@@ -106,6 +107,7 @@ partial class SandboxGame : GameManager
 		{
 			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
 		}
+		Sandbox.Hooks.Entities.TriggerOnSpawned(ent, owner);
 	}
 
 	static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )
@@ -160,8 +162,9 @@ partial class SandboxGame : GameManager
 		ent.Position = tr.EndPosition;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
 
-		//Log.Info( $"ent: {ent}" );
+		Sandbox.Hooks.Entities.TriggerOnSpawned(ent, owner);
 	}
+
 
 	[ClientRpc]
 	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
@@ -278,5 +281,18 @@ partial class SandboxGame : GameManager
 		if ( ent is BaseViewModel ) return false;
 
 		return true;
+	}
+}
+
+namespace Sandbox.Hooks
+{
+	public static partial class Entities
+	{
+		public static event Action<IEntity, IEntity> OnSpawned;
+
+		public static void TriggerOnSpawned( IEntity spawned, IEntity owner )
+		{
+			OnSpawned?.Invoke(spawned, owner);
+		}
 	}
 }

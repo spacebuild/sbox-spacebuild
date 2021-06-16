@@ -106,6 +106,7 @@ public partial class BalloonTool : BaseTool
 				rope?.Destroy( true );
 				spring.Remove();
 			};
+			Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
 		}
 	}
 }
