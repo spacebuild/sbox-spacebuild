@@ -130,6 +130,9 @@ namespace Sandbox.Tools
 
 		protected virtual float MaxTraceDistance => 10000.0f;
 
+		// Set this to override the [Library]'s class default
+		public string Description { get; set; } = null;
+
 		public virtual void Activate()
 		{
 			if ( Game.IsServer )

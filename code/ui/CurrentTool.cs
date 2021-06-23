@@ -24,7 +24,7 @@ public class CurrentTool : Panel
 			var display = DisplayInfo.For( tool );
 
 			Title.SetText( display.Name );
-			Description.SetText( display.Description );
+			Description.SetText( tool.Description ?? display.Description );
 		}
 	}
 
