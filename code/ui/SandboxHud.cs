@@ -1,9 +1,12 @@
-﻿using Sandbox;
+﻿using System;
+using Sandbox;
 using Sandbox.UI;
 
 [Library]
 public partial class SandboxHud : HudEntity<RootPanel>
 {
+	
+	public static event Action OnHudLoaded;
 	public SandboxHud()
 	{
 		if ( !Game.IsClient )
@@ -21,5 +24,6 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		RootPanel.AddChild<CurrentTool>();
 		RootPanel.AddChild<SpawnMenu>();
 		RootPanel.AddChild<Crosshair>();
+		OnHudLoaded?.Invoke();
 	}
 }

@@ -166,6 +166,8 @@ namespace Sandbox.Tools
 								.To( trace2.Body, trace2.EndPos )
 								.WithBasis( Rotation.LookAt( trace1.Normal, trace1.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ) )
 								.WithCollisionsEnabled()
+								// .WithLimit(0,50) // can be used like a rope/slider hybrid, to limit max length
+								.WithPivot(trace1.EndPos)
 								// .WithFriction( 1 )
 								.Create();
 							var rope = MakeRope( trace1, trace2 );
