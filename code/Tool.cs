@@ -171,16 +171,12 @@ namespace Sandbox.Tools
 				.Ignore( Owner )
 				.Run();
 		}
-
-		public virtual TraceResult DoTrace()
+		
+		protected string GetConvarValue(string name, string defaultValue = null)
 		{
-			var startPos = Owner.EyePosition;
-			var dir = Owner.EyeRotation.Forward;
-
-			return Trace.Ray( startPos, startPos + ( dir * MaxTraceDistance ) )
-				.WithAllTags( "solid" )
-				.Ignore( Owner )
-				.Run();
+			return Game.IsServer
+				? Owner.Client.GetClientData<string>( name, defaultValue )
+				: ConsoleSystem.GetValue( name, default );
 		}
 	}
 }

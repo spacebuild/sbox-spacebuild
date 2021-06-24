@@ -102,6 +102,7 @@ spawnmenu
 }
 
 
+.modelselector,
 .spawnpage
 {
 	display: none;
@@ -162,6 +163,16 @@ spawnmenu
 			}
 		}
 	}
+}
+
+.modelselector {
+    max-width: 275px;
+    .canvas {
+        margin: 4px;
+        .cell {
+            padding: 2px;
+        }
+    }
 }
 
 

@@ -8,6 +8,7 @@ public partial class SpawnMenu : Panel
 {
 	public static SpawnMenu Instance;
 	readonly Panel toollist;
+	public Panel ToolPanel { get; private set; }
 
 	public SpawnMenu()
 	{
@@ -48,7 +49,7 @@ public partial class SpawnMenu : Panel
 				{
 					RebuildToolList();
 				}
-				body.Add.Panel( "inspector" );
+				ToolPanel = body.Add.Panel( "inspector" );
 			}
 		}
 
@@ -72,6 +73,7 @@ public partial class SpawnMenu : Panel
 
 				foreach ( var child in toollist.Children )
 					child.SetClass( "active", child == button );
+				ToolPanel.DeleteChildren(true);
 			} );
 		}
 	}
