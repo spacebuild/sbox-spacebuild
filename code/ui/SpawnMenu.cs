@@ -9,6 +9,8 @@ public partial class SpawnMenu : Panel
 	public static SpawnMenu Instance;
 	readonly Panel toollist;
 	public Panel ToolPanel { get; private set; }
+	public ButtonGroup SpawnMenuLeftTabs;
+	public Panel SpawnMenuLeftBody;
 
 	public SpawnMenu()
 	{
@@ -18,9 +20,10 @@ public partial class SpawnMenu : Panel
 		{
 			var tabs = left.AddChild<ButtonGroup>();
 			tabs.AddClass( "tabs" );
+			SpawnMenuLeftTabs = tabs;
 
 			var body = left.Add.Panel( "body" );
-
+			SpawnMenuLeftBody = body;
 			{
 				var props = body.AddChild<SpawnList>();
 				tabs.SelectedButton = tabs.AddButtonActive( "#spawnmenu.props", ( b ) => props.SetClass( "active", b ) );
