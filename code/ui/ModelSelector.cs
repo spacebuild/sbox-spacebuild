@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using Sandbox.UI.Tests;
+using System.Text.RegularExpressions;
 
 namespace Sandbox.UI
 {
@@ -11,7 +13,8 @@ namespace Sandbox.UI
 		private static readonly Dictionary<string, List<string>> SpawnLists = new();
 		VirtualScrollPanel Canvas;
 
-		public ModelSelector( IEnumerable<string> spawnListNames )
+		private static readonly Regex reModelMatGroup = new( @"^(.*?)(?:--(\d+))?\.vmdl$" );
+		public ModelSelector( IEnumerable<string> spawnListNames, bool showMaterialGroups = false )
 		{
 			AddClass( "modelselector" );
 			AddClass( "active" );
@@ -23,9 +26,11 @@ namespace Sandbox.UI
 			Canvas.OnCreateCell = ( cell, data ) => {
 				var file = (string)data;
 				var panel = cell.Add.Panel( "icon" );
-				panel.AddEvent( "onclick", () => {
+				var match = reModelMatGroup.Match( file );
+				panel.AddEventListener( "onclick", () => {
 					var currentTool = ConsoleSystem.GetValue( "tool_current" );
-					ConsoleSystem.Run( $"{currentTool}_model", file );
+					ConsoleSystem.Run( $"{currentTool}_model", match.Groups[1] + ".vmdl" );
+					ConsoleSystem.Run( $"{currentTool}_materialgroup", match.Groups.Count > 2 ? match.Groups[2] : 0 );
 				} );
 				panel.Style.BackgroundImage = Texture.Load( $"/{file}_c.png", false );
 			};
@@ -47,6 +52,11 @@ namespace Sandbox.UI
 		public static void AddToSpawnlist( string list, IEnumerable<string> models )
 		{
 			SpawnLists.GetOrCreate( list ).AddRange( models );
+		}
+
+		public static IEnumerable<string> GetSpawnList( string list )
+		{
+			return SpawnLists.GetOrCreate( list );
 		}
 	}
 }
