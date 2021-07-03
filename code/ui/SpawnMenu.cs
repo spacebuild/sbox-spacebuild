@@ -12,6 +12,9 @@ public partial class SpawnMenu : Panel
 	public ButtonGroup SpawnMenuLeftTabs;
 	public Panel SpawnMenuLeftBody;
 
+	public bool IgnoreMenuButton = false;
+	private bool IsOpen = false;
+
 	public SpawnMenu()
 	{
 		Instance = this;
@@ -80,7 +83,6 @@ public partial class SpawnMenu : Panel
 			} );
 		}
 	}
-
 	void SetActiveTool( string className )
 	{
 		// setting a cvar
@@ -101,11 +103,22 @@ public partial class SpawnMenu : Panel
 		}
 	}
 
+	private bool menuWasPressed = false;
+
 	public override void Tick()
 	{
 		base.Tick();
+		if ( !IgnoreMenuButton ) {
+			if ( Input.Pressed( "menu" ) ) {
+				IsOpen = true;
+			}
+			if ( menuWasPressed && !Input.Down( "menu" ) ) {
+				IsOpen = false;
+			}
+		}
+		menuWasPressed = Input.Down( "menu" );
 
-		Parent.SetClass( "spawnmenuopen", Input.Down( "menu" ) );
+		Parent.SetClass( "spawnmenuopen", IsOpen );
 
 		UpdateActiveTool();
 	}
@@ -122,6 +135,7 @@ public partial class SpawnMenu : Panel
 				child.SetClass( "active", tool != null && button.Text == tool.Title );
 			}
 		}
+		Parent.SetClass( "spawnmenuopen", Input.Down( "menu" ) );
 	}
 
 	public override void OnHotloaded()
