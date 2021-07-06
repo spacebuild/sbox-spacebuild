@@ -55,29 +55,6 @@ namespace Sandbox.Tools
 			}
 		}
 	}
-
-	[Library]
-	public class MaterialLists : MinimalExtended.IAutoload
-	{
-		public MaterialLists()
-		{
-			UI.ModelSelector.AddToSpawnlist( "material", new string[] {
-				"materials/lighthouse_concrete_floor.vmat",
-				"materials/gas_station_concrete_floor.vmat",
-				"materials/gas_station_concrete_wall.vmat",
-				"materials/0_dirt.vmat",
-				"materials/1_snow.vmat",
-				"materials/2_sand.vmat",
-				"materials/3_rock.vmat",
-				"materials/4_grass.vmat",
-				"materials/5_forest.vmat",
-				"materials/6_stones.vmat",
-				"materials/7_gravel.vmat",
-			} );
-		}
-		public bool ReloadOnHotload => true;
-		public void Dispose() { }
-	}
 }
 
 

@@ -9,11 +9,12 @@ namespace Sandbox.UI
 	[Library]
 	public partial class ModelSelector : Panel
 	{
-		// Todo: (optionally) loading these from flat files (or json?) would be nice for model-only packs
-		private static readonly Dictionary<string, List<string>> SpawnLists = new();
+		private static Dictionary<string, List<string>> SpawnLists = new();
+		private static bool spawnListsLoaded = false;
 		VirtualScrollPanel Canvas;
 
 		private static readonly Regex reModelMatGroup = new( @"^(.*?)(?:--(\d+))?\.vmdl$" );
+		private static readonly Regex reSpawnlistFile = new( @"([^\.]+)\.spawnlist$" );
 		public ModelSelector( IEnumerable<string> spawnListNames, bool showMaterialGroups = false )
 		{
 			AddClass( "modelselector" );
@@ -35,7 +36,7 @@ namespace Sandbox.UI
 				panel.Style.BackgroundImage = Texture.Load( $"/{file}_c.png", false );
 			};
 
-			var spawnList = spawnListNames.SelectMany( name => SpawnLists.GetValueOrDefault( name, new List<string>() ) );
+			var spawnList = spawnListNames.SelectMany( GetSpawnList );
 
 			foreach ( var file in spawnList ) {
 				if ( !FileSystem.Mounted.FileExists( file + "_c.png" ) ) {
@@ -45,6 +46,9 @@ namespace Sandbox.UI
 			}
 		}
 
+		/// To add models/materials to the spawnlists:
+		/// either call these functions in your addon init, like `ModelSelector.AddToSpawnlist( "thruster", new string[] {"models/blah.vmdl"} )`
+		/// or add an `addonname.thruster.spawnlist` file (newline delimited list of models)
 		public static void AddToSpawnlist( string list, string model )
 		{
 			SpawnLists.GetOrCreate( list ).Add( model );
@@ -56,7 +60,21 @@ namespace Sandbox.UI
 
 		public static IEnumerable<string> GetSpawnList( string list )
 		{
+			if (!spawnListsLoaded) {
+				InitializeSpawnlists();
+			}
 			return SpawnLists.GetOrCreate( list );
+		}
+
+		private static void InitializeSpawnlists()
+		{
+			spawnListsLoaded = true;
+			foreach (var file in FileSystem.Mounted.FindFile("/", "*.spawnlist", true)) {
+				var match = reSpawnlistFile.Match(file);
+				var listName = match.Groups[1].Value;
+				var models = FileSystem.Mounted.ReadAllText(file).Trim().Split('\n').Select(x => x.Trim());
+				SpawnLists.GetOrCreate(listName).AddRange(models);
+			}
 		}
 	}
 }

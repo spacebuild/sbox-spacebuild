@@ -97,19 +97,4 @@ namespace Sandbox.Tools
 			}
 		}
 	}
-
-	[Library]
-	public class ThrusterModels : IAutoload
-	{
-		public ThrusterModels()
-		{
-			ModelSelector.AddToSpawnlist( "thruster", new string[] {
-				"models/thruster/thrusterprojector.vmdl",
-				"models/citizen_props/trashcan01.vmdl",
-				"models/citizen_props/trashcan02.vmdl",
-			} );
-		}
-		public bool ReloadOnHotload => false;
-		public void Dispose() { }
-	}
 }
