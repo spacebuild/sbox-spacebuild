@@ -144,6 +144,7 @@ namespace Sandbox.Tools
 		public virtual void Deactivate()
 		{
 			DeletePreviews();
+			SpawnMenu.Instance?.ToolPanel?.DeleteChildren( true );
 		}
 
 		public virtual void Simulate()

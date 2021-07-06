@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Sandbox;
 using System;
 using System.Linq;
@@ -292,9 +293,9 @@ namespace Sandbox.Hooks
 
 		// Add an "Undoable" lambda. Should return the string to show in the toast,
 		// or empty string if the undoable is redundant and should be skipped over (eg. if the weld was already removed)
-		public static void AddUndo(Func<string> undo, Entity owner)
+		public static void AddUndo( Func<string> undo, Entity owner )
 		{
-			OnAddUndo?.Invoke(undo, owner);
+			OnAddUndo?.Invoke( undo, owner );
 		}
 	}
 
@@ -304,7 +305,7 @@ namespace Sandbox.Hooks
 
 		public static void TriggerOnSpawned( IEntity spawned, IEntity owner )
 		{
-			OnSpawned?.Invoke(spawned, owner);
+			OnSpawned?.Invoke( spawned, owner );
 		}
 	}
 }

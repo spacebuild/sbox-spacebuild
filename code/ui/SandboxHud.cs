@@ -25,5 +25,12 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		RootPanel.AddChild<SpawnMenu>();
 		RootPanel.AddChild<Crosshair>();
 		OnHudLoaded?.Invoke();
+		HotReloadTool();
+	}
+
+	[ClientRpc]
+	public static void HotReloadTool()
+	{
+		CurrentTool.GetCurrentTool()?.Activate();
 	}
 }
