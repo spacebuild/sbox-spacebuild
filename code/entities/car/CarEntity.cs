@@ -217,7 +217,7 @@ public partial class CarEntity : Prop, IUse
 		Driver.SetAnimParameter( "b_noclip", false );
 		Driver.SetAnimParameter( "sit", 1 );
 
-		var aimRotation = Input.Rotation.Clamp( Driver.Rotation, 90 );
+		var aimRotation = Driver.ViewRotation.Clamp( Driver.Rotation, 90 );
 
 		var aimPos = Driver.EyePosition + aimRotation.Forward * 200;
 		var localPos = new Transform( Driver.EyePosition, Driver.Rotation ).PointToLocal( aimPos );
