@@ -89,7 +89,7 @@ public class InventoryBar : Panel
 		if ( ent == null )
 			return;
 
-		player.SelectedChildIndex = i;
+		player.ActiveChildInput = ent;
 	}
 
 	private static void SwitchActiveSlot( IBaseInventory inventory, int idelta )
