@@ -70,7 +70,7 @@ partial class SandboxPlayer : Player
 			PlaySound( "kersplat" );
 		}
 
-		BecomeRagdollOnClient( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, GetHitboxBone( lastDamage.HitboxIndex ) );
+		BecomeRagdollOnClient( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, lastDamage.BoneIndex );
 
 		Controller = null;
 
@@ -96,7 +96,7 @@ partial class SandboxPlayer : Player
 				return;
 		}
 
-		if ( GetHitboxGroup( info.HitboxIndex ) == 1 )
+		if ( info.Hitbox.HasTag( "head" ) )
 		{
 			info.Damage *= 10.0f;
 		}
