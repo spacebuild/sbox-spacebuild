@@ -2,38 +2,27 @@
 {
 	data = 
 	{
+		BaseSurface = resource:"surfaces/metal.surface"
+		AudioMaterial = null
+		Description = ""
 		Friction = 0.075
-		Elasticity = 0.0
-		Density = 2000.0
-		Thickness = -1.0
-		Dampening = 0.0
-		BounceThreshold = 0.0
+		Elasticity = 0
+		Density = 2000
+		Thickness = -1
+		Dampening = 0
+		BounceThreshold = 0
 		ImpactEffects = 
 		{
-			Bullet = 
-			[
-				resource:"particles/impact.metal.vpcf",
-			]
-			BulletDecal = 
-			[
-				"decals/bullet-metal.decal",
-			]
-			Regular = 
-			[
-				resource:"particles/impact.metal-light.vpcf",
-			]
+			Regular = [  ]
+			Bullet = [  ]
+			BulletDecal = [  ]
 		}
 		Sounds = 
 		{
-			ImpactSoft = "physics.metal.sheet.impact"
-			ImpactHard = "physics.metal.sheet.impact"
 			RoughScrape = ""
-			FootLeft = "footstep-metal"
-			FootRight = "footstep-metal"
-			FootLaunch = "footstep-metal"
-			FootLand = "footstep-metal"
 		}
-		basesurface = "surfaces/default.surface"
-		description = ""
+		Breakables = 
+		{
+		}
 	}
 }
