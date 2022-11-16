@@ -1,7 +1,8 @@
 {
     "spawnmenu.props" : "models",
     "spawnmenu.entities" : "entities",
-    "spawnmenu.cloudmodels": "asset.party",
+    "spawnmenu.modellist": "Models",
     "spawnmenu.tools": "tools",
-    "spawnmenu.utility": "utility"
+    "spawnmenu.utility": "utility",
+    "spawnmenu.npclist": "NPC"
 }

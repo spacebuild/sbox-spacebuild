@@ -1,0 +1,87 @@
+﻿@using System.Threading.Tasks;
+@using System.Collections.Generic;
+@using Sandbox;
+@using Sandbox.UI;
+@inherits Panel;
+
+<root class="spawnpage columned">
+
+	<div class="nav">
+
+		<button class="button" @onclick=@RefreshItems> Refresh</button>
+
+	</div>
+
+	<div class="contents">
+
+	@if (Packages == null)
+	{
+		<span>No Packages OFund!</span>
+		
+	}
+	else
+	{
+		<div class="package-list">
+			@foreach ( var package in Packages )
+			{
+				<PackageIcon Package=@package OnIconPressed=@(() => SpawnPackage( package ))></PackageIcon>
+			}
+		</div>
+	}
+
+	</div>
+
+</root>
+
+
+@code
+{
+	public List<Package> Packages;
+
+	DisplayInfo[] SortOrders;
+
+	protected override void OnParametersSet()
+	{
+		base.OnParametersSet();
+
+		SortOrders = DisplayInfo.ForEnumValues(typeof(Package.Order));
+
+		RefreshItems();
+	}
+
+	public async Task UpdateItems(int offset = 0)
+	{
+		Packages ??= new List<Package>();
+
+		var q = new Package.Query();
+		q.Type = Package.Type.Addon;
+		q.Order = Package.Order.Updated;
+		q.Tags.Add("+game:facepunch.sandbox");
+		q.Tags.Add("+runtime");
+		q.Tags.Add("+entity");
+		q.Tags.Add("-npc");
+		q.Take = 500;
+		q.Skip = offset;
+
+		var found = await q.RunAsync(default);
+
+		Packages.AddRange(found);
+
+		StateHasChanged();
+	}
+
+	public void RefreshItems()
+	{
+		//Canvas.Clear();
+
+		Packages?.Clear();
+		StateHasChanged();
+
+		_ = UpdateItems();
+	}
+
+	void SpawnPackage( Package package )
+	{
+		ConsoleSystem.Run("spawnpackage", package.FullIdent);
+	}
+}
