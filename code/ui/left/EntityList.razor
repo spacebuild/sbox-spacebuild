@@ -8,26 +8,22 @@
 
 	<div class="nav">
 
-		<button class="button" @onclick=@RefreshItems> Refresh</button>
+		<div class="section">
+			<PackageSortButtonGroup Value:bind=@SortOrder></PackageSortButtonGroup>
+		</div>
+
+		<div class="section grow">
+		</div>
+
+		<div class="section">
+			<button active=@LocalOnly @onclick=@(() =>{ LocalOnly = !LocalOnly; } )>Local Only</button>
+		</div>
 
 	</div>
 
 	<div class="contents">
 
-	@if (Packages == null)
-	{
-		<span>No Packages OFund!</span>
-		
-	}
-	else
-	{
-		<div class="package-list">
-			@foreach ( var package in Packages )
-			{
-				<PackageIcon Package=@package OnIconPressed=@(() => SpawnPackage( package ))></PackageIcon>
-			}
-		</div>
-	}
+		<PackageList Query=@GetQueryString() OnIconPressed=@SpawnPackage></PackageList>
 
 	</div>
 
@@ -36,51 +32,20 @@
 
 @code
 {
-	public List<Package> Packages;
+	string SortOrder { get; set; } = "updated";
+	bool LocalOnly = false;
 
-	DisplayInfo[] SortOrders;
-
-	protected override void OnParametersSet()
+	public string GetQueryString()
 	{
-		base.OnParametersSet();
+		var sort = $"sort:{SortOrder}";
+		var local = LocalOnly ? "local:true" : "";
 
-		SortOrders = DisplayInfo.ForEnumValues(typeof(Package.Order));
+		var str = $"{sort} {local} type:addon +game:facepunch.sandbox +runtime +entity -npc";
 
-		RefreshItems();
+		return str;
 	}
 
-	public async Task UpdateItems(int offset = 0)
-	{
-		Packages ??= new List<Package>();
-
-		var q = new Package.Query();
-		q.Type = Package.Type.Addon;
-		q.Order = Package.Order.Updated;
-		q.Tags.Add("+game:facepunch.sandbox");
-		q.Tags.Add("+runtime");
-		q.Tags.Add("+entity");
-		q.Tags.Add("-npc");
-		q.Take = 500;
-		q.Skip = offset;
-
-		var found = await q.RunAsync(default);
-
-		Packages.AddRange(found);
-
-		StateHasChanged();
-	}
-
-	public void RefreshItems()
-	{
-		//Canvas.Clear();
-
-		Packages?.Clear();
-		StateHasChanged();
-
-		_ = UpdateItems();
-	}
-
-	void SpawnPackage( Package package )
+	void SpawnPackage(Package package)
 	{
 		ConsoleSystem.Run("spawnpackage", package.FullIdent);
 	}
