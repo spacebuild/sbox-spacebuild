@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using System.Linq;
 using System.Threading.Tasks;
+using static Sandbox.Package;
 
 partial class SandboxGame : Game
 {
@@ -162,6 +163,73 @@ partial class SandboxGame : Game
 	public override void OnKilledMessage( long leftid, string left, long rightid, string right, string method )
 	{
 		KillFeed.Current?.AddEntry( leftid, left, rightid, right, method );
+	}
+
+	[ConCmd.Server( "spawnpackage" )]
+	public static async Task SpawnPackage( string fullIdent )
+	{
+		var owner = ConsoleSystem.Caller.Pawn as Player;
+
+		if ( owner == null )
+			return;
+		
+		Log.Info( $"Spawn package {fullIdent}" );
+
+		var package = await Package.FetchAsync( fullIdent, false );
+		if ( package == null )
+		{
+			Log.Warning( $"Tried to spawn package {fullIdent} - which was not found" );
+			return;
+		}
+
+		Log.Info( $"Spawn package {package.Title}" );
+
+		var entityname = package.GetMeta( "PrimaryAsset", "" );
+
+		if ( string.IsNullOrEmpty( entityname ) )
+		{
+			Log.Warning( $"{package.FullIdent} doesn't have a PrimaryAsset key" );
+			return;
+		}
+
+		if ( !CanSpawnPackage( package ) )
+		{
+			Log.Warning( $"Not allowed to spawn package {package.FullIdent}" );
+			return;
+		}
+
+		await package.MountAsync( true );
+
+		Log.Info( $"Spawning Entity: {entityname}" );
+
+		var type = TypeLibrary.GetDescription( entityname );
+		if ( type == null )
+		{
+			Log.Warning( $"'{entityname}' type wasn't found for {package.FullIdent}" );
+			return;
+		}
+
+		Log.Info( $"Found Type: {type.Name}" );
+		Log.Info( $"		  : {type.ClassName}" );
+
+		var ent = type.Create<Entity>();
+
+		var tr = Trace.Ray( owner.EyePosition, owner.EyePosition + owner.EyeRotation.Forward * 200 )
+							.UseHitboxes()
+							.Ignore( owner )
+							.Size( 2 )
+							.Run();
+
+		ent.Position = tr.EndPosition;
+		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
+	}
+
+	static bool CanSpawnPackage( Package package )
+	{
+		if ( package.PackageType != Package.Type.Addon ) return false;
+		if ( !package.Tags.Contains( "runtime" ) ) return false;
+
+		return true;
 	}
 
 }

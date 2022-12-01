@@ -9,7 +9,7 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		if ( !IsClient )
 			return;
 
-		RootPanel.StyleSheet.Load( "/ui/SandboxHud.scss" );
+		RootPanel.StyleSheet.Load( "/Styles/sandbox.scss" );
 
 		RootPanel.AddChild<ChatBox>();
 		RootPanel.AddChild<VoiceList>();

@@ -14,8 +14,6 @@ public partial class SpawnMenu : Panel
 	{
 		Instance = this;
 
-		StyleSheet.Load( "/ui/SpawnMenu.scss" );
-
 		var left = Add.Panel( "left" );
 		{
 			var tabs = left.AddChild<ButtonGroup>();
@@ -27,11 +25,14 @@ public partial class SpawnMenu : Panel
 				var props = body.AddChild<SpawnList>();
 				tabs.SelectedButton = tabs.AddButtonActive( "#spawnmenu.props", ( b ) => props.SetClass( "active", b ) );
 
+				var models = body.AddChild<ModelList>();
+				tabs.AddButtonActive( "#spawnmenu.modellist", ( b ) => models.SetClass( "active", b ) );			
+				
 				var ents = body.AddChild<EntityList>();
 				tabs.AddButtonActive( "#spawnmenu.entities", ( b ) => ents.SetClass( "active", b ) );
 
-				var models = body.AddChild<CloudModelList>();
-				tabs.AddButtonActive( "#spawnmenu.cloudmodels", ( b ) => models.SetClass( "active", b ) );
+				var npclist = body.AddChild<NpcList>();
+				tabs.AddButtonActive( "#spawnmenu.npclist", ( b ) => npclist.SetClass( "active", b ) );
 			}
 		}
 

@@ -1,10 +1,15 @@
-﻿spawnmenu
+﻿
+@import "_packageicon.scss";
+@import "_tabs.scss";
+@import "_packagelist.scss";
+
+spawnmenu
 {
 	left: 0px;
 	right: 0px;
 	top: 0px;
 	bottom: 0px;
-	padding: 100px;
+	padding: 80px 100px;
 	padding-bottom: 200px;
 	border-radius: 5px;
 	pointer-events: none;
@@ -12,47 +17,8 @@
 	position: absolute;
 	font-family: poppins;
 	opacity: 0;
-	z-index: 200;
-
-	.tabs
-	{
-		font-size: 16px;
-		flex-shrink: 0;
-		margin-bottom: 4px;
-		padding-left: 10px;
-
-		button
-		{
-			padding: 6px 5px;
-			margin-right: 10px;
-			font-size: 23px;
-			align-items: center;
-			font-weight: 600;
-			opacity: 0.2;
-			color: #fff;
-			cursor: pointer;
-			font-family: Poppins;
-			//border-radius: 5px;
-			label
-			{
-				text-shadow: 1px 1px 4px rgba( black, 0.2 );
-			}
-
-			&:hover
-			{
-				opacity: 1;
-			}
-
-			&.active
-			{
-				transform: scale( 1 );
-				opacity: 1;
-				color: #fff;
-				//	background-color: #fff;//( #3273eb, 0.2 );
-				//color: #3273eb;
-			}
-		}
-	}
+	z-index: 10;
+	backdrop-filter: blur( 50px ) contrast( 25% ) saturate( 50% ) brightness( 9% );
 
 	.left
 	{
@@ -64,18 +30,15 @@
 
 		.body
 		{
-			border-radius: 10px;
-			background-color: rgba( #111, 0.4 );
 			flex-grow: 1;
-			backdrop-filter: blur( 100px );
 		}
 	}
 
 	.right
 	{
-		margin-left: 10px;
+		margin-left: 50px;
 		flex-direction: column;
-		min-width: 450px;
+		min-width: 400px;
 		flex-shrink: 0;
 		left: 500px;
 		transition: all 0.3s ease-in;
@@ -84,10 +47,7 @@
 		{
 			//	background-color: rgba( #333, 0.95 );
 			flex-grow: 1;
-			border-radius: 10px;
-			background-color: rgba( #111, 0.4 );
 			padding: 10px;
-			backdrop-filter: blur( 100px );
 
 			.toollist
 			{
@@ -224,10 +184,3 @@ spawnmenu .sidebar
 	}
 }
 
-
-icon, iconpanel
-{
-	font-family: "material icons";
-	flex-grow: 1;
-	text-align: left;
-}
