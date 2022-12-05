@@ -386,7 +386,7 @@ public partial class PhysGun : Carriable
 		//
 		// Lock view angles
 		//
-		//owner.ViewAngles = owner.OriginalViewAngles;
+		Input.AnalogLook = Angles.Zero;
 	}
 
 	public override bool IsUsable( Entity user )
