@@ -3,7 +3,7 @@
   "Type": "game",
   "Org": "facepunch",
   "Ident": "sandbox",
-  "Tags": null,
+  "Tags": "",
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
@@ -117,6 +117,11 @@
       "VelocityIterations": 8,
       "SoftBodyIterations": 1,
       "SoftBodySubsteps": 1
-    }
+    },
+    "DefaultLeaderboards": null,
+    "Summary": "Create and play in your own sandbox mode.",
+    "Description": "This game lets you spawn props and ragdolls and create entities to play with. It\u0027s like Garry\u0027s Mod.\r\n\r\nThis is a bit of a sandbox itself. This is not the final sandbox gamemode. All of this code will likely be thrown away and re-written when we come to do the sandbox gamemode proper.",
+    "Public": true,
+    "ReplaceTags": "sandbox game dynamic spawnmenu physgun"
   }
 }
