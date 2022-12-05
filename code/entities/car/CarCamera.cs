@@ -113,14 +113,14 @@ public class CarCamera : CameraMode
 		Viewer = null;
 	}
 
-	public override void BuildInput( InputBuilder input )
+	public override void BuildInput()
 	{
-		base.BuildInput( input );
+		base.BuildInput();
 
-		var pawn = Local.Pawn;
+		var pawn = Local.Pawn as Player;
 		if ( pawn == null ) return;
 
-		if ( (Math.Abs( input.AnalogLook.pitch ) + Math.Abs( input.AnalogLook.yaw )) > 0.0f )
+		if ( (Math.Abs( Input.AnalogLook.pitch ) + Math.Abs( Input.AnalogLook.yaw )) > 0.0f )
 		{
 			if ( !orbitEnabled )
 			{
@@ -134,14 +134,13 @@ public class CarCamera : CameraMode
 			orbitEnabled = true;
 			timeSinceOrbit = 0.0f;
 
-			orbitAngles.yaw += input.AnalogLook.yaw;
-			orbitAngles.pitch += input.AnalogLook.pitch;
+			orbitAngles.yaw += Input.AnalogLook.yaw;
+			orbitAngles.pitch += Input.AnalogLook.pitch;
 			orbitAngles = orbitAngles.Normal;
 			orbitAngles.pitch = orbitAngles.pitch.Clamp( MinOrbitPitch, MaxOrbitPitch );
 		}
 
-		input.ViewAngles = orbitEnabled ? orbitAngles : Entity.Rotation.Angles();
-		input.ViewAngles = input.ViewAngles.Normal;
+		pawn.ViewAngles = orbitEnabled ? orbitAngles : Entity.Rotation.Angles();
 	}
 
 	private void ApplyShake( float speed )
