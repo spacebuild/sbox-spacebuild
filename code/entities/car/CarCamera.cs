@@ -1,7 +1,8 @@
 ﻿using Sandbox;
+using Sandbox.Component;
 using System;
 
-public class CarCamera : CameraMode
+public class CarCamera : CameraComponent
 {
 	protected virtual float MinFov => 80.0f;
 	protected virtual float MaxFov => 100.0f;

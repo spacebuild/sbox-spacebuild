@@ -20,32 +20,33 @@ public class ViewModel : BaseViewModel
 	public float YawInertia { get; private set; }
 	public float PitchInertia { get; private set; }
 
-	public override void PostCameraSetup( ref CameraSetup camSetup )
+	public override void PlaceViewmodel()
 	{
-		base.PostCameraSetup( ref camSetup );
-
 		if ( !Local.Pawn.IsValid() )
 			return;
 
+		var inPos = Map.Camera.Position;
+		var inRot = Map.Camera.Rotation;
+
 		if ( !activated )
 		{
-			lastPitch = camSetup.Rotation.Pitch();
-			lastYaw = camSetup.Rotation.Yaw();
+			lastPitch = inRot.Pitch();
+			lastYaw = inRot.Yaw();
 
 			YawInertia = 0;
 			PitchInertia = 0;
 
 			activated = true;
 		}
-
-		Position = camSetup.Position;
-		Rotation = camSetup.Rotation;
-
+		
 		var cameraBoneIndex = GetBoneIndex( "camera" );
 		if ( cameraBoneIndex != -1 )
 		{
-			camSetup.Rotation *= (Rotation.Inverse * GetBoneTransform( cameraBoneIndex ).Rotation);
+			inRot *= (Rotation.Inverse * GetBoneTransform( cameraBoneIndex ).Rotation);
 		}
+
+		Position = inPos;
+		Rotation = inRot;
 
 		var newPitch = Rotation.Pitch();
 		var newYaw = Rotation.Yaw();

@@ -86,7 +86,7 @@ partial class Tool : Carriable
 	{
 	}
 
-	[Event.Frame]
+	[Event.Client.Frame]
 	public void OnFrame()
 	{
 		if ( Owner is Player player && player.ActiveChild != this )

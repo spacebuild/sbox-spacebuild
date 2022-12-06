@@ -92,7 +92,7 @@ partial class SandboxPlayer : Player
 	{
 		if ( info.Attacker.IsValid() )
 		{
-			if ( info.Attacker.Tags.Has( $"{PhysGun.GrabbedTag}{Client.PlayerId}" ) )
+			if ( info.Attacker.Tags.Has( $"{PhysGun.GrabbedTag}{Client.SteamId}" ) )
 				return;
 		}
 
@@ -166,7 +166,7 @@ partial class SandboxPlayer : Player
 		{
 			if ( timeSinceJumpReleased < 0.3f )
 			{
-				Game.Current?.DoPlayerNoclip( cl );
+				GameManager.Current?.DoPlayerNoclip( cl );
 			}
 
 			timeSinceJumpReleased = 0;

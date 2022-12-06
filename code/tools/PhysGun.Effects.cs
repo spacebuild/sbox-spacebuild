@@ -10,7 +10,7 @@ public partial class PhysGun
 	Vector3 lastBeamPos;
 	ModelEntity lastGrabbedEntity;
 
-	[Event.Frame]
+	[Event.Client.Frame]
 	public void OnFrame()
 	{
 		UpdateEffects();

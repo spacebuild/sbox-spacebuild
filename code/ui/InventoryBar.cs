@@ -46,7 +46,7 @@ public class InventoryBar : Panel
 		inventoryIcon.SetClass( "active", player.ActiveChild == ent );
 	}
 
-	[Event( "buildinput" )]
+	[Event.Client.BuildInput]
 	public void ProcessClientInput()
 	{
 		var player = Local.Pawn as Player;

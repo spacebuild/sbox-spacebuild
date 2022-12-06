@@ -1,9 +1,8 @@
 ﻿using Sandbox;
 using System.Linq;
 using System.Threading.Tasks;
-using static Sandbox.Package;
 
-partial class SandboxGame : Game
+partial class SandboxGame : GameManager
 {
 	public SandboxGame()
 	{
@@ -48,7 +47,7 @@ partial class SandboxGame : Game
 		//
 		if ( modelname.Count( x => x == '.' ) == 1 && !modelname.EndsWith( ".vmdl", System.StringComparison.OrdinalIgnoreCase ) && !modelname.EndsWith( ".vmdl_c", System.StringComparison.OrdinalIgnoreCase ) )
 		{
-			modelname = await SpawnPackageModel( modelname, tr.EndPosition, modelRotation, owner );
+			modelname = await SpawnPackageModel( modelname, tr.EndPosition, modelRotation, owner as Entity );
 			if ( modelname == null )
 				return;
 		}

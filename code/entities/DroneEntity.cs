@@ -131,7 +131,7 @@ public partial class DroneEntity : Prop
 
 	private float spinAngle;
 
-	[Event.Frame]
+	[Event.Client.Frame]
 	public void OnFrame()
 	{
 		spinAngle += 10000.0f * Time.Delta;

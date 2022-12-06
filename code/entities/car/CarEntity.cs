@@ -449,7 +449,7 @@ public partial class CarEntity : Prop, IUse
 	float wheelAngle = 0.0f;
 	float wheelRevolute = 0.0f;
 
-	[Event.Frame]
+	[Event.Client.Frame]
 	public void OnFrame()
 	{
 		wheelAngle = wheelAngle.LerpTo( TurnDirection * 25, 1.0f - MathF.Pow( 0.001f, Time.Delta ) );
