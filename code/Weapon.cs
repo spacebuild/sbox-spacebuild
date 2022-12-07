@@ -231,7 +231,9 @@ public partial class Weapon : BaseWeapon, IUse
 	public virtual void ShootBullet( float spread, float force, float damage, float bulletSize )
 	{
 		Rand.SetSeed( Time.Tick );
-		ShootBullet( Owner.EyePosition, Owner.EyeRotation.Forward, spread, force, damage, bulletSize );
+
+		var ray = Owner.AimRay;
+		ShootBullet( ray.Position, ray.Forward, spread, force, damage, bulletSize );
 	}
 
 	/// <summary>
@@ -239,12 +241,11 @@ public partial class Weapon : BaseWeapon, IUse
 	/// </summary>
 	public virtual void ShootBullets( int numBullets, float spread, float force, float damage, float bulletSize )
 	{
-		var pos = Owner.EyePosition;
-		var dir = Owner.EyeRotation.Forward;
+		var ray = Owner.AimRay;
 
 		for ( int i = 0; i < numBullets; i++ )
 		{
-			ShootBullet( pos, dir, spread, force / numBullets, damage, bulletSize );
+			ShootBullet( ray.Position, ray.Forward, spread, force / numBullets, damage, bulletSize );
 		}
 	}
 }

@@ -30,7 +30,7 @@ partial class SandboxGame : GameManager
 	[ConCmd.Server( "spawn" )]
 	public static async Task Spawn( string modelname )
 	{
-		var owner = ConsoleSystem.Caller?.Pawn;
+		var owner = ConsoleSystem.Caller?.Pawn as Player;
 
 		if ( ConsoleSystem.Caller == null )
 			return;

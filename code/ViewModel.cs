@@ -25,8 +25,8 @@ public class ViewModel : BaseViewModel
 		if ( !Local.Pawn.IsValid() )
 			return;
 
-		var inPos = Map.Camera.Position;
-		var inRot = Map.Camera.Rotation;
+		var inPos = Camera.Position;
+		var inRot = Camera.Rotation;
 
 		if ( !activated )
 		{

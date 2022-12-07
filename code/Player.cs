@@ -7,6 +7,9 @@ partial class SandboxPlayer : Player
 
 	private DamageInfo lastDamage;
 
+	[Net, Predicted]
+	public bool ThirdPersonCamera { get; set; }
+
 	/// <summary>
 	/// The clothing container is what dresses the citizen
 	/// </summary>
@@ -54,8 +57,6 @@ partial class SandboxPlayer : Player
 		Inventory.Add( new Flashlight() );
 		Inventory.Add( new Fists() );
 
-		CameraMode = new FirstPersonCamera();
-
 		base.Respawn();
 	}
 
@@ -76,8 +77,6 @@ partial class SandboxPlayer : Player
 
 		EnableAllCollisions = false;
 		EnableDrawing = false;
-
-		CameraMode = new SpectateRagdollCamera();
 
 		foreach ( var child in Children )
 		{
@@ -140,14 +139,7 @@ partial class SandboxPlayer : Player
 
 		if ( Input.Pressed( InputButton.View ) )
 		{
-			if ( CameraMode is ThirdPersonCamera )
-			{
-				CameraMode = new FirstPersonCamera();
-			}
-			else
-			{
-				CameraMode = new ThirdPersonCamera();
-			}
+			ThirdPersonCamera = !ThirdPersonCamera;
 		}
 
 		if ( Input.Pressed( InputButton.Drop ) )
@@ -266,6 +258,44 @@ partial class SandboxPlayer : Player
 			inventory.SetActiveSlot( i, false );
 
 			break;
+		}
+	}
+
+	public override void FrameSimulate( Client cl )
+	{
+		Camera.ZNear = 1f;
+		Camera.ZFar = 25000.0f;
+		Camera.Rotation = ViewAngles.ToRotation();
+		
+		if ( ThirdPersonCamera )
+		{
+			Camera.FieldOfView = Local.UserPreference.FieldOfView;
+			Camera.FirstPersonViewer = null;
+
+			Vector3 targetPos;
+			var center = Position + Vector3.Up * 64;
+
+			var pos = center;
+			var rot = Rotation.FromAxis( Vector3.Up, -16 ) * Camera.Rotation;
+
+			float distance = 130.0f * Scale;
+			targetPos = pos + rot.Right * ((CollisionBounds.Mins.x + 32) * Scale);
+			targetPos += rot.Forward * -distance;
+
+			var tr = Trace.Ray( pos, targetPos )
+				.WithAnyTags( "solid" )
+				.Ignore( this )
+				.Radius( 8 )
+				.Run();
+
+			Camera.Position = tr.EndPosition;
+		}
+		else
+		{
+			Camera.Position = EyePosition;
+			Camera.FieldOfView = Local.UserPreference.FieldOfView;
+			Camera.FirstPersonViewer = this;
+			Camera.Main.SetViewModelCamera( Camera.FieldOfView, 0.01f, 100.0f );
 		}
 	}
 }

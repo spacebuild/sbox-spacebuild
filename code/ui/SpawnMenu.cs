@@ -3,7 +3,6 @@ using Sandbox.Tools;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 
-
 [Library]
 public partial class SpawnMenu : Panel
 {
