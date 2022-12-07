@@ -269,7 +269,7 @@ partial class SandboxPlayer : Player
 		
 		if ( ThirdPersonCamera )
 		{
-			Camera.FieldOfView = Local.UserPreference.FieldOfView;
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Local.UserPreference.FieldOfView );
 			Camera.FirstPersonViewer = null;
 
 			Vector3 targetPos;
@@ -293,7 +293,7 @@ partial class SandboxPlayer : Player
 		else
 		{
 			Camera.Position = EyePosition;
-			Camera.FieldOfView = Local.UserPreference.FieldOfView;
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Local.UserPreference.FieldOfView );
 			Camera.FirstPersonViewer = this;
 			Camera.Main.SetViewModelCamera( Camera.FieldOfView, 0.01f, 100.0f );
 		}
