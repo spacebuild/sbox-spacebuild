@@ -263,8 +263,6 @@ partial class SandboxPlayer : Player
 
 	public override void FrameSimulate( Client cl )
 	{
-		Camera.ZNear = 1f;
-		Camera.ZFar = 25000.0f;
 		Camera.Rotation = ViewAngles.ToRotation();
 		
 		if ( ThirdPersonCamera )
@@ -295,7 +293,7 @@ partial class SandboxPlayer : Player
 			Camera.Position = EyePosition;
 			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Local.UserPreference.FieldOfView );
 			Camera.FirstPersonViewer = this;
-			Camera.Main.SetViewModelCamera( Camera.FieldOfView, 0.01f, 100.0f );
+			Camera.Main.SetViewModelCamera( Camera.FieldOfView );
 		}
 	}
 }
