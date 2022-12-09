@@ -102,11 +102,11 @@ partial class SandboxGame : GameManager
 		if ( owner == null )
 			return;
 
-		var entityType = TypeLibrary.GetDescription<Entity>( entName )?.TargetType;
+		var entityType = TypeLibrary.GetType<Entity>( entName )?.TargetType;
 		if ( entityType == null )
 			return;
 
-		if ( !TypeLibrary.Has<SpawnableAttribute>( entityType ) )
+		if ( !TypeLibrary.HasAttribute<SpawnableAttribute>( entityType ) )
 			return;
 
 		var tr = Trace.Ray( owner.EyePosition, owner.EyePosition + owner.EyeRotation.Forward * 200 )
@@ -201,7 +201,7 @@ partial class SandboxGame : GameManager
 
 		Log.Info( $"Spawning Entity: {entityname}" );
 
-		var type = TypeLibrary.GetDescription( entityname );
+		var type = TypeLibrary.GetType( entityname );
 		if ( type == null )
 		{
 			Log.Warning( $"'{entityname}' type wasn't found for {package.FullIdent}" );

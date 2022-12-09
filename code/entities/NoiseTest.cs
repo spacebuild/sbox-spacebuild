@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using Sandbox.Utility;
 
 [Spawnable]
 [Library( "noise_test", Title = "Noise Test" )]

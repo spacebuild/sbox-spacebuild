@@ -34,6 +34,7 @@ partial class SandboxPlayer : Player
 
 	public override void Respawn()
 	{
+		
 		SetModel( "models/citizen/citizen.vmdl" );
 
 		Controller = new WalkController();
@@ -43,6 +44,7 @@ partial class SandboxPlayer : Player
 			DevController = null;
 		}
 
+		this.ClearWaterLevel();
 		EnableAllCollisions = true;
 		EnableDrawing = true;
 		EnableHideInFirstPerson = true;
@@ -64,14 +66,14 @@ partial class SandboxPlayer : Player
 	{
 		base.OnKilled();
 
-		if ( lastDamage.Flags.HasFlag( DamageFlags.Vehicle ) )
+		if ( lastDamage.HasTag( "vehicle" ) )
 		{
 			Particles.Create( "particles/impact.flesh.bloodpuff-big.vpcf", lastDamage.Position );
 			Particles.Create( "particles/impact.flesh-big.vpcf", lastDamage.Position );
 			PlaySound( "kersplat" );
 		}
 
-		BecomeRagdollOnClient( Velocity, lastDamage.Flags, lastDamage.Position, lastDamage.Force, lastDamage.BoneIndex );
+		BecomeRagdollOnClient( Velocity, lastDamage.Position, lastDamage.Force, lastDamage.BoneIndex, lastDamage.HasTag( "bullet" ), lastDamage.HasTag( "blast" ) );
 
 		Controller = null;
 
@@ -102,14 +104,7 @@ partial class SandboxPlayer : Player
 
 		lastDamage = info;
 
-		TookDamage( lastDamage.Flags, lastDamage.Position, lastDamage.Force );
-
 		base.TakeDamage( info );
-	}
-
-	[ClientRpc]
-	public void TookDamage( DamageFlags damageFlags, Vector3 forcePos, Vector3 force )
-	{
 	}
 
 	public override PawnController GetActiveController()
@@ -205,7 +200,7 @@ partial class SandboxPlayer : Player
 		animHelper.IsSitting = controller.HasTag( "sitting" );
 		animHelper.IsNoclipping = controller.HasTag( "noclip" );
 		animHelper.IsClimbing = controller.HasTag( "climbing" );
-		animHelper.IsSwimming = WaterLevel >= 0.5f;
+		animHelper.IsSwimming = this.GetWaterLevel() >= 0.5f;
 		animHelper.IsWeaponLowered = false;
 
 		if ( controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
