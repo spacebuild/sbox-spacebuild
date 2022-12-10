@@ -126,7 +126,7 @@ partial class Flashlight : Weapon
 
 			hit = true;
 
-			if ( !IsServer ) continue;
+			if ( !Game.IsServer ) continue;
 
 			using ( Prediction.Off() )
 			{
@@ -178,7 +178,7 @@ partial class Flashlight : Weapon
 	{
 		base.ActiveStart( ent );
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			Activate();
 		}
@@ -188,7 +188,7 @@ partial class Flashlight : Weapon
 	{
 		base.ActiveEnd( ent, dropped );
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			if ( dropped )
 			{

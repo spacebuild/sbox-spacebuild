@@ -67,7 +67,7 @@ public partial class PhysGun : Carriable
 
 		BeamActive = grabEnabled;
 
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			using ( Prediction.Off() )
 			{
@@ -224,7 +224,7 @@ public partial class PhysGun : Carriable
 
 	private void Activate()
 	{
-		if ( !IsServer )
+		if ( !Game.IsServer )
 		{
 			return;
 		}
@@ -232,7 +232,7 @@ public partial class PhysGun : Carriable
 
 	private void Deactivate()
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			GrabEnd();
 		}
@@ -310,7 +310,7 @@ public partial class PhysGun : Carriable
 	[Event.Physics.PreStep]
 	public void OnPrePhysicsStep()
 	{
-		if ( !IsServer )
+		if ( !Game.IsServer )
 			return;
 
 		if ( !heldBody.IsValid() )

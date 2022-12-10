@@ -41,7 +41,7 @@ public partial class DirectionalGravity : Prop
 	[Event.Tick]
 	protected void UpdateGravity()
 	{
-		if ( !IsServer )
+		if ( !Game.IsServer )
 			return;
 
 		if ( !enabled )

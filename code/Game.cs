@@ -6,7 +6,7 @@ partial class SandboxGame : GameManager
 {
 	public SandboxGame()
 	{
-		if ( IsServer )
+		if ( Game.IsServer )
 		{
 			// Create the HUD
 			_ = new SandboxHud();

@@ -94,7 +94,7 @@ public partial class DroneEntity : Prop
 	public override void Simulate( IClient owner )
 	{
 		if ( owner == null ) return;
-		if ( !IsServer ) return;
+		if ( !Game.IsServer ) return;
 
 		using ( Prediction.Off() )
 		{
@@ -124,7 +124,7 @@ public partial class DroneEntity : Prop
 	{
 		base.OnNewModel( model );
 
-		if ( IsClient )
+		if ( Game.IsClient )
 		{
 		}
 	}

@@ -6,7 +6,7 @@ public partial class SandboxHud : HudEntity<RootPanel>
 {
 	public SandboxHud()
 	{
-		if ( !IsClient )
+		if ( !Game.IsClient )
 			return;
 
 		RootPanel.StyleSheet.Load( "/Styles/sandbox.scss" );

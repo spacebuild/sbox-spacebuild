@@ -207,7 +207,7 @@ public partial class Weapon : BaseWeapon, IUse
 		{
 			tr.Surface.DoBulletImpact( tr );
 
-			if ( !IsServer ) continue;
+			if ( !Game.IsServer ) continue;
 			if ( !tr.Entity.IsValid() ) continue;
 
 			//
