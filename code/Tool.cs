@@ -19,22 +19,22 @@ partial class Tool : Carriable
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
 	}
 
-	public override void Simulate( Client owner )
+	public override void Simulate( IClient owner )
 	{
-		if ( Host.IsServer )
+		if ( Game.IsServer )
 		{
 			UpdateCurrentTool( owner );
 		}
 
 		CurrentTool?.Simulate();
 
-		if ( Host.IsServer )
+		if ( Game.IsServer )
 		{
 			CurrentTool?.UpdatePreviews();
 		}
 	}
 
-	private void UpdateCurrentTool( Client owner )
+	private void UpdateCurrentTool( IClient owner )
 	{
 		var toolName = owner.GetClientData<string>( "tool_current", "tool_balloon" );
 		if ( toolName == null )
@@ -117,7 +117,7 @@ namespace Sandbox.Tools
 
 		public virtual void Activate()
 		{
-			if ( Host.IsServer )
+			if ( Game.IsServer )
 			{
 				CreatePreviews();
 			}

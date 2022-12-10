@@ -32,7 +32,7 @@ public partial class LightTool : BaseTool
 
 	public override void Simulate()
 	{
-		if ( !Host.IsServer )
+		if ( !Game.IsServer )
 			return;
 
 		using ( Prediction.Off() )

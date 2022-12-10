@@ -50,7 +50,7 @@ partial class Fists : Weapon
 
 	public override void CreateViewModel()
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 
 		if ( string.IsNullOrEmpty( ViewModelPath ) )
 			return;
@@ -103,7 +103,7 @@ partial class Fists : Weapon
 	[ClientRpc]
 	private void OnMeleeMiss( bool leftHand )
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 
 		ViewModelEntity?.SetAnimParameter( "attack_has_hit", false );
 		ViewModelEntity?.SetAnimParameter( "attack", true );
@@ -113,7 +113,7 @@ partial class Fists : Weapon
 	[ClientRpc]
 	private void OnMeleeHit( bool leftHand )
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 
 		ViewModelEntity?.SetAnimParameter( "attack_has_hit", true );
 		ViewModelEntity?.SetAnimParameter( "attack", true );

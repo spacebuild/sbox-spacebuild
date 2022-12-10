@@ -61,7 +61,7 @@ partial class Flashlight : Weapon
 		return light;
 	}
 
-	public override void Simulate( Client cl )
+	public override void Simulate( IClient cl )
 	{
 		if ( cl == null )
 			return;
@@ -145,7 +145,7 @@ partial class Flashlight : Weapon
 	[ClientRpc]
 	private void OnMeleeMiss()
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 
 		ViewModelEntity?.SetAnimParameter( "attack", true );
 	}
@@ -153,7 +153,7 @@ partial class Flashlight : Weapon
 	[ClientRpc]
 	private void OnMeleeHit()
 	{
-		Host.AssertClient();
+		Game.AssertClient();
 
 		ViewModelEntity?.SetAnimParameter( "attack_hit", true );
 	}

@@ -41,7 +41,7 @@ public partial class PhysGun : Carriable
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
 	}
 
-	public override void Simulate( Client client )
+	public override void Simulate( IClient client )
 	{
 		if ( Owner is not Player owner ) return;
 

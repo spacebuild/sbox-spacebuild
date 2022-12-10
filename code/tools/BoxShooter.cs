@@ -9,7 +9,7 @@
 
 		public override void Simulate()
 		{
-			if ( Host.IsServer )
+			if ( Game.IsServer )
 			{
 				if ( Input.Pressed( InputButton.Reload ) )
 				{

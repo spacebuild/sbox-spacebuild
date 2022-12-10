@@ -91,7 +91,7 @@ public partial class DroneEntity : Prop
 		}
 	}
 
-	public override void Simulate( Client owner )
+	public override void Simulate( IClient owner )
 	{
 		if ( owner == null ) return;
 		if ( !IsServer ) return;

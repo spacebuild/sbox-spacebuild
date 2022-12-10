@@ -14,7 +14,7 @@ public partial class BalloonTool : BaseTool
 	{
 		base.Activate();
 
-		if ( Host.IsServer )
+		if ( Game.IsServer )
 		{
 			Tint = Color.Random;
 		}
@@ -46,7 +46,7 @@ public partial class BalloonTool : BaseTool
 			previewModel.RenderColor = Tint;
 		}
 
-		if ( !Host.IsServer )
+		if ( !Game.IsServer )
 			return;
 
 		using ( Prediction.Off() )

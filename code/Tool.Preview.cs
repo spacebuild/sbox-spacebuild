@@ -25,7 +25,7 @@ namespace Sandbox.Tools
 
 		public virtual void DeletePreviews()
 		{
-			if ( !Host.IsServer )
+			if ( !Game.IsServer )
 				return;
 
 			if ( Previews == null || Previews.Count == 0 )

@@ -13,7 +13,7 @@ partial class SandboxGame : GameManager
 		}
 	}
 
-	public override void ClientJoined( Client cl )
+	public override void ClientJoined( IClient cl )
 	{
 		base.ClientJoined( cl );
 		var player = new SandboxPlayer( cl );
@@ -126,36 +126,6 @@ partial class SandboxGame : GameManager
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
 
 		//Log.Info( $"ent: {ent}" );
-	}
-
-	public override void DoPlayerNoclip( Client player )
-	{
-		if ( player.Pawn is Player basePlayer )
-		{
-			if ( basePlayer.DevController is NoclipController )
-			{
-				Log.Info( "Noclip Mode Off" );
-				basePlayer.DevController = null;
-			}
-			else
-			{
-				Log.Info( "Noclip Mode On" );
-				basePlayer.DevController = new NoclipController();
-			}
-		}
-	}
-
-	[ClientRpc]
-	internal static void RespawnEntitiesClient()
-	{
-		Map.Reset( DefaultCleanupFilter );
-	}
-
-	[ConCmd.Admin( "respawn_entities" )]
-	public static void RespawnEntities()
-	{
-		Map.Reset( DefaultCleanupFilter );
-		RespawnEntitiesClient();
 	}
 
 	[ClientRpc]

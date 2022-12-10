@@ -1,4 +1,5 @@
 ﻿using Sandbox;
+using System.Numerics;
 
 partial class SandboxPlayer : Player
 {
@@ -26,7 +27,7 @@ partial class SandboxPlayer : Player
 	/// <summary>
 	/// Initialize using this client
 	/// </summary>
-	public SandboxPlayer( Client cl ) : this()
+	public SandboxPlayer( IClient cl ) : this()
 	{
 		// Load clothing from client data
 		Clothing.LoadFromClient( cl );
@@ -114,7 +115,7 @@ partial class SandboxPlayer : Player
 		return base.GetActiveController();
 	}
 
-	public override void Simulate( Client cl )
+	public override void Simulate( IClient cl )
 	{
 		base.Simulate( cl );
 
@@ -153,7 +154,14 @@ partial class SandboxPlayer : Player
 		{
 			if ( timeSinceJumpReleased < 0.3f )
 			{
-				GameManager.Current?.DoPlayerNoclip( cl );
+				if ( DevController is NoclipController )
+				{
+					DevController = null;
+				}
+				else
+				{
+					DevController = new NoclipController();
+				}
 			}
 
 			timeSinceJumpReleased = 0;
@@ -195,7 +203,7 @@ partial class SandboxPlayer : Player
 		animHelper.AimAngle = rotation;
 		animHelper.FootShuffle = shuffle;
 		animHelper.DuckLevel = MathX.Lerp( animHelper.DuckLevel, controller.HasTag( "ducked" ) ? 1 : 0, Time.Delta * 10.0f );
-		animHelper.VoiceLevel = ( Host.IsClient && Client.IsValid() ) ? Client.TimeSinceLastVoice < 0.5f ? Client.VoiceLevel : 0.0f : 0.0f;
+		animHelper.VoiceLevel = ( Game.IsClient && Client.IsValid() ) ? Client.Voice.LastHeard < 0.5f ? Client.Voice.CurrentLevel : 0.0f : 0.0f;
 		animHelper.IsGrounded = GroundEntity != null;
 		animHelper.IsSitting = controller.HasTag( "sitting" );
 		animHelper.IsNoclipping = controller.HasTag( "noclip" );
@@ -256,13 +264,13 @@ partial class SandboxPlayer : Player
 		}
 	}
 
-	public override void FrameSimulate( Client cl )
+	public override void FrameSimulate( IClient cl )
 	{
 		Camera.Rotation = ViewAngles.ToRotation();
 		
 		if ( ThirdPersonCamera )
 		{
-			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Local.UserPreference.FieldOfView );
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
 			Camera.FirstPersonViewer = null;
 
 			Vector3 targetPos;
@@ -286,7 +294,7 @@ partial class SandboxPlayer : Player
 		else
 		{
 			Camera.Position = EyePosition;
-			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Local.UserPreference.FieldOfView );
+			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
 			Camera.FirstPersonViewer = this;
 			Camera.Main.SetViewModelCamera( Camera.FieldOfView );
 		}

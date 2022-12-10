@@ -14,7 +14,7 @@ public partial class BouncyBallEntity : Prop, IUse
 
 		SetModel( "models/ball/ball.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
-		Scale = Rand.Float( 0.5f, 2.0f );
+		Scale = Game.Random.Float( 0.5f, 2.0f );
 		RenderColor = Color.Random;
 	}
 

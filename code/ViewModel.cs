@@ -22,7 +22,7 @@ public class ViewModel : BaseViewModel
 
 	public override void PlaceViewmodel()
 	{
-		if ( !Local.Pawn.IsValid() )
+		if ( !Game.LocalPawn.IsValid() )
 			return;
 
 		var inPos = Camera.Position;
@@ -56,9 +56,9 @@ public class ViewModel : BaseViewModel
 
 		if ( EnableSwingAndBob )
 		{
-			var playerVelocity = Local.Pawn.Velocity;
+			var playerVelocity = Game.LocalPawn.Velocity;
 
-			if ( Local.Pawn is Player player )
+			if ( Game.LocalPawn is Player player )
 			{
 				var controller = player.GetActiveController();
 				if ( controller != null && controller.HasTag( "noclip" ) )
