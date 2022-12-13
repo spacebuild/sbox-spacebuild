@@ -11,7 +11,7 @@ public partial class SandboxHud : HudEntity<RootPanel>
 
 		RootPanel.StyleSheet.Load( "/Styles/sandbox.scss" );
 
-		RootPanel.AddChild<ChatBox>();
+		RootPanel.AddChild<Chat>();
 		RootPanel.AddChild<VoiceList>();
 		RootPanel.AddChild<VoiceSpeaker>();
 		RootPanel.AddChild<KillFeed>();
