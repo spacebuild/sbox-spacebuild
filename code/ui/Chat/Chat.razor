@@ -74,10 +74,10 @@
 
 	void Submit()
 	{
-		Close();
-
 		var msg = Input.Text.Trim();
 		Input.Text = "";
+
+		Close();
 
 		if ( string.IsNullOrWhiteSpace( msg ) ) return;
 
