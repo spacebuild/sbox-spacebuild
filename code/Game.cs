@@ -141,7 +141,7 @@ partial class SandboxGame : GameManager
 
 		if ( owner == null )
 			return;
-		
+
 		Log.Info( $"Spawn package {fullIdent}" );
 
 		var package = await Package.FetchAsync( fullIdent, false );
@@ -201,4 +201,47 @@ partial class SandboxGame : GameManager
 		return true;
 	}
 
+	[ClientRpc]
+	internal static void RespawnEntitiesClient()
+	{
+		Sandbox.Game.ResetMap( Entity.All.Where( x => !DefaultCleanupFilter( x ) ).ToArray() );
+	}
+
+	[ConCmd.Admin( "respawn_entities" )]
+	static void RespawnEntities()
+	{
+		Sandbox.Game.ResetMap( Entity.All.Where( x => !DefaultCleanupFilter( x ) ).ToArray() );
+		RespawnEntitiesClient();
+	}
+
+	static bool DefaultCleanupFilter( Entity ent )
+	{
+		// Basic Source engine stuff
+		var className = ent.ClassName;
+		if ( className == "player" || className == "worldent" || className == "worldspawn" || className == "soundent" || className == "player_manager" )
+		{
+			return false;
+		}
+
+		// When creating entities we only have classNames to work with..
+		// The filtered entities below are created through code at runtime, so we don't want to be deleting them
+		if ( ent == null || !ent.IsValid ) return true;
+
+		// Gamemode entity
+		if ( ent is BaseGameManager ) return false;
+
+		// HUD entities
+		if ( ent.GetType().IsBasedOnGenericType( typeof( HudEntity<> ) ) ) return false;
+
+		// Player related stuff, clothing and weapons
+		foreach ( var cl in Game.Clients )
+		{
+			if ( ent.Root == cl.Pawn ) return false;
+		}
+
+		// Do not delete view model
+		if ( ent is BaseViewModel ) return false;
+
+		return true;
+	}
 }
