@@ -35,7 +35,7 @@ partial class SandboxPlayer : Player
 
 	public override void Respawn()
 	{
-		
+
 		SetModel( "models/citizen/citizen.vmdl" );
 
 		Controller = new WalkController();
@@ -173,6 +173,32 @@ partial class SandboxPlayer : Player
 		}
 	}
 
+	[ConCmd.Admin( "noclip" )]
+	static void DoPlayerNoclip()
+	{
+		if ( ConsoleSystem.Caller.Pawn is SandboxPlayer basePlayer )
+		{
+			if ( basePlayer.DevController is NoclipController )
+			{
+				basePlayer.DevController = null;
+			}
+			else
+			{
+				basePlayer.DevController = new NoclipController();
+			}
+		}
+	}
+
+	[ConCmd.Admin( "kill" )]
+	static void DoPlayerSuicide()
+	{
+		if ( ConsoleSystem.Caller.Pawn is SandboxPlayer basePlayer )
+		{
+			basePlayer.TakeDamage( new DamageInfo { Damage = basePlayer.Health * 99 } );
+		}
+	}
+
+
 	Entity lastWeapon;
 
 	void SimulateAnimation( PawnController controller )
@@ -267,7 +293,7 @@ partial class SandboxPlayer : Player
 	public override void FrameSimulate( IClient cl )
 	{
 		Camera.Rotation = ViewAngles.ToRotation();
-		
+
 		if ( ThirdPersonCamera )
 		{
 			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
