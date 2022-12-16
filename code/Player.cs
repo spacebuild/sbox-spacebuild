@@ -322,7 +322,7 @@ partial class SandboxPlayer : Player
 			Camera.Position = EyePosition;
 			Camera.FieldOfView = Screen.CreateVerticalFieldOfView( Game.Preferences.FieldOfView );
 			Camera.FirstPersonViewer = this;
-			Camera.Main.SetViewModelCamera( Camera.FieldOfView );
+			Camera.Main.SetViewModelCamera( 90f );
 		}
 	}
 }
