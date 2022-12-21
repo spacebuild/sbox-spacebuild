@@ -303,7 +303,7 @@ partial class SandboxPlayer : Player
 			var center = Position + Vector3.Up * 64;
 
 			var pos = center;
-			var rot = Rotation.FromAxis( Vector3.Up, -16 ) * Camera.Rotation;
+			var rot = Camera.Rotation * Rotation.FromAxis( Vector3.Up, -16 );
 
 			float distance = 130.0f * Scale;
 			targetPos = pos + rot.Right * ((CollisionBounds.Mins.x + 32) * Scale);
