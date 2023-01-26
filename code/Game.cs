@@ -27,6 +27,17 @@ partial class SandboxGame : GameManager
 		base.OnDestroy();
 	}
 
+	// TODO - delete me
+	[ConCmd.Admin( "giveall" )]
+	public static void GiveAll()
+	{
+		var player = ConsoleSystem.Caller.Pawn as SandboxPlayer;
+
+		player.Inventory.Add( new Pistol() );
+		player.Inventory.Add( new SMG() );
+		player.Inventory.Add( new Shotgun() );
+	}
+
 	[ConCmd.Server( "spawn" )]
 	public static async Task Spawn( string modelname )
 	{
