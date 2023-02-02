@@ -36,6 +36,7 @@ partial class SandboxGame : GameManager
 		player.Inventory.Add( new Pistol() );
 		player.Inventory.Add( new SMG() );
 		player.Inventory.Add( new Shotgun() );
+		player.Inventory.Add( new RPG() );
 	}
 
 	[ConCmd.Server( "spawn" )]
