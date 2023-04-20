@@ -11,7 +11,7 @@
 		{
 			if ( Game.IsServer )
 			{
-				if ( Input.Pressed( InputButton.Reload ) )
+				if ( Input.Pressed( "reload" ) )
 				{
 					var tr = Trace.Ray( Owner.EyePosition, Owner.EyePosition + Owner.EyeRotation.Forward * 4000 ).Ignore( Owner ).Run();
 
@@ -22,12 +22,12 @@
 					}
 				}
 
-				if ( Input.Pressed( InputButton.PrimaryAttack ) )
+				if ( Input.Pressed( "attack1" ) )
 				{
 					ShootBox();
 				}
 
-				if ( Input.Down( InputButton.SecondaryAttack ) && timeSinceShoot > 0.05f )
+				if ( Input.Down( "attack2" ) && timeSinceShoot > 0.05f )
 				{
 					timeSinceShoot = 0;
 					ShootBox();

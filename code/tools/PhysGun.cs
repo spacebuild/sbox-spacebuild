@@ -49,7 +49,7 @@ public partial class PhysGun : Carriable
 		var eyeDir = owner.EyeRotation.Forward;
 		var eyeRot = Rotation.From( new Angles( 0.0f, owner.EyeRotation.Yaw(), 0.0f ) );
 
-		if ( Input.Pressed( InputButton.PrimaryAttack ) )
+		if ( Input.Pressed( "attack1" ) )
 		{
 			(Owner as AnimatedEntity)?.SetAnimParameter( "b_attack", true );
 
@@ -57,8 +57,8 @@ public partial class PhysGun : Carriable
 				grabbing = true;
 		}
 
-		bool grabEnabled = grabbing && Input.Down( InputButton.PrimaryAttack );
-		bool wantsToFreeze = Input.Pressed( InputButton.SecondaryAttack );
+		bool grabEnabled = grabbing && Input.Down( "attack1" );
+		bool wantsToFreeze = Input.Pressed( "attack2" );
 
 		if ( GrabbedEntity.IsValid() && wantsToFreeze )
 		{
@@ -87,7 +87,7 @@ public partial class PhysGun : Carriable
 					GrabEnd();
 				}
 
-				if ( !grabbing && Input.Pressed( InputButton.Reload ) )
+				if ( !grabbing && Input.Pressed( "reload" ) )
 				{
 					TryUnfreezeAll( eyePos, eyeRot, eyeDir );
 				}
@@ -210,13 +210,13 @@ public partial class PhysGun : Carriable
 
 		MoveTargetDistance( Input.MouseWheel * TargetDistanceSpeed );
 
-		bool rotating = Input.Down( InputButton.Use );
+		bool rotating = Input.Down( "use" );
 		bool snapping = false;
 
 		if ( rotating )
 		{
 			DoRotate( eyeRot, Input.MouseDelta * RotateSpeed );
-			snapping = Input.Down( InputButton.Run );
+			snapping = Input.Down( "run" );
 		}
 
 		GrabMove( eyePos, eyeDir, eyeRot, snapping );
@@ -377,7 +377,7 @@ public partial class PhysGun : Carriable
 
 	public override void BuildInput()
 	{
-		if ( !Input.Down( InputButton.Use ) || !Input.Down( InputButton.PrimaryAttack ) ||
+		if ( !Input.Down( "use" ) || !Input.Down( "attack1" ) ||
 			 !GrabbedEntity.IsValid() )
 		{
 			return;

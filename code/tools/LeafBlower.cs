@@ -14,8 +14,8 @@
 
 			using ( Prediction.Off() )
 			{
-				bool push = Input.Down( InputButton.PrimaryAttack );
-				if ( !push && !Input.Down( InputButton.SecondaryAttack ) )
+				bool push = Input.Down( "attack1" );
+				if ( !push && !Input.Down( "attack2" ) )
 					return;
 
 				var tr = DoTrace();

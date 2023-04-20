@@ -136,12 +136,12 @@ partial class SandboxPlayer : Player
 		TickPlayerUse();
 		SimulateActiveChild( cl, ActiveChild );
 
-		if ( Input.Pressed( InputButton.View ) )
+		if ( Input.Pressed( "view" ) )
 		{
 			ThirdPersonCamera = !ThirdPersonCamera;
 		}
 
-		if ( Input.Pressed( InputButton.Drop ) )
+		if ( Input.Pressed( "drop" ) )
 		{
 			var dropped = Inventory.DropActive();
 			if ( dropped != null )
@@ -153,7 +153,7 @@ partial class SandboxPlayer : Player
 			}
 		}
 
-		if ( Input.Released( InputButton.Jump ) )
+		if ( Input.Released( "jump" ) )
 		{
 			if ( timeSinceJumpReleased < 0.3f )
 			{
@@ -239,7 +239,7 @@ partial class SandboxPlayer : Player
 		animHelper.IsClimbing = controller.HasTag( "climbing" );
 		animHelper.IsSwimming = this.GetWaterLevel() >= 0.5f;
 		animHelper.IsWeaponLowered = false;
-		animHelper.MoveStyle = Input.Down( InputButton.Run ) ? CitizenAnimationHelper.MoveStyles.Run : CitizenAnimationHelper.MoveStyles.Walk;
+		animHelper.MoveStyle = Input.Down( "run" ) ? CitizenAnimationHelper.MoveStyles.Run : CitizenAnimationHelper.MoveStyles.Walk;
 
 		if ( controller.HasEvent( "jump" ) ) animHelper.TriggerJump();
 		if ( ActiveChild != lastWeapon ) animHelper.TriggerDeploy();

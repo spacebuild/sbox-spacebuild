@@ -37,8 +37,8 @@ public partial class LightTool : BaseTool
 
 		using ( Prediction.Off() )
 		{
-			bool useRope = Input.Pressed( InputButton.PrimaryAttack );
-			if ( !useRope && !Input.Pressed( InputButton.SecondaryAttack ) )
+			bool useRope = Input.Pressed( "attack1" );
+			if ( !useRope && !Input.Pressed( "attack2" ) )
 				return;
 
 			var tr = DoTrace();

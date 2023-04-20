@@ -62,15 +62,15 @@ public class InventoryBar : Panel
 			return;
 		}
 
-		if ( Input.Pressed( InputButton.Slot1 ) ) SetActiveSlot( inventory, 0 );
-		if ( Input.Pressed( InputButton.Slot2 ) ) SetActiveSlot( inventory, 1 );
-		if ( Input.Pressed( InputButton.Slot3 ) ) SetActiveSlot( inventory, 2 );
-		if ( Input.Pressed( InputButton.Slot4 ) ) SetActiveSlot( inventory, 3 );
-		if ( Input.Pressed( InputButton.Slot5 ) ) SetActiveSlot( inventory, 4 );
-		if ( Input.Pressed( InputButton.Slot6 ) ) SetActiveSlot( inventory, 5 );
-		if ( Input.Pressed( InputButton.Slot7 ) ) SetActiveSlot( inventory, 6 );
-		if ( Input.Pressed( InputButton.Slot8 ) ) SetActiveSlot( inventory, 7 );
-		if ( Input.Pressed( InputButton.Slot9 ) ) SetActiveSlot( inventory, 8 );
+		if ( Input.Pressed( "slot1" ) ) SetActiveSlot( inventory, 0 );
+		if ( Input.Pressed( "slot2" ) ) SetActiveSlot( inventory, 1 );
+		if ( Input.Pressed( "slot3" ) ) SetActiveSlot( inventory, 2 );
+		if ( Input.Pressed( "slot4" ) ) SetActiveSlot( inventory, 3 );
+		if ( Input.Pressed( "slot5" ) ) SetActiveSlot( inventory, 4 );
+		if ( Input.Pressed( "slot6" ) ) SetActiveSlot( inventory, 5 );
+		if ( Input.Pressed( "slot7" ) ) SetActiveSlot( inventory, 6 );
+		if ( Input.Pressed( "slot8" ) ) SetActiveSlot( inventory, 7 );
+		if ( Input.Pressed( "slot9" ) ) SetActiveSlot( inventory, 8 );
 
 		if ( Input.MouseWheel != 0 ) SwitchActiveSlot( inventory, -Input.MouseWheel );
 	}

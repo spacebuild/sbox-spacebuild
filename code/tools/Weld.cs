@@ -23,7 +23,7 @@
 				if ( tr.Entity is not Prop prop )
 					return;
 
-				if ( Input.Pressed( InputButton.PrimaryAttack ) )
+				if ( Input.Pressed( "attack1" ) )
 				{
 					if ( prop.Root is not Prop rootProp )
 					{
@@ -43,13 +43,13 @@
 						target = null;
 					}
 				}
-				else if ( Input.Pressed( InputButton.SecondaryAttack ) )
+				else if ( Input.Pressed( "attack2" ) )
 				{
 					prop.Unweld( true );
 
 					Reset();
 				}
-				else if ( Input.Pressed( InputButton.Reload ) )
+				else if ( Input.Pressed( "reload" ) )
 				{
 					if ( prop.Root is not Prop rootProp )
 					{

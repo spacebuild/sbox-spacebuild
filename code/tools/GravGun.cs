@@ -55,7 +55,7 @@ public partial class GravGun : Carriable
 
 			if ( HeldBody.IsValid() && HeldBody.PhysicsGroup != null )
 			{
-				if ( Input.Pressed( InputButton.PrimaryAttack ) )
+				if ( Input.Pressed( "attack1" ) )
 				{
 					if ( HeldBody.PhysicsGroup.BodyCount > 1 )
 					{
@@ -71,7 +71,7 @@ public partial class GravGun : Carriable
 
 					GrabEnd();
 				}
-				else if ( Input.Pressed( InputButton.SecondaryAttack ) )
+				else if ( Input.Pressed( "attack2" ) )
 				{
 					GrabEnd();
 				}
@@ -111,7 +111,7 @@ public partial class GravGun : Carriable
 			if ( body.BodyType != PhysicsBodyType.Dynamic )
 				return;
 
-			if ( Input.Pressed( InputButton.PrimaryAttack ) )
+			if ( Input.Pressed( "attack1" ) )
 			{
 				if ( tr.Distance < MaxPushDistance )
 				{
@@ -119,7 +119,7 @@ public partial class GravGun : Carriable
 					body.ApplyImpulseAt( tr.EndPosition, eyeDir * (body.Mass * (PushForce * pushScale)) );
 				}
 			}
-			else if ( Input.Down( InputButton.SecondaryAttack ) )
+			else if ( Input.Down( "attack2" ) )
 			{
 				var physicsGroup = tr.Entity.PhysicsGroup;
 

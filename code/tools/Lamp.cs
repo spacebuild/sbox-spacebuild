@@ -35,7 +35,7 @@
 
 			using ( Prediction.Off() )
 			{
-				if ( !Input.Pressed( InputButton.PrimaryAttack ) )
+				if ( !Input.Pressed( "attack1" ) )
 					return;
 
 				var tr = DoTrace();

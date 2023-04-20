@@ -15,7 +15,7 @@ namespace Sandbox.Tools
 				var startPos = Owner.EyePosition;
 				var dir = Owner.EyeRotation.Forward;
 
-				if ( !Input.Pressed( InputButton.PrimaryAttack ) ) return;
+				if ( !Input.Pressed( "attack1" ) ) return;
 
 				var tr = DoTrace();
 
