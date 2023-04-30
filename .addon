@@ -264,13 +264,11 @@
         {
           "Name": "Voice",
           "KeyboardCode": "v",
-          "GamepadCode": "RightJoystickButton",
           "GroupName": "Other"
         },
         {
           "Name": "Drop",
           "KeyboardCode": "g",
-          "GamepadCode": "RightJoystickButton",
           "GroupName": "Other"
         },
         {
@@ -297,6 +295,7 @@
           "GroupName": "Other"
         }
       ]
-    }
+    },
+    "HttpAllowList": null
   }
 }
