@@ -1,9 +1,11 @@
 ﻿using Sandbox;
 using Sandbox.Component;
 using System.Linq;
+using System;
 
 public partial class PhysGun
 {
+	CapsuleLightEntity? BeamLight;
 	Particles Beam;
 	Particles EndNoHit;
 
@@ -18,9 +20,11 @@ public partial class PhysGun
 
 	protected virtual void KillEffects()
 	{
+		BeamLight?.Delete();
 		Beam?.Destroy( true );
 		Beam = null;
 		BeamActive = false;
+		BeamLight = null;
 
 		EndNoHit?.Destroy( false );
 		EndNoHit = null;
@@ -69,6 +73,12 @@ public partial class PhysGun
 		if ( Beam == null )
 		{
 			Beam = Particles.Create( "particles/physgun_beam.vpcf", tr.EndPosition );
+		}
+
+		if( BeamLight == null )
+		{
+			BeamLight = new CapsuleLightEntity();
+			BeamLight.Color = Color.FromBytes( 4, 20, 70 );
 		}
 
 		Beam.SetEntityAttachment( 0, EffectEntity, "muzzle", true );
@@ -126,5 +136,18 @@ public partial class PhysGun
 
 			EndNoHit.SetPosition( 0, lastBeamPos );
 		}
+
+		{
+			var muzzle = IsFirstPersonMode && ViewModelEntity.IsValid ? ViewModelEntity.GetAttachment( "muzzle" ) ?? default : GetAttachment( "muzzle" ) ?? default;
+			var pos = muzzle.Position;
+
+			BeamLight.CapsuleLength = ( pos - tr.EndPosition ).Length * 0.5f;
+			BeamLight.LightSize = 0.5f + ( MathF.Sin( Time.Now * 10 ) * 0.5f);
+			BeamLight.Position = ( pos + tr.EndPosition ) * 0.5f;
+			BeamLight.Rotation = Rotation.LookAt( ( pos - tr.EndPosition ).Normal );
+
+			BeamLight.Color = Color.Lerp( BeamLight.Color, new Color( 0.1f, 1.0f, 1.0f, 1.0f ) * 0.04f, Time.Delta * 10 );
+		}
+		
 	}
 }
