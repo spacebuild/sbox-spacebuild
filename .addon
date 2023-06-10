@@ -7,9 +7,8 @@
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
-  "ResourcePaths": [
-    "/models/*"
-  ],
+  "Resources": "*.vmdl_c.png\nentity/*.png",
+  "MenuResources": null,
   "HasCode": true,
   "CodePath": "code",
   "PackageReferences": [],
