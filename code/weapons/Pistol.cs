@@ -4,8 +4,6 @@
 [Library( "weapon_pistol", Title = "Pistol" )]
 partial class Pistol : Weapon
 {
-	public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
-
 	public override float PrimaryRate => 15.0f;
 	public override float SecondaryRate => 1.0f;
 
@@ -15,7 +13,17 @@ partial class Pistol : Weapon
 	{
 		base.Spawn();
 
-		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+		Model = Cloud.Model( "https://asset.party/facepunch/w_usp" );
+		LocalScale = 2f; // todo - this doesn't work when bone merged! we should make it multiply!
+	}
+
+	public override void CreateViewModel()
+	{
+		ViewModelEntity = new BaseViewModel();
+		ViewModelEntity.Position = Position;
+		ViewModelEntity.Owner = Owner;
+		ViewModelEntity.EnableViewmodelRendering = true;
+		ViewModelEntity.Model = Cloud.Model( "https://asset.party/facepunch/v_usp" );
 	}
 
 	public override bool CanPrimaryAttack()
