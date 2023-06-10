@@ -4,6 +4,7 @@
 [Library( "weapon_pistol", Title = "Pistol" )]
 partial class Pistol : Weapon
 {
+	public override float ReloadTime => 1.5f;
 	public override float PrimaryRate => 15.0f;
 	public override float SecondaryRate => 1.0f;
 
