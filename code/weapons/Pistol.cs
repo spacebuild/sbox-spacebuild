@@ -9,6 +9,8 @@ partial class Pistol : Weapon
 
 	public TimeSince TimeSinceDischarge { get; set; }
 
+	public AnimatedEntity ViewModelArms { get; set; }
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -24,6 +26,22 @@ partial class Pistol : Weapon
 		ViewModelEntity.Owner = Owner;
 		ViewModelEntity.EnableViewmodelRendering = true;
 		ViewModelEntity.Model = Cloud.Model( "https://asset.party/facepunch/v_usp" );
+
+		ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
+		ViewModelArms.SetParent( ViewModelEntity, true );
+		ViewModelArms.EnableViewmodelRendering = true;
+	}
+	public override void ActiveStart( Entity ent )
+	{
+		base.ActiveStart( ent );
+
+		ViewModelEntity?.SetAnimParameter( "b_deploy", true );
+	}
+	public override void Reload()
+	{
+		base.Reload();
+
+		ViewModelEntity?.SetAnimParameter( "b_reload", true );
 	}
 
 	public override bool CanPrimaryAttack()
@@ -37,6 +55,7 @@ partial class Pistol : Weapon
 		TimeSinceSecondaryAttack = 0;
 
 		(Owner as AnimatedEntity)?.SetAnimParameter( "b_attack", true );
+		ViewModelEntity?.SetAnimParameter( "b_attack", true );
 
 		ShootEffects();
 		PlaySound( "rust_pistol.shoot" );
