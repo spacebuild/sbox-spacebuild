@@ -16,9 +16,10 @@ partial class Pistol : Weapon
 		base.Spawn();
 
 		Model = Cloud.Model( "https://asset.party/facepunch/w_usp" );
+		SetBodyGroup( "barrel", 1 );
+		SetBodyGroup( "sights", 1 );
 		LocalScale = 2f; // todo - this doesn't work when bone merged! we should make it multiply!
 	}
-
 	public override void CreateViewModel()
 	{
 		ViewModelEntity = new BaseViewModel();
@@ -26,6 +27,8 @@ partial class Pistol : Weapon
 		ViewModelEntity.Owner = Owner;
 		ViewModelEntity.EnableViewmodelRendering = true;
 		ViewModelEntity.Model = Cloud.Model( "https://asset.party/facepunch/v_usp" );
+		ViewModelEntity.SetBodyGroup( "barrel", 1 );
+		ViewModelEntity.SetBodyGroup( "sights", 1 );
 
 		ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
 		ViewModelArms.SetParent( ViewModelEntity, true );
@@ -79,7 +82,7 @@ partial class Pistol : Weapon
 
 		ApplyAbsoluteImpulse( rot.Backward * 200.0f );
 	}
-
+	
 	protected override void OnPhysicsCollision( CollisionEventData eventData )
 	{
 		if ( eventData.Speed > 500.0f )
