@@ -40,9 +40,10 @@ public class ViewModel : BaseViewModel
 		}
 		
 		var cameraBoneIndex = GetBoneIndex( "camera" );
+		
 		if ( cameraBoneIndex != -1 )
 		{
-			inRot *= (Rotation.Inverse * GetBoneTransform( cameraBoneIndex ).Rotation);
+			Camera.Rotation *= Rotation.Inverse * GetBoneTransform( cameraBoneIndex ).Rotation;
 		}
 
 		Position = inPos;
