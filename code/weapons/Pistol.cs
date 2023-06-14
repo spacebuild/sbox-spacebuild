@@ -23,7 +23,7 @@ partial class Pistol : Weapon
 	}
 	public override void CreateViewModel()
 	{
-		ViewModelEntity = new BaseViewModel();
+		ViewModelEntity = new ViewModel();
 		ViewModelEntity.Position = Position;
 		ViewModelEntity.Owner = Owner;
 		ViewModelEntity.EnableViewmodelRendering = true;
