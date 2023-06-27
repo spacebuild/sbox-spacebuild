@@ -12,7 +12,7 @@ public partial class PhysGun
 	Vector3 lastBeamPos;
 	ModelEntity lastGrabbedEntity;
 
-	[Event.Client.Frame]
+	[GameEvent.Client.Frame]
 	public void OnFrame()
 	{
 		UpdateEffects();
@@ -70,15 +70,14 @@ public partial class PhysGun
 			.WithAllTags( "solid" )
 			.Run();
 
-		if ( Beam == null )
-		{
-			Beam = Particles.Create( "particles/physgun_beam.vpcf", tr.EndPosition );
-		}
+		Beam ??= Particles.Create( "particles/physgun_beam.vpcf", tr.EndPosition );
 
-		if( BeamLight == null )
+		if ( !BeamLight.IsValid() )
 		{
-			BeamLight = new CapsuleLightEntity();
-			BeamLight.Color = Color.FromBytes( 4, 20, 70 );
+			BeamLight = new CapsuleLightEntity
+			{
+				Color = Color.FromBytes( 4, 20, 70 )
+			};
 		}
 
 		Beam.SetEntityAttachment( 0, EffectEntity, "muzzle", true );
@@ -137,6 +136,7 @@ public partial class PhysGun
 			EndNoHit.SetPosition( 0, lastBeamPos );
 		}
 
+		if ( BeamLight.IsValid() )
 		{
 			var muzzle = IsFirstPersonMode && ViewModelEntity.IsValid ? ViewModelEntity.GetAttachment( "muzzle" ) ?? default : GetAttachment( "muzzle" ) ?? default;
 			var pos = muzzle.Position;
