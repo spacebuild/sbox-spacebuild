@@ -6,13 +6,13 @@ public partial class PhysGun : Carriable
 {
 	public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
 
-	protected PhysicsBody heldBody;
-	protected Vector3 heldPos;
-	protected Rotation heldRot;
-	protected Vector3 holdPos;
-	protected Rotation holdRot;
-	protected float holdDistance;
-	protected bool grabbing;
+	public PhysicsBody HeldBody { get; private set; }
+	public Vector3 HeldPos { get; private set; }
+	public Rotation HeldRot { get; private set; }
+	public Vector3 HoldPos { get; private set; }
+	public Rotation HoldRot { get; private set; }
+	public float HoldDistance { get; private set; }
+	public bool Grabbing { get; private set; }
 
 	protected virtual float MinTargetDistance => 0.0f;
 	protected virtual float MaxTargetDistance => 10000.0f;
@@ -31,8 +31,6 @@ public partial class PhysGun : Carriable
 	[Net] public int GrabbedBone { get; set; }
 	[Net] public Vector3 GrabbedPos { get; set; }
 
-	public PhysicsBody HeldBody => heldBody;
-
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -41,9 +39,20 @@ public partial class PhysGun : Carriable
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
 	}
 
+	[GameEvent.Entity.PreCleanup]
+	protected void OnEntityPreCleanup()
+	{
+		GrabEnd();
+	}
+
 	public override void Simulate( IClient client )
 	{
 		if ( Owner is not Player owner ) return;
+
+		if ( Game.IsServer && GrabbedEntity.IsValid() )
+		{
+			Log.Info( GrabbedEntity.NetworkIdent );
+		}
 
 		var eyePos = owner.EyePosition;
 		var eyeDir = owner.EyeRotation.Forward;
@@ -53,11 +62,11 @@ public partial class PhysGun : Carriable
 		{
 			(Owner as AnimatedEntity)?.SetAnimParameter( "b_attack", true );
 
-			if ( !grabbing )
-				grabbing = true;
+			if ( !Grabbing )
+				Grabbing = true;
 		}
 
-		bool grabEnabled = grabbing && Input.Down( "attack1" );
+		bool grabEnabled = Grabbing && Input.Down( "attack1" );
 		bool wantsToFreeze = Input.Pressed( "attack2" );
 
 		if ( GrabbedEntity.IsValid() && wantsToFreeze )
@@ -73,7 +82,7 @@ public partial class PhysGun : Carriable
 			{
 				if ( grabEnabled )
 				{
-					if ( heldBody.IsValid() )
+					if ( HeldBody.IsValid() )
 					{
 						UpdateGrab( eyePos, eyeRot, eyeDir, wantsToFreeze );
 					}
@@ -82,12 +91,12 @@ public partial class PhysGun : Carriable
 						TryStartGrab( eyePos, eyeRot, eyeDir );
 					}
 				}
-				else if ( grabbing )
+				else if ( Grabbing )
 				{
 					GrabEnd();
 				}
 
-				if ( !grabbing && Input.Pressed( "reload" ) )
+				if ( !Grabbing && Input.Pressed( "reload" ) )
 				{
 					TryUnfreezeAll( eyePos, eyeRot, eyeDir );
 				}
@@ -193,15 +202,15 @@ public partial class PhysGun : Carriable
 	{
 		if ( wantsToFreeze )
 		{
-			if ( heldBody.BodyType == PhysicsBodyType.Dynamic )
+			if ( HeldBody.BodyType == PhysicsBodyType.Dynamic )
 			{
-				heldBody.BodyType = PhysicsBodyType.Static;
+				HeldBody.BodyType = PhysicsBodyType.Static;
 			}
 
 			if ( GrabbedEntity.IsValid() )
 			{
 				var freezeEffect = Particles.Create( "particles/physgun_freeze.vpcf" );
-				freezeEffect.SetPosition( 0, heldBody.Transform.PointToWorld( GrabbedPos ) );
+				freezeEffect.SetPosition( 0, HeldBody.Transform.PointToWorld( GrabbedPos ) );
 			}
 
 			GrabEnd();
@@ -272,26 +281,26 @@ public partial class PhysGun : Carriable
 
 		GrabEnd();
 
-		grabbing = true;
-		heldBody = body;
-		holdDistance = Vector3.DistanceBetween( startPos, grabPos );
-		holdDistance = holdDistance.Clamp( MinTargetDistance, MaxTargetDistance );
+		Grabbing = true;
+		HeldBody = body;
+		HoldDistance = Vector3.DistanceBetween( startPos, grabPos );
+		HoldDistance = HoldDistance.Clamp( MinTargetDistance, MaxTargetDistance );
 
-		heldRot = rot.Inverse * heldBody.Rotation;
-		heldPos = heldBody.Transform.PointToLocal( grabPos );
+		HeldRot = rot.Inverse * HeldBody.Rotation;
+		HeldPos = HeldBody.Transform.PointToLocal( grabPos );
 
-		holdPos = heldBody.Position;
-		holdRot = heldBody.Rotation;
+		HoldPos = HeldBody.Position;
+		HoldRot = HeldBody.Rotation;
 
-		heldBody.Sleeping = false;
-		heldBody.AutoSleep = false;
+		HeldBody.Sleeping = false;
+		HeldBody.AutoSleep = false;
 	}
 
 	private void GrabEnd()
 	{
-		if ( heldBody.IsValid() )
+		if ( HeldBody.IsValid() )
 		{
-			heldBody.AutoSleep = true;
+			HeldBody.AutoSleep = true;
 		}
 
 		Client?.Pvs.Remove( GrabbedEntity );
@@ -300,58 +309,59 @@ public partial class PhysGun : Carriable
 		{
 			GrabbedEntity.Tags.Remove( GrabbedTag );
 			GrabbedEntity.Tags.Remove( $"{GrabbedTag}{Client.SteamId}" );
-			GrabbedEntity = null;
 		}
 
-		heldBody = null;
-		grabbing = false;
+		GrabbedEntity = null;
+
+		HeldBody = null;
+		Grabbing = false;
 	}
 
-	[Event.Physics.PreStep]
+	[GameEvent.Physics.PreStep]
 	public void OnPrePhysicsStep()
 	{
 		if ( !Game.IsServer )
 			return;
 
-		if ( !heldBody.IsValid() )
+		if ( !HeldBody.IsValid() )
 			return;
 
 		if ( GrabbedEntity is Player )
 			return;
 
-		var velocity = heldBody.Velocity;
-		Vector3.SmoothDamp( heldBody.Position, holdPos, ref velocity, 0.075f, Time.Delta );
-		heldBody.Velocity = velocity;
+		var velocity = HeldBody.Velocity;
+		Vector3.SmoothDamp( HeldBody.Position, HoldPos, ref velocity, 0.075f, Time.Delta );
+		HeldBody.Velocity = velocity;
 
-		var angularVelocity = heldBody.AngularVelocity;
-		Rotation.SmoothDamp( heldBody.Rotation, holdRot, ref angularVelocity, 0.075f, Time.Delta );
-		heldBody.AngularVelocity = angularVelocity;
+		var angularVelocity = HeldBody.AngularVelocity;
+		Rotation.SmoothDamp( HeldBody.Rotation, HoldRot, ref angularVelocity, 0.075f, Time.Delta );
+		HeldBody.AngularVelocity = angularVelocity;
 	}
 
 	private void GrabMove( Vector3 startPos, Vector3 dir, Rotation rot, bool snapAngles )
 	{
-		if ( !heldBody.IsValid() )
+		if ( !HeldBody.IsValid() )
 			return;
 
-		holdPos = startPos - heldPos * heldBody.Rotation + dir * holdDistance;
+		HoldPos = startPos - HeldPos * HeldBody.Rotation + dir * HoldDistance;
 
 		if ( GrabbedEntity is Player player )
 		{
 			var velocity = player.Velocity;
-			Vector3.SmoothDamp( player.Position, holdPos, ref velocity, 0.075f, Time.Delta );
+			Vector3.SmoothDamp( player.Position, HoldPos, ref velocity, 0.075f, Time.Delta );
 			player.Velocity = velocity;
 			player.GroundEntity = null;
 
 			return;
 		}
 
-		holdRot = rot * heldRot;
+		HoldRot = rot * HeldRot;
 
 		if ( snapAngles )
 		{
-			var angles = holdRot.Angles();
+			var angles = HoldRot.Angles();
 
-			holdRot = Rotation.From(
+			HoldRot = Rotation.From(
 				MathF.Round( angles.pitch / RotateSnapAt ) * RotateSnapAt,
 				MathF.Round( angles.yaw / RotateSnapAt ) * RotateSnapAt,
 				MathF.Round( angles.roll / RotateSnapAt ) * RotateSnapAt
@@ -361,8 +371,8 @@ public partial class PhysGun : Carriable
 
 	private void MoveTargetDistance( float distance )
 	{
-		holdDistance += distance;
-		holdDistance = holdDistance.Clamp( MinTargetDistance, MaxTargetDistance );
+		HoldDistance += distance;
+		HoldDistance = HoldDistance.Clamp( MinTargetDistance, MaxTargetDistance );
 	}
 
 	protected virtual void DoRotate( Rotation eye, Vector3 input )
@@ -372,7 +382,7 @@ public partial class PhysGun : Carriable
 		localRot *= Rotation.FromAxis( Vector3.Right, input.y * RotateSpeed );
 		localRot = eye.Inverse * localRot;
 
-		heldRot = localRot * heldRot;
+		HeldRot = localRot * HeldRot;
 	}
 
 	public override void BuildInput()

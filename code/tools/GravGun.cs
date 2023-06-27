@@ -40,6 +40,12 @@ public partial class GravGun : Carriable
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
 	}
 
+	[GameEvent.Entity.PreCleanup]
+	protected void OnEntityPreCleanup()
+	{
+		GrabEnd();
+	}
+
 	public override void Simulate( IClient client )
 	{
 		if ( Owner is not Player owner ) return;
@@ -255,8 +261,9 @@ public partial class GravGun : Carriable
 		if ( HeldEntity.IsValid() )
 		{
 			HeldEntity.Tags.Remove( grabbedTag );
-			HeldEntity = null;
 		}
+
+		HeldEntity = null;
 	}
 
 	private void GrabMove( Vector3 startPos, Vector3 dir, Rotation rot )
