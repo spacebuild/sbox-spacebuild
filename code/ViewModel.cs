@@ -123,4 +123,11 @@ public class ViewModel : BaseViewModel
 
 		return offset;
 	}
+
+	protected override void OnAnimGraphCreated()
+	{
+		base.OnAnimGraphCreated();
+
+		SetAnimParameter( "b_deploy", true );
+	}
 }
