@@ -105,8 +105,8 @@ partial class Fists : Weapon
 	{
 		Game.AssertClient();
 
-		ViewModelEntity?.SetAnimParameter( "attack_has_hit", false );
-		ViewModelEntity?.SetAnimParameter( "attack", true );
+		ViewModelEntity?.SetAnimParameter( "b_attack_has_hit", false );
+		ViewModelEntity?.SetAnimParameter( "b_attack", true );
 		ViewModelEntity?.SetAnimParameter( "holdtype_attack", leftHand ? 2 : 1 );
 	}
 
@@ -115,8 +115,8 @@ partial class Fists : Weapon
 	{
 		Game.AssertClient();
 
-		ViewModelEntity?.SetAnimParameter( "attack_has_hit", true );
-		ViewModelEntity?.SetAnimParameter( "attack", true );
+		ViewModelEntity?.SetAnimParameter( "b_attack_has_hit", true );
+		ViewModelEntity?.SetAnimParameter( "b_attack", true );
 		ViewModelEntity?.SetAnimParameter( "holdtype_attack", leftHand ? 2 : 1 );
 	}
 }
