@@ -59,9 +59,9 @@
 						_class = "PhysicsHullFromRender"
 						parent_bone = ""
 						surface_prop = "default"
-						collision_prop = "default"
-						faceMergeAngle = 20.0
-						maxHullVertices = 32
+						collision_tags = "solid"
+						faceMergeAngle = 10.0
+						maxHullVertices = 0
 					},
 				]
 			},
@@ -126,5 +126,6 @@
 		model_archetype = ""
 		primary_associated_entity = ""
 		anim_graph_name = ""
+		base_model_name = ""
 	}
 }
