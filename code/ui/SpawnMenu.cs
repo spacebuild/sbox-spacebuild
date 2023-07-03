@@ -66,14 +66,33 @@ public partial class SpawnMenu : Panel
 			var button = toollist.Add.Button( entry.Title );
 			button.SetClass( "active", entry.ClassName == ConsoleSystem.GetValue( "tool_current" ) );
 
-			button.AddEventListener( "onclick", () =>
+			button.AddEventListener( "onclick", () => 
 			{
-				ConsoleSystem.Run( "tool_current", entry.ClassName );
-				ConsoleSystem.Run( "inventory_current", "weapon_tool" );
+				SetActiveTool( entry.ClassName );
 
 				foreach ( var child in toollist.Children )
 					child.SetClass( "active", child == button );
 			} );
+		}
+	}
+
+	void SetActiveTool( string className )
+	{
+		// setting a cvar
+		ConsoleSystem.Run( "tool_current", className );
+
+		// set the active weapon to the toolgun
+		if ( Game.LocalPawn is not Player player ) return;
+		if ( player.Inventory is null ) return;
+
+		// why isn't inventory just an ienumurable wtf
+		for ( int i = 0; i < player.Inventory.Count(); i++ )
+		{
+			var entity = player.Inventory.GetSlot( i );
+			if ( !entity.IsValid() ) continue;
+			if ( entity.ClassName != "weapon_tool" ) continue;
+
+			player.ActiveChildInput = entity;
 		}
 	}
 
