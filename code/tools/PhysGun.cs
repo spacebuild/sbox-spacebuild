@@ -49,11 +49,6 @@ public partial class PhysGun : Carriable
 	{
 		if ( Owner is not Player owner ) return;
 
-		if ( Game.IsServer && GrabbedEntity.IsValid() )
-		{
-			Log.Info( GrabbedEntity.NetworkIdent );
-		}
-
 		var eyePos = owner.EyePosition;
 		var eyeDir = owner.EyeRotation.Forward;
 		var eyeRot = Rotation.From( new Angles( 0.0f, owner.EyeRotation.Yaw(), 0.0f ) );
