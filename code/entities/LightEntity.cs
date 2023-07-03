@@ -10,6 +10,7 @@ public partial class LightEntity : PointLightEntity, IUse
 
 		SetModel( "models/light/light_tubular.vmdl" );
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
+		Tags.Add( "solid" );
 	}
 
 	public bool IsUsable( Entity user )
