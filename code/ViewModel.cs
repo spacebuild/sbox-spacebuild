@@ -54,11 +54,11 @@ public class ViewModel : BaseViewModel
 		var newPitch = Rotation.Pitch();
 		var newYaw = Rotation.Yaw();
 
-		var pitchDelta = newPitch - lastPitch;
-		var yawDelta = lastYaw - newYaw;
+		var pitchDelta = Angles.NormalizeAngle( newPitch - lastPitch );
+		var yawDelta = Angles.NormalizeAngle( lastYaw - newYaw );
 
-		PitchInertia += Angles.NormalizeAngle( newPitch - lastPitch );
-		YawInertia += Angles.NormalizeAngle( lastYaw - newYaw );
+		PitchInertia += pitchDelta;
+		YawInertia += yawDelta;
 
 		if ( EnableSwingAndBob )
 		{
