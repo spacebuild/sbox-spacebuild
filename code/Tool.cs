@@ -7,7 +7,7 @@ partial class Tool : Carriable
 	[ConVar.ClientData( "tool_current" )]
 	public static string UserToolCurrent { get; set; } = "tool_boxgun";
 
-	public override string ViewModelPath => "weapons/rust_pistol/v_rust_pistol.vmdl";
+	public AnimatedEntity ViewModelArms { get; set; }
 
 	[Net]
 	public BaseTool CurrentTool { get; set; }
@@ -17,6 +17,21 @@ partial class Tool : Carriable
 		base.Spawn();
 
 		SetModel( "weapons/rust_pistol/rust_pistol.vmdl" );
+	}
+
+	public override void CreateViewModel()
+	{
+		base.CreateViewModel();
+		
+		ViewModelEntity = new ViewModel();
+		ViewModelEntity.Position = Position;
+		ViewModelEntity.Owner = Owner;
+		ViewModelEntity.EnableViewmodelRendering = true;
+		ViewModelEntity.Model = Cloud.Model( "https://asset.party/facepunch/v_toolgun" );
+
+		ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
+		ViewModelArms.SetParent( ViewModelEntity, true );
+		ViewModelArms.EnableViewmodelRendering = true;
 	}
 
 	public override void Simulate( IClient owner )
@@ -63,7 +78,7 @@ partial class Tool : Carriable
 	public override void ActiveStart( Entity ent )
 	{
 		base.ActiveStart( ent );
-
+		
 		CurrentTool?.Activate();
 	}
 
