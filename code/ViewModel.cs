@@ -13,6 +13,7 @@ public class ViewModel : BaseViewModel
 	private float lastPitch;
 	private float lastYaw;
 	private float bobAnim;
+	private float bobSpeed;
 
 	private bool activated = false;
 
@@ -78,8 +79,12 @@ public class ViewModel : BaseViewModel
 			verticalDelta *= 1.0f - System.MathF.Abs( viewDown.Cross( Vector3.Down ).y );
 			pitchDelta -= verticalDelta * 1.0f;
 
+			var speed = playerVelocity.WithZ( 0 ).Length;
+			speed = speed > 10.0 ? speed : 0.0f;
+			bobSpeed = bobSpeed.LerpTo( speed, Time.Delta * InertiaDamping );
+
 			var offset = CalcSwingOffset( pitchDelta, yawDelta );
-			offset += CalcBobbingOffset( playerVelocity );
+			offset += CalcBobbingOffset( bobSpeed );
 
 			Position += Rotation * offset;
 		}
@@ -98,7 +103,7 @@ public class ViewModel : BaseViewModel
 
 	protected Vector3 CalcSwingOffset( float pitchDelta, float yawDelta )
 	{
-		Vector3 swingVelocity = new Vector3( 0, yawDelta, pitchDelta );
+		var swingVelocity = new Vector3( 0, yawDelta, pitchDelta );
 
 		swingOffset -= swingOffset * ReturnSpeed * Time.Delta;
 		swingOffset += (swingVelocity * SwingInfluence);
@@ -111,7 +116,7 @@ public class ViewModel : BaseViewModel
 		return swingOffset;
 	}
 
-	protected Vector3 CalcBobbingOffset( Vector3 velocity )
+	protected Vector3 CalcBobbingOffset( float speed )
 	{
 		bobAnim += Time.Delta * BobCycleTime;
 
@@ -122,8 +127,6 @@ public class ViewModel : BaseViewModel
 			bobAnim -= twoPI;
 		}
 
-		var speed = new Vector2( velocity.x, velocity.y ).Length;
-		speed = speed > 10.0 ? speed : 0.0f;
 		var offset = BobDirection * (speed * 0.005f) * System.MathF.Cos( bobAnim );
 		offset = offset.WithZ( -System.MathF.Abs( offset.z ) );
 
