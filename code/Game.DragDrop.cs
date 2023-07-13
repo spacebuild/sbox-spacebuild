@@ -134,7 +134,8 @@ partial class SandboxGame
 				{
 					//if ( package.IsMounted( true ) )
 					{
-						var modelEnt = new ModelEntity( model );
+						var modelEnt = new Prop();
+						modelEnt.SetModel( model );
 						modelEnt.Position = pos + GetBoundsOffset( dragSceneObject.LocalBounds, tr.Normal );
 						modelEnt.Rotation = rot;
 
