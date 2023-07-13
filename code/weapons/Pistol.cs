@@ -19,7 +19,7 @@ partial class Pistol : Weapon
 		Model = Cloud.Model( "https://asset.party/facepunch/w_usp" );
 		SetBodyGroup( "barrel", 1 );
 		SetBodyGroup( "sights", 1 );
-		LocalScale = 2f; // todo - this doesn't work when bone merged! we should make it multiply!
+		LocalScale = 1.5f;
 	}
 	public override void CreateViewModel()
 	{
