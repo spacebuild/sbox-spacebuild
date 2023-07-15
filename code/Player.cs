@@ -247,6 +247,9 @@ partial class SandboxPlayer : Player
 		if ( ActiveChild is BaseCarriable carry )
 		{
 			carry.SimulateAnimator( animHelper );
+
+			// We want to use player anim params in viewmodel
+			carry.ViewModelEntity?.CopyAnimParameters( this );
 		}
 		else
 		{
