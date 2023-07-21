@@ -170,6 +170,18 @@ partial class SandboxPlayer : Player
 			timeSinceJumpReleased = 0;
 		}
 
+		if ( Input.Released( "noclip" ) )
+		{
+			if ( DevController is NoclipController )
+			{
+				DevController = null;
+			}
+			else
+			{
+				DevController = new NoclipController();
+			}
+		}
+
 		if ( InputDirection.y != 0 || InputDirection.x != 0f )
 		{
 			timeSinceJumpReleased = 1;

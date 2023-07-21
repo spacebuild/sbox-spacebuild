@@ -292,9 +292,15 @@
           "Name": "Chat",
           "KeyboardCode": "enter",
           "GroupName": "Other"
+        },
+        {
+          "Name": "Noclip",
+          "KeyboardCode": "N",
+          "GroupName": "Movement"
         }
       ]
     },
-    "HttpAllowList": null
+    "HttpAllowList": null,
+    "TickRate": 50
   }
 }
