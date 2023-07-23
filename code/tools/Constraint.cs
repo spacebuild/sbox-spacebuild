@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
+using Sandbox.Physics;
 
 namespace Sandbox.Tools
 {
@@ -11,7 +12,7 @@ namespace Sandbox.Tools
 	{
 		// ConVar.ClientData doesn't seem to network its wrapped property nicely, so lets make our own...
 		[ConVar.ClientData( "tool_constraint_type" )]
-		public ConstraintType _ { get; set; } = ConstraintType.Weld;
+		public static ConstraintType _ { get; set; } = ConstraintType.Weld;
 		private ConstraintType Type
 		{
 			get {
@@ -41,21 +42,21 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( Host.IsClient ) {
+			if ( Game.IsClient ) {
 				this.Description = CalculateDescription();
 
-				if ( Input.Pressed( InputButton.Drop ) ) {
+				if ( Input.Pressed( "drop" ) ) {
 					SelectNextType();
 				}
 			}
 
 			using ( Prediction.Off() ) {
 
-				if ( !Host.IsServer )
+				if ( !Game.IsServer )
 					return;
 
-				var startPos = Owner.EyePos;
-				var dir = Owner.EyeRot.Forward;
+				var startPos = Owner.EyePosition;
+				var dir = Owner.EyeRotation.Forward;
 
 				var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance )
 					.Ignore( Owner )
@@ -66,7 +67,7 @@ namespace Sandbox.Tools
 				}
 
 
-				if ( Input.Pressed( InputButton.Attack1 ) ) {
+				if ( Input.Pressed( "attack1" ) ) {
 					if ( stage == 0 ) {
 						trace1 = tr;
 						stage++;
@@ -82,11 +83,11 @@ namespace Sandbox.Tools
 						}
 
 						if ( Type == ConstraintType.Weld ) {
-							var joint = PhysicsJoint.Weld
-								.From( trace1.Body )
-								.To( trace2.Body, trace2.Body.Transform.PointToLocal( trace1.Body.Position ), trace2.Body.Transform.RotationToLocal( trace1.Body.Rotation ) )
-								.WithCollisionsEnabled()
-								.Create();
+							var joint = PhysicsJoint.CreateFixed(
+								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
+								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
+							);
+							joint.Collisions = true;
 
 							FinishConstraintCreation( joint, () => {
 								if ( joint.IsValid() ) {
@@ -97,10 +98,13 @@ namespace Sandbox.Tools
 							} );
 						}
 						else if ( Type == ConstraintType.Nocollide ) {
-							var joint = PhysicsJoint.Generic
-								.From( trace1.Body )
-								.To( trace2.Body )
-								.Create();
+							var joint = PhysicsJoint.CreateFixed(
+								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
+								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
+							);
+							joint.EnableAngularConstraint = false;
+							joint.EnableLinearConstraint = false;
+							joint.Collisions = false;
 							FinishConstraintCreation( joint, () => {
 								if ( joint.IsValid() ) {
 									joint.Remove();
@@ -110,20 +114,17 @@ namespace Sandbox.Tools
 							} );
 						}
 						else if ( Type == ConstraintType.Spring ) {
-							var length = trace1.EndPos.Distance( trace2.EndPos );
-							var joint = PhysicsJoint.Spring
-								.From( trace1.Body, trace1.Body.Transform.PointToLocal( trace1.EndPos ) )
-								.To( trace2.Body, trace2.Body.Transform.PointToLocal( trace2.EndPos ) )
-								.WithPivot( trace2.EndPos )
-								.WithFrequency( 5.0f )
-								.WithDampingRatio( 0.7f )
-								.WithMinRestLength( 0 )
-								.WithMaxRestLength( 0 )
-								.WithCollisionsEnabled()
-								// .WithFriction(1) // does this do anything?
-								.Create();
+							var length = trace1.EndPosition.Distance( trace2.EndPosition );
+							var joint = PhysicsJoint.CreateSpring(
+								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
+								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								length,
+								length
+							);
+							joint.SpringLinear = new( 5.0f, 0.7f );
+							joint.Collisions = true;
+							joint.EnableAngularConstraint = false;
 
-							// todo: where to store rope refs? how to tidy up on prop remove?
 							var rope = MakeRope( trace1, trace2 );
 
 							FinishConstraintCreation( joint, () => {
@@ -136,16 +137,14 @@ namespace Sandbox.Tools
 							} );
 						}
 						else if ( Type == ConstraintType.Rope ) {
-							var length = trace1.EndPos.Distance( trace2.EndPos );
-							var joint = PhysicsJoint.Spring
-								.From( trace1.Body, trace1.Body.Transform.PointToLocal( trace1.EndPos ) )
-								.To( trace2.Body, trace2.Body.Transform.PointToLocal( trace2.EndPos ) )
-								.WithFrequency( 1000.0f )
-								.WithDampingRatio( 0.7f )
-								.WithMinRestLength( 0 )
-								.WithMaxRestLength( length )
-								.WithCollisionsEnabled()
-								.Create();
+							var joint = PhysicsJoint.CreateLength(
+								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
+								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								trace1.EndPosition.Distance( trace2.EndPosition )
+							);
+							joint.SpringLinear = new( 1000.0f, 0.7f );
+							joint.Collisions = true;
+							joint.EnableAngularConstraint = false;
 
 							var rope = MakeRope( trace1, trace2 );
 
@@ -159,17 +158,18 @@ namespace Sandbox.Tools
 							} );
 						}
 						else if ( Type == ConstraintType.Axis ) {
-							var pivot = Input.Down( InputButton.Run )
+							var pivot = Input.Down( "run" )
 								? trace1.Body.MassCenter
-								: trace1.EndPos;
-							var joint = PhysicsJoint.Revolute
-								.From( trace1.Body, pivot )
-								.To( trace2.Body, trace2.EndPos )
-								.WithPivot( pivot )
-								.WithBasis( Rotation.LookAt( trace1.Normal, trace1.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ) )
-								.WithCollisionsEnabled()
-								// .WithFriction( 1 )
-								.Create();
+								: trace1.EndPosition;
+
+							var joint = PhysicsJoint.CreateHinge(
+								trace1.Body,
+								trace2.Body,
+								pivot,
+								trace1.Normal
+							);
+							joint.Collisions = true;
+
 							FinishConstraintCreation( joint, () => {
 								if ( joint.IsValid() ) {
 									joint.Remove();
@@ -179,15 +179,12 @@ namespace Sandbox.Tools
 							} );
 						}
 						else if ( Type == ConstraintType.Slider ) {
-							var joint = PhysicsJoint.Prismatic
-								.From( trace1.Body, trace1.EndPos )
-								.To( trace2.Body, trace2.EndPos )
-								.WithBasis( Rotation.LookAt( trace1.Normal, trace1.Direction ) * Rotation.From( new Angles( 90, 0, 0 ) ) )
-								.WithCollisionsEnabled()
-								// .WithLimit(0,50) // can be used like a rope/slider hybrid, to limit max length
-								.WithPivot( trace1.EndPos )
-								// .WithFriction( 1 )
-								.Create();
+							var joint = PhysicsJoint.CreateSlider(
+								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
+								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								0,
+								0 // can be used like a rope hybrid, to limit max length
+							);
 							var rope = MakeRope( trace1, trace2 );
 							FinishConstraintCreation( joint, () => {
 								rope?.Destroy( true );
@@ -207,10 +204,10 @@ namespace Sandbox.Tools
 						Reset();
 					}
 				}
-				else if ( Input.Pressed( InputButton.Attack2 ) ) {
+				else if ( Input.Pressed( "attack2" ) ) {
 					Reset();
 				}
-				else if ( Input.Pressed( InputButton.Reload ) ) {
+				else if ( Input.Pressed( "reload" ) ) {
 					if ( tr.Entity is not Prop prop ) {
 						return;
 					}
@@ -223,14 +220,14 @@ namespace Sandbox.Tools
 					return;
 				}
 
-				CreateHitEffects( tr.EndPos, tr.Normal );
+				CreateHitEffects( tr.EndPosition, tr.Normal );
 			}
 		}
 
 		private void SelectNextType()
 		{
 			IEnumerable<ConstraintType> possibleEnums = Enum.GetValues<ConstraintType>();
-			if ( Input.Down( InputButton.Run ) ) {
+			if ( Input.Down( "run" ) ) {
 				possibleEnums = possibleEnums.Reverse();
 			}
 			Type = possibleEnums.SkipWhile( e => e != Type ).Skip( 1 ).FirstOrDefault();
@@ -263,11 +260,13 @@ namespace Sandbox.Tools
 			return desc;
 		}
 
-		private void FinishConstraintCreation( object joint, Func<string> undo )
+		private void FinishConstraintCreation( PhysicsJoint joint, Func<string> undo )
 		{
+			joint.OnBreak += () => { undo(); };
+
 			Sandbox.Hooks.Undos.AddUndo( undo, Owner );
 
-			if ( WireboxSupport && Input.Down( InputButton.Walk ) ) {
+			if ( WireboxSupport && Input.Down( "walk" ) ) {
 				createdJoint = joint;
 				createdUndo = undo;
 				stage = 2;
@@ -280,17 +279,17 @@ namespace Sandbox.Tools
 		{
 			var rope = Particles.Create( "particles/rope.vpcf" );
 
-			if ( trace1.Entity.IsWorld ) {
-				rope.SetPos( 0, trace1.EndPos );
+			if ( trace1.Body.GetEntity().IsWorld ) {
+				rope.SetPosition( 0, trace1.EndPosition );
 			}
 			else {
-				rope.SetEntityBone( 0, trace1.Entity, trace1.Bone, new Transform( trace1.Entity.Transform.PointToLocal( trace1.EndPos ) ) );
+				rope.SetEntityBone( 0, trace1.Body.GetEntity(), trace1.Bone, new Transform( trace1.Body.GetEntity().Transform.PointToLocal( trace1.EndPosition ) ) );
 			}
-			if ( trace2.Entity.IsWorld ) {
-				rope.SetPos( 1, trace2.EndPos );
+			if ( trace2.Body.GetEntity().IsWorld ) {
+				rope.SetPosition( 1, trace2.EndPosition );
 			}
 			else {
-				rope.SetEntityBone( 1, trace2.Entity, trace2.Bone, new Transform( trace2.Entity.Transform.PointToLocal( trace2.EndPos ) ) );
+				rope.SetEntityBone( 1, trace2.Body.GetEntity(), trace2.Bone, new Transform( trace2.Body.GetEntity().Transform.PointToLocal( trace2.EndPosition ) ) );
 			}
 			return rope;
 		}
@@ -306,7 +305,7 @@ namespace Sandbox.Tools
 
 			Reset();
 
-			if ( Host.IsClient ) {
+			if ( Game.IsClient ) {
 				var toolConfigUi = new ConstraintToolConfig();
 				SpawnMenu.Instance?.ToolPanel?.AddChild( toolConfigUi );
 			}
