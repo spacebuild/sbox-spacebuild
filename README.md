@@ -16,10 +16,6 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 ### Todo
 
 - [] Figure out how 2023 addons work, get Wirebox loading
-- [] load toolmenus on tool switch (currently only loads when switching to the Toolgun from another; broken as of 2023 api's)
-- [] Improve spawnmenu/tool hotreloading (broken as of 2023 api's, as [Event.Hotload] doesn't seem to trigger in Game.cs if it was a toolmenu.cs that updated)
-- [] Restore DynPlates spawnmenu (broken as of 2023 api's)
-- [] Restore Material toolmenu (broken as of 2023 api's)
 
 ## Contributing
 
