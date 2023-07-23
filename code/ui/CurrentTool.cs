@@ -3,7 +3,7 @@ using Sandbox.Tools;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 
-public class CurrentTool : Panel
+public partial class CurrentTool : Panel
 {
 	public Label Title;
 	public Label Description;
@@ -39,5 +39,11 @@ public class CurrentTool : Panel
 		if ( inventory.Active is not Tool tool ) return null;
 
 		return tool?.CurrentTool;
+	}
+
+	[ClientRpc]
+	public static void CreateToolPanel()
+	{
+		GetCurrentTool()?.CreateToolPanel();
 	}
 }

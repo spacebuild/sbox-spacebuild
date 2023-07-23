@@ -88,10 +88,10 @@ namespace Sandbox.Tools
 			}
 		}
 
-		public override void Activate()
+		public override void CreateToolPanel()
 		{
-			base.Activate();
-			if ( Game.IsClient ) {
+			if ( Game.IsClient )
+			{
 				var modelSelector = new ModelSelector( new string[] { "thruster" } );
 				SpawnMenu.Instance?.ToolPanel?.AddChild( modelSelector );
 			}

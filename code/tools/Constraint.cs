@@ -279,19 +279,32 @@ namespace Sandbox.Tools
 		{
 			var rope = Particles.Create( "particles/rope.vpcf" );
 
-			if ( trace1.Body.GetEntity().IsWorld ) {
+			if ( trace1.Body.GetEntity().IsWorld )
+			{
 				rope.SetPosition( 0, trace1.EndPosition );
 			}
-			else {
+			else
+			{
 				rope.SetEntityBone( 0, trace1.Body.GetEntity(), trace1.Bone, new Transform( trace1.Body.GetEntity().Transform.PointToLocal( trace1.EndPosition ) ) );
 			}
-			if ( trace2.Body.GetEntity().IsWorld ) {
+			if ( trace2.Body.GetEntity().IsWorld )
+			{
 				rope.SetPosition( 1, trace2.EndPosition );
 			}
-			else {
+			else
+			{
 				rope.SetEntityBone( 1, trace2.Body.GetEntity(), trace2.Bone, new Transform( trace2.Body.GetEntity().Transform.PointToLocal( trace2.EndPosition ) ) );
 			}
 			return rope;
+		}
+
+		public override void CreateToolPanel()
+		{
+			if ( Game.IsClient )
+			{
+				var toolConfigUi = new ConstraintToolConfig();
+				SpawnMenu.Instance?.ToolPanel?.AddChild( toolConfigUi );
+			}
 		}
 
 		private void Reset()
@@ -305,10 +318,6 @@ namespace Sandbox.Tools
 
 			Reset();
 
-			if ( Game.IsClient ) {
-				var toolConfigUi = new ConstraintToolConfig();
-				SpawnMenu.Instance?.ToolPanel?.AddChild( toolConfigUi );
-			}
 		}
 
 		public override void Deactivate()

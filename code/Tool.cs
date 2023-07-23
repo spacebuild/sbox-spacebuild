@@ -138,7 +138,13 @@ namespace Sandbox.Tools
 			if ( Game.IsServer )
 			{
 				CreatePreviews();
+				CurrentTool.CreateToolPanel();
 			}
+		}
+
+		public virtual void CreateToolPanel()
+		{
+
 		}
 
 		public virtual void Deactivate()

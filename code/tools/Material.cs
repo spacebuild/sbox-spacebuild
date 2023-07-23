@@ -45,11 +45,11 @@ namespace Sandbox.Tools
 			}
 		}
 
-		public override void Activate()
-		{
-			base.Activate();
 
-			if ( Game.IsClient ) {
+		public override void CreateToolPanel()
+		{
+			if ( Game.IsClient )
+			{
 				var materialSelector = new MaterialSelector();
 				SpawnMenu.Instance?.ToolPanel?.AddChild( materialSelector );
 			}
