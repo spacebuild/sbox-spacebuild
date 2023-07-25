@@ -45,6 +45,8 @@
 
 			ent.SetModel( modelToShoot );
 			ent.Velocity = Owner.EyeRotation.Forward * 1000;
+
+			Services.Stats.Increment( Owner.Client, "box.shoot", 1 );
 		}
 	}
 }

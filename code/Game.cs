@@ -17,9 +17,10 @@ partial class SandboxGame : GameManager
 	{
 		base.ClientJoined( cl );
 		var player = new SandboxPlayer( cl );
-		player.Respawn();
 
 		cl.Pawn = player;
+
+		player.Respawn();
 	}
 
 	protected override void OnDestroy()
@@ -83,6 +84,8 @@ partial class SandboxGame : GameManager
 		{
 			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
 		}
+
+		Sandbox.Services.Stats.Increment( owner.Client, "spawn.model", 1, modelname );
 	}
 
 	static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )

@@ -11,14 +11,13 @@ spawnmenu
 	bottom: 0px;
 	padding: 80px 100px;
 	padding-bottom: 200px;
-	border-radius: 5px;
 	pointer-events: none;
 	transition: all 0.1s ease-out;
 	position: absolute;
 	font-family: poppins;
 	opacity: 0;
 	z-index: 10;
-	backdrop-filter: blur( 50px ) contrast( 25% ) saturate( 50% ) brightness( 9% );
+	backdrop-filter: blur( 10px ) contrast( 50% ) saturate( 50% ) brightness( 10% );
 
 	.left
 	{
