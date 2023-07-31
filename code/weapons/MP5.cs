@@ -7,6 +7,7 @@ partial class MP5 : Weapon
 	public override float PrimaryRate => 15.0f;
 	public override float SecondaryRate => 1.0f;
 	public override float ReloadTime => 2.5f;
+	private ParticleSystem EjectBrass;
 
 	public override void Spawn()
 	{
@@ -14,6 +15,12 @@ partial class MP5 : Weapon
 
 		Model = Cloud.Model( "https://asset.party/facepunch/w_mp5" );
 		LocalScale = 1.5f;
+	}
+
+	public override void ActiveStart( Entity ent )
+	{
+		base.ActiveStart( ent );
+		EjectBrass = Cloud.ParticleSystem( "https://asset.party/facepunch/9mm_ejectbrass" );
 	}
 
 	public override void CreateViewModel()
@@ -64,7 +71,7 @@ partial class MP5 : Weapon
 		Game.AssertClient();
 
 		Particles.Create( "particles/pistol_muzzleflash.vpcf", EffectEntity, "muzzle" );
-		Particles.Create( "particles/pistol_ejectbrass.vpcf", EffectEntity, "eject" );
+		Particles.Create( EjectBrass.ResourcePath, EffectEntity, "eject" );
 	}
 
 	public override void SimulateAnimator( CitizenAnimationHelper anim )
