@@ -6,7 +6,7 @@ partial class MP5 : Weapon
 {
 	public override float PrimaryRate => 15.0f;
 	public override float SecondaryRate => 1.0f;
-	public override float ReloadTime => 5.0f;
+	public override float ReloadTime => 2.5f;
 
 	public override void Spawn()
 	{

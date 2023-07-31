@@ -75,7 +75,7 @@ public partial class Weapon : BaseWeapon, IUse
 	[ClientRpc]
 	public virtual void StartReloadEffects()
 	{
-		ViewModelEntity?.SetAnimParameter( "reload", true );
+		ViewModelEntity?.SetAnimParameter( "b_reload", true );
 
 		// TODO - player third person model reload
 	}
