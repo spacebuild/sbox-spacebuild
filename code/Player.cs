@@ -153,6 +153,8 @@ partial class SandboxPlayer : Player
 
 				if ( dropped.PhysicsGroup.IsValid() )
 				{
+					dropped.PhysicsGroup.Velocity = 0;
+					dropped.PhysicsGroup.AngularVelocity = 0;
 					dropped.PhysicsGroup.ApplyImpulse( Velocity + EyeRotation.Forward * 500.0f + Vector3.Up * 100.0f, true );
 					dropped.PhysicsGroup.ApplyAngularImpulse( Vector3.Random * 100.0f, true );
 				}
