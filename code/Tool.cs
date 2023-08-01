@@ -9,7 +9,7 @@ partial class Tool : Carriable
 
 	public AnimatedEntity ViewModelArms { get; set; }
 
-	[Net]
+	[Net, Change]
 	public BaseTool CurrentTool { get; set; }
 
 	public override void Spawn()
@@ -73,6 +73,13 @@ partial class Tool : Carriable
 			CurrentTool.Owner = owner.Pawn as Player;
 			CurrentTool.Activate();
 		}
+	}
+
+	// Note: called clientside only
+	private void OnCurrentToolChanged( BaseTool oldTool, BaseTool newTool )
+	{
+		oldTool?.Deactivate();
+		newTool?.Activate();
 	}
 
 	public override void ActiveStart( Entity ent )
