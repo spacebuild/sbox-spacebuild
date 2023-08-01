@@ -1,7 +1,7 @@
 ﻿using Sandbox;
 using System.Numerics;
 
-partial class SandboxPlayer : Player
+public partial class SandboxPlayer : Player
 {
 	private TimeSince timeSinceDropped;
 	private TimeSince timeSinceJumpReleased;

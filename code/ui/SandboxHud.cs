@@ -5,12 +5,14 @@ using Sandbox.UI;
 [Library]
 public partial class SandboxHud : HudEntity<RootPanel>
 {
-	
+	public static SandboxHud Instance;
+
 	public static event Action OnHudLoaded;
 	public SandboxHud()
 	{
 		if ( !Game.IsClient )
 			return;
+		Instance = this;
 
 		RootPanel.StyleSheet.Load( "/Styles/sandbox.scss" );
 

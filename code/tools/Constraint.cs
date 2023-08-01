@@ -29,12 +29,12 @@ namespace Sandbox.Tools
 		private int stage { get; set; } = 0;
 		private TraceResult trace1;
 		private TraceResult trace2;
-		private object createdJoint;
+		private PhysicsJoint createdJoint;
 		private Func<string> createdUndo;
 
 
 		// Dynamic entrypoint for optional Wirebox support, if installed
-		public static Action<Player, TraceResult, ConstraintType, object, Func<string>> CreateWireboxConstraintController;
+		public static Action<Player, TraceResult, ConstraintType, PhysicsJoint, Func<string>> CreateWireboxConstraintController;
 		private static bool WireboxSupport
 		{
 			get => CreateWireboxConstraintController != null;

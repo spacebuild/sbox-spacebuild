@@ -31,7 +31,9 @@ class ReloadManager
 		{
 			if ( !x.IsAbstract && !x.IsGenericType && !Autoload.ContainsKey( x ) )
 			{
-				Autoload.Add( x, TypeLibrary.Create<IAutoload>( x.TargetType ) );
+				var instance = TypeLibrary.Create<IAutoload>( x.TargetType );
+				instance.Initialize();
+				Autoload.Add( x, instance );
 			}
 		} );
 	}

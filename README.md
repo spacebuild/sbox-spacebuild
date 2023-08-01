@@ -2,20 +2,21 @@
 
 It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/sandbox), with additions to make it more extendable by other modules (adding events, publicizing UI globals, etc), while staying unopinionated/light. This module is primarily aiming to become a "Gmod 2", replicating the functionality found in Gmod's Sandbox gamemode (with improvements).
 
-## Improvements over FP's Sandbox:
+## Improvements over Facepunch/sandbox:
 
+### Gameplay
 - Toolgun model (wip)
-- `IStopUsing` entity interface
-- `SandboxPlayer.OnSimulate` event, so ents can subscribe to keypresses
-- Sandbox.Hooks.Entities.OnSpawned event, Sandbox.Hooks.Undos.OnAddUndo event
 - Constraint tool: an omni-tool with all your classic Gmod constraints (weld/axis/rope/elastic/slider/ballsocket)
 - Material tool
 - DynPlates spawnmenu: like PHX, but dynamic, fully customizable sizes using procedural meshes
 - UI tool panels, including ModelSelector with extendable `.spawnlist`'s
 
-### Todo
+### Extensiblility
 
-- [] Figure out how 2023 addons work, get Wirebox loading
+- `IStopUsing` entity interface
+- `SandboxPlayer.OnSimulate` event, so ents can subscribe to keypresses
+- Sandbox.Hooks.Entities.OnSpawned event, Sandbox.Hooks.Undos.OnAddUndo event
+
 
 ## Contributing
 
