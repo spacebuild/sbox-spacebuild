@@ -69,7 +69,7 @@ public partial class WheelTool : BaseTool
 			ent.PhysicsBody.Mass = tr.Body.Mass;
 			ent.Joint = PhysicsJoint.CreateHinge( ent.PhysicsBody, tr.Body, tr.EndPosition, tr.Normal );
 
-			Sandbox.Hooks.Entities.TriggerOnSpawned(ent, Owner);
+			Sandbox.Hooks.Entities.TriggerOnSpawned( ent, Owner );
 		}
 	}
 }

@@ -58,7 +58,8 @@ partial class SandboxPlayer
 
 	protected override void StopUsing()
 	{
-		if ( Using is IStopUsing use ) {
+		if ( Using is IStopUsing use )
+		{
 			use.OnStopUsing( this );
 		}
 		base.StopUsing();

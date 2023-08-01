@@ -11,7 +11,8 @@ namespace Sandbox.Tools
 		bool massless = true;
 		public override void CreatePreviews()
 		{
-			if ( TryCreatePreview( ref previewModel, GetConvarValue( "tool_thruster_model" ) ) ) {
+			if ( TryCreatePreview( ref previewModel, GetConvarValue( "tool_thruster_model" ) ) )
+			{
 				previewModel.RotationOffset = Rotation.FromAxis( Vector3.Right, -90 );
 			}
 		}
@@ -29,7 +30,8 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( previewModel.IsValid() && GetConvarValue( "tool_thruster_model" ) != previewModel.GetModelName() ) {
+			if ( previewModel.IsValid() && GetConvarValue( "tool_thruster_model" ) != previewModel.GetModelName() )
+			{
 				previewModel.SetModel( GetConvarValue( "tool_thruster_model" ) );
 			}
 			if ( !Game.IsServer )

@@ -15,11 +15,13 @@ namespace Sandbox.Tools
 		public static ConstraintType _ { get; set; } = ConstraintType.Weld;
 		private ConstraintType Type
 		{
-			get {
+			get
+			{
 				var _ = Enum.TryParse( GetConvarValue( "tool_constraint_type" ), out ConstraintType val );
 				return val;
 			}
-			set {
+			set
+			{
 				ConsoleSystem.Run( "tool_constraint_type", value.ToString() );
 			}
 		}
@@ -42,15 +44,18 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( Game.IsClient ) {
+			if ( Game.IsClient )
+			{
 				this.Description = CalculateDescription();
 
-				if ( Input.Pressed( "drop" ) ) {
+				if ( Input.Pressed( "drop" ) )
+				{
 					SelectNextType();
 				}
 			}
 
-			using ( Prediction.Off() ) {
+			using ( Prediction.Off() )
+			{
 
 				if ( !Game.IsServer )
 					return;
@@ -62,42 +67,52 @@ namespace Sandbox.Tools
 					.Ignore( Owner )
 					.Run();
 
-				if ( !tr.Hit || !tr.Entity.IsValid() ) {
+				if ( !tr.Hit || !tr.Entity.IsValid() )
+				{
 					return;
 				}
 
 
-				if ( Input.Pressed( "attack1" ) ) {
-					if ( stage == 0 ) {
+				if ( Input.Pressed( "attack1" ) )
+				{
+					if ( stage == 0 )
+					{
 						trace1 = tr;
 						stage++;
 					}
-					else if ( stage == 1 ) {
+					else if ( stage == 1 )
+					{
 						trace2 = tr;
-						if ( !trace1.Entity.IsValid() ) {
+						if ( !trace1.Entity.IsValid() )
+						{
 							Reset();
 							return;
 						}
-						if ( trace1.Entity.IsWorld && trace2.Entity.IsWorld ) {
+						if ( trace1.Entity.IsWorld && trace2.Entity.IsWorld )
+						{
 							return; // can't both be world
 						}
 
-						if ( Type == ConstraintType.Weld ) {
+						if ( Type == ConstraintType.Weld )
+						{
 							var joint = PhysicsJoint.CreateFixed(
 								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
 								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
 							);
 							joint.Collisions = true;
 
-							FinishConstraintCreation( joint, () => {
-								if ( joint.IsValid() ) {
+							FinishConstraintCreation( joint, () =>
+							{
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
 								return "";
 							} );
 						}
-						else if ( Type == ConstraintType.Nocollide ) {
+						else if ( Type == ConstraintType.Nocollide )
+						{
 							var joint = PhysicsJoint.CreateFixed(
 								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
 								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
@@ -105,15 +120,18 @@ namespace Sandbox.Tools
 							joint.EnableAngularConstraint = false;
 							joint.EnableLinearConstraint = false;
 							joint.Collisions = false;
-							FinishConstraintCreation( joint, () => {
-								if ( joint.IsValid() ) {
+							FinishConstraintCreation( joint, () =>
+							{
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
 								return "";
 							} );
 						}
-						else if ( Type == ConstraintType.Spring ) {
+						else if ( Type == ConstraintType.Spring )
+						{
 							var length = trace1.EndPosition.Distance( trace2.EndPosition );
 							var joint = PhysicsJoint.CreateSpring(
 								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
@@ -127,16 +145,19 @@ namespace Sandbox.Tools
 
 							var rope = MakeRope( trace1, trace2 );
 
-							FinishConstraintCreation( joint, () => {
+							FinishConstraintCreation( joint, () =>
+							{
 								rope?.Destroy( true );
-								if ( joint.IsValid() ) {
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
 								return "";
 							} );
 						}
-						else if ( Type == ConstraintType.Rope ) {
+						else if ( Type == ConstraintType.Rope )
+						{
 							var joint = PhysicsJoint.CreateLength(
 								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
 								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
@@ -148,16 +169,19 @@ namespace Sandbox.Tools
 
 							var rope = MakeRope( trace1, trace2 );
 
-							FinishConstraintCreation( joint, () => {
+							FinishConstraintCreation( joint, () =>
+							{
 								rope?.Destroy( true );
-								if ( joint.IsValid() ) {
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
 								return "";
 							} );
 						}
-						else if ( Type == ConstraintType.Axis ) {
+						else if ( Type == ConstraintType.Axis )
+						{
 							var pivot = Input.Down( "run" )
 								? trace1.Body.MassCenter
 								: trace1.EndPosition;
@@ -170,15 +194,18 @@ namespace Sandbox.Tools
 							);
 							joint.Collisions = true;
 
-							FinishConstraintCreation( joint, () => {
-								if ( joint.IsValid() ) {
+							FinishConstraintCreation( joint, () =>
+							{
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
 								return "";
 							} );
 						}
-						else if ( Type == ConstraintType.Slider ) {
+						else if ( Type == ConstraintType.Slider )
+						{
 							var joint = PhysicsJoint.CreateSlider(
 								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
 								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
@@ -186,9 +213,11 @@ namespace Sandbox.Tools
 								0 // can be used like a rope hybrid, to limit max length
 							);
 							var rope = MakeRope( trace1, trace2 );
-							FinishConstraintCreation( joint, () => {
+							FinishConstraintCreation( joint, () =>
+							{
 								rope?.Destroy( true );
-								if ( joint.IsValid() ) {
+								if ( joint.IsValid() )
+								{
 									joint.Remove();
 									return $"Removed {Type} constraint";
 								}
@@ -196,19 +225,24 @@ namespace Sandbox.Tools
 							} );
 						}
 					}
-					else if ( stage == 2 ) {
+					else if ( stage == 2 )
+					{
 						// only reachable if Wirebox's installed
-						if ( WireboxSupport ) {
+						if ( WireboxSupport )
+						{
 							CreateWireboxConstraintController( Owner, tr, Type, createdJoint, createdUndo );
 						}
 						Reset();
 					}
 				}
-				else if ( Input.Pressed( "attack2" ) ) {
+				else if ( Input.Pressed( "attack2" ) )
+				{
 					Reset();
 				}
-				else if ( Input.Pressed( "reload" ) ) {
-					if ( tr.Entity is not Prop prop ) {
+				else if ( Input.Pressed( "reload" ) )
+				{
+					if ( tr.Entity is not Prop prop )
+					{
 						return;
 					}
 
@@ -216,7 +250,8 @@ namespace Sandbox.Tools
 
 					Reset();
 				}
-				else {
+				else
+				{
 					return;
 				}
 
@@ -227,7 +262,8 @@ namespace Sandbox.Tools
 		private void SelectNextType()
 		{
 			IEnumerable<ConstraintType> possibleEnums = Enum.GetValues<ConstraintType>();
-			if ( Input.Down( "run" ) ) {
+			if ( Input.Down( "run" ) )
+			{
 				possibleEnums = possibleEnums.Reverse();
 			}
 			Type = possibleEnums.SkipWhile( e => e != Type ).Skip( 1 ).FirstOrDefault();
@@ -236,24 +272,32 @@ namespace Sandbox.Tools
 		private string CalculateDescription()
 		{
 			var desc = $"Constraint entities together using a {Type} constraint";
-			if ( Type == ConstraintType.Axis ) {
-				if ( stage == 0 ) {
+			if ( Type == ConstraintType.Axis )
+			{
+				if ( stage == 0 )
+				{
 					desc += $"\nFirst, shoot the part that spins (eg. wheel).";
 				}
-				else if ( stage == 1 ) {
+				else if ( stage == 1 )
+				{
 					desc += $"\nSecond, shoot the base. Hold shift to use wheel's center of mass.";
 				}
 			}
-			else {
-				if ( stage == 1 ) {
+			else
+			{
+				if ( stage == 1 )
+				{
 					desc += $"\nSecond, shoot the base.";
 				}
 			}
-			if ( WireboxSupport ) {
-				if ( stage == 1 ) {
+			if ( WireboxSupport )
+			{
+				if ( stage == 1 )
+				{
 					desc += $"\nHold alt to begin creating a Wire Constraint Controller";
 				}
-				else if ( stage == 2 ) {
+				else if ( stage == 2 )
+				{
 					desc += $"\nFinally, place the Wire Constraint Controller";
 				}
 			}
@@ -266,7 +310,8 @@ namespace Sandbox.Tools
 
 			Sandbox.Hooks.Undos.AddUndo( undo, Owner );
 
-			if ( WireboxSupport && Input.Down( "walk" ) ) {
+			if ( WireboxSupport && Input.Down( "walk" ) )
+			{
 				createdJoint = joint;
 				createdUndo = undo;
 				stage = 2;
@@ -348,11 +393,14 @@ namespace Sandbox.Tools
 			StyleSheet.Load( "/ui/ConstraintTool.scss" );
 			AddClass( "list" );
 			List<Button> buttons = new();
-			foreach ( var type in Enum.GetValues<ConstraintType>() ) {
+			foreach ( var type in Enum.GetValues<ConstraintType>() )
+			{
 				var button = Add.Button( type.ToString(), "list_option" );
-				button.AddEventListener( "onclick", () => {
+				button.AddEventListener( "onclick", () =>
+				{
 					ConsoleSystem.Run( "tool_constraint_type " + type.ToString() );
-					foreach ( var child in buttons ) {
+					foreach ( var child in buttons )
+					{
 						child.SetClass( "active", child == button );
 					}
 				} );

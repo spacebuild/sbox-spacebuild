@@ -10,7 +10,8 @@ partial class SandboxGame : GameManager
 	[Event.Hotload]
 	public async void hotload()
 	{
-		if ( Game.IsServer ) {
+		if ( Game.IsServer )
+		{
 			_sandboxHud?.Delete();
 			await Task.Delay( 500 ); // gotta wait for clients to hotreload too
 			Log.Info( "SandboxPlus: hotloading SandboxHud" );
@@ -23,7 +24,8 @@ partial class SandboxGame : GameManager
 	public SandboxGame()
 	{
 		Log.Info( "Init SandboxPlus" );
-		if ( Game.IsServer ) {
+		if ( Game.IsServer )
+		{
 			Log.Info( "[Server] initting HUD" );
 			// Create the HUD
 			_sandboxHud = new SandboxHud();
@@ -108,7 +110,7 @@ partial class SandboxGame : GameManager
 		{
 			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
 		}
-		Sandbox.Hooks.Entities.TriggerOnSpawned(ent, owner);
+		Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
 	}
 
 	static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )
@@ -163,7 +165,7 @@ partial class SandboxGame : GameManager
 		ent.Position = tr.EndPosition;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
 
-		Sandbox.Hooks.Entities.TriggerOnSpawned(ent, owner);
+		Sandbox.Hooks.Entities.TriggerOnSpawned( ent, owner );
 	}
 
 

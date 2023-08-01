@@ -73,8 +73,8 @@
 				lamp.SetModel( Model );
 				lamp.SetupPhysicsFromModel( PhysicsMotionType.Dynamic, false );
 				lamp.Position = tr.EndPosition + -lamp.CollisionBounds.Center + tr.Normal * lamp.CollisionBounds.Size * 0.5f;
-				
-				Sandbox.Hooks.Entities.TriggerOnSpawned(lamp, Owner);
+
+				Sandbox.Hooks.Entities.TriggerOnSpawned( lamp, Owner );
 			}
 		}
 	}

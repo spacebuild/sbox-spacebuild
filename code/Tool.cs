@@ -22,7 +22,7 @@ partial class Tool : Carriable
 	public override void CreateViewModel()
 	{
 		base.CreateViewModel();
-		
+
 		ViewModelEntity = new ViewModel();
 		ViewModelEntity.Position = Position;
 		ViewModelEntity.Owner = Owner;
@@ -78,7 +78,7 @@ partial class Tool : Carriable
 	public override void ActiveStart( Entity ent )
 	{
 		base.ActiveStart( ent );
-		
+
 		CurrentTool?.Activate();
 	}
 
@@ -173,13 +173,13 @@ namespace Sandbox.Tools
 			var startPos = Owner.EyePosition;
 			var dir = Owner.EyeRotation.Forward;
 
-			return Trace.Ray( startPos, startPos + ( dir * MaxTraceDistance ) )
+			return Trace.Ray( startPos, startPos + (dir * MaxTraceDistance) )
 				.WithAllTags( "solid" )
 				.Ignore( Owner )
 				.Run();
 		}
-		
-		protected string GetConvarValue(string name, string defaultValue = null)
+
+		protected string GetConvarValue( string name, string defaultValue = null )
 		{
 			return Game.IsServer
 				? Owner.Client.GetClientData<string>( name, defaultValue )

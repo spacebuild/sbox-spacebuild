@@ -13,7 +13,8 @@ namespace Sandbox.UI
 		}
 		public override void OnKeyTyped( char k )
 		{
-			if ( k == 'q' && filteringMenuButtonUntil >= Time.Now ) {
+			if ( k == 'q' && filteringMenuButtonUntil >= Time.Now )
+			{
 				filteringMenuButtonUntil = Time.Now + 0.25f;
 				return;
 			}

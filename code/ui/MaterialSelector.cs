@@ -17,7 +17,8 @@ namespace Sandbox.UI
 			Canvas.Layout.AutoColumns = true;
 			Canvas.Layout.ItemWidth = 64;
 			Canvas.Layout.ItemHeight = 64;
-			Canvas.OnCreateCell = ( cell, data ) => {
+			Canvas.OnCreateCell = ( cell, data ) =>
+			{
 				var file = (string)data;
 				// todo: Cloud.Material would be neat, but does not appear to work
 				var material = Material.Load( file );
@@ -31,7 +32,8 @@ namespace Sandbox.UI
 				ScenePanel panel = cell.Add.ScenePanel( sceneWorld, Vector3.Up * 68, new Angles( 90, 0, 0 ).ToRotation(), 45, "icon" );
 				panel.RenderOnce = true;
 
-				panel.AddEventListener( "onclick", () => {
+				panel.AddEventListener( "onclick", () =>
+				{
 					var currentTool = ConsoleSystem.GetValue( "tool_current" );
 					ConsoleSystem.Run( $"{currentTool}_material", file );
 				} );
@@ -39,8 +41,10 @@ namespace Sandbox.UI
 
 			var spawnList = ModelSelector.GetSpawnList( "material" );
 
-			foreach ( var file in spawnList ) {
-				if ( !FileSystem.Mounted.FileExists( file + "_c" ) ) {
+			foreach ( var file in spawnList )
+			{
+				if ( !FileSystem.Mounted.FileExists( file + "_c" ) )
+				{
 					continue;
 				}
 				Canvas.AddItem( file );

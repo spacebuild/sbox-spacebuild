@@ -10,7 +10,8 @@ namespace Sandbox
 		public static string CreateRectangleModel( Vector3 size, int texSize = 64 )
 		{
 			var key = $"rect_{size.x}_{size.y}_{size.z}_{texSize}";
-			if ( Models.ContainsKey( key ) ) {
+			if ( Models.ContainsKey( key ) )
+			{
 				return key;
 			}
 

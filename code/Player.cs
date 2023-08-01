@@ -16,7 +16,7 @@ public partial class SandboxPlayer : Player
 	/// </summary>
 	public ClothingContainer Clothing = new();
 
-	public delegate void OnSimulateHandler(SandboxPlayer player);
+	public delegate void OnSimulateHandler( SandboxPlayer player );
 	public event OnSimulateHandler OnSimulate;
 
 	public bool SuppressScrollWheelInventory { get; set; } = false;

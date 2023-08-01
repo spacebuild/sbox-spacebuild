@@ -16,20 +16,23 @@ public partial class Tool
 	{
 		Game.AssertClient();
 
-		if ( continuous ) {
+		if ( continuous )
+		{
 			var particle = Particles.Create( "particles/tool_hit.vpcf", hitPos );
 			particle.SetPosition( 0, hitPos );
 			particle.Destroy( false );
 		}
-		else {
-			if ( normal.Length > 0 ) {
+		else
+		{
+			if ( normal.Length > 0 )
+			{
 				var random = new Random();
 				var offset = normal * 0.66f; // A number of models have surfaces that differ from the physics hull, so let's add a small offset so the particle is always visible
 				var particle = Particles.Create( "particles/tool_select_indicator.vpcf", hitPos + offset );
 				particle.SetPosition( 0, hitPos + offset );
 				particle.SetForward( 1, normal );
 				particle.SetPosition( 2, new Vector3( // Actually a color. Blame Facepunch for calling it "SetPos".
-												 // These values are taken from Garry's Mod, and yet, they seem wrong...
+													  // These values are taken from Garry's Mod, and yet, they seem wrong...
 					random.Next( 10, 150 ) / 255.0f,
 					random.Next( 170, 220 ) / 255.0f,
 					random.Next( 240, 255 ) / 255.0f

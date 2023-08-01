@@ -72,7 +72,8 @@ public class InventoryBar : Panel
 		if ( Input.Pressed( "slot8" ) ) SetActiveSlot( inventory, 7 );
 		if ( Input.Pressed( "slot9" ) ) SetActiveSlot( inventory, 8 );
 
-		if ( !player.SuppressScrollWheelInventory && Input.MouseWheel != 0 ) {
+		if ( !player.SuppressScrollWheelInventory && Input.MouseWheel != 0 )
+		{
 			SwitchActiveSlot( inventory, -Input.MouseWheel );
 		}
 	}

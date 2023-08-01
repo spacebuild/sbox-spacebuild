@@ -32,8 +32,8 @@ public partial class SpawnMenu : Panel
 				tabs.SelectedButton = tabs.AddButtonActive( "#spawnmenu.props", ( b ) => props.SetClass( "active", b ) );
 
 				var models = body.AddChild<ModelList>();
-				tabs.AddButtonActive( "#spawnmenu.modellist", ( b ) => models.SetClass( "active", b ) );			
-				
+				tabs.AddButtonActive( "#spawnmenu.modellist", ( b ) => models.SetClass( "active", b ) );
+
 				var ents = body.AddChild<EntityList>();
 				tabs.AddButtonActive( "#spawnmenu.entities", ( b ) => ents.SetClass( "active", b ) );
 
@@ -73,13 +73,13 @@ public partial class SpawnMenu : Panel
 			var button = toollist.Add.Button( entry.Title );
 			button.SetClass( "active", entry.ClassName == ConsoleSystem.GetValue( "tool_current" ) );
 
-			button.AddEventListener( "onclick", () => 
+			button.AddEventListener( "onclick", () =>
 			{
 				SetActiveTool( entry.ClassName );
 
 				foreach ( var child in toollist.Children )
 					child.SetClass( "active", child == button );
-				ToolPanel.DeleteChildren(true);
+				ToolPanel.DeleteChildren( true );
 			} );
 		}
 	}
@@ -108,11 +108,14 @@ public partial class SpawnMenu : Panel
 	public override void Tick()
 	{
 		base.Tick();
-		if ( !IgnoreMenuButton ) {
-			if ( Input.Pressed( "menu" ) ) {
+		if ( !IgnoreMenuButton )
+		{
+			if ( Input.Pressed( "menu" ) )
+			{
 				IsOpen = true;
 			}
-			if ( menuWasPressed && !Input.Down( "menu" ) ) {
+			if ( menuWasPressed && !Input.Down( "menu" ) )
+			{
 				IsOpen = false;
 			}
 		}

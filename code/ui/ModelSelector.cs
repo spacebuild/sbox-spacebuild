@@ -24,11 +24,13 @@ namespace Sandbox.UI
 			Canvas.Layout.AutoColumns = true;
 			Canvas.Layout.ItemWidth = 64;
 			Canvas.Layout.ItemHeight = 64;
-			Canvas.OnCreateCell = ( cell, data ) => {
+			Canvas.OnCreateCell = ( cell, data ) =>
+			{
 				var file = (string)data;
 				var panel = cell.Add.Panel( "icon" );
 				var match = reModelMatGroup.Match( file );
-				panel.AddEventListener( "onclick", () => {
+				panel.AddEventListener( "onclick", () =>
+				{
 					var currentTool = ConsoleSystem.GetValue( "tool_current" );
 					ConsoleSystem.Run( $"{currentTool}_model", match.Groups[1] + ".vmdl" );
 					ConsoleSystem.Run( $"{currentTool}_materialgroup", match.Groups.Count > 2 ? match.Groups[2] : 0 );
@@ -38,8 +40,10 @@ namespace Sandbox.UI
 
 			var spawnList = spawnListNames.SelectMany( GetSpawnList );
 
-			foreach ( var file in spawnList ) {
-				if ( !FileSystem.Mounted.FileExists( file + "_c.png" ) ) {
+			foreach ( var file in spawnList )
+			{
+				if ( !FileSystem.Mounted.FileExists( file + "_c.png" ) )
+				{
 					continue;
 				}
 				Canvas.AddItem( file );
@@ -60,7 +64,8 @@ namespace Sandbox.UI
 
 		public static IEnumerable<string> GetSpawnList( string list )
 		{
-			if (!spawnListsLoaded) {
+			if ( !spawnListsLoaded )
+			{
 				InitializeSpawnlists();
 			}
 			return SpawnLists.GetOrCreate( list );
@@ -69,11 +74,12 @@ namespace Sandbox.UI
 		private static void InitializeSpawnlists()
 		{
 			spawnListsLoaded = true;
-			foreach (var file in FileSystem.Mounted.FindFile("/", "*.spawnlist", true)) {
-				var match = reSpawnlistFile.Match(file);
+			foreach ( var file in FileSystem.Mounted.FindFile( "/", "*.spawnlist", true ) )
+			{
+				var match = reSpawnlistFile.Match( file );
 				var listName = match.Groups[1].Value;
-				var models = FileSystem.Mounted.ReadAllText(file).Trim().Split('\n').Select(x => x.Trim());
-				SpawnLists.GetOrCreate(listName).AddRange(models);
+				var models = FileSystem.Mounted.ReadAllText( file ).Trim().Split( '\n' ).Select( x => x.Trim() );
+				SpawnLists.GetOrCreate( listName ).AddRange( models );
 			}
 		}
 	}

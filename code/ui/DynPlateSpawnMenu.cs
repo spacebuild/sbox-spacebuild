@@ -14,7 +14,8 @@ namespace Sandbox
 	{
 		public DynPlateSpawnMenu()
 		{
-			if ( Game.IsClient ) {
+			if ( Game.IsClient )
+			{
 				Log.Info( "[Client] DynPlateSpawnMenu created" );
 
 				SandboxHud.OnHudLoaded -= Initialize;
@@ -65,7 +66,8 @@ namespace Sandbox
 			Canvas.Layout.Columns = 16;
 			Canvas.Layout.ItemWidth = 64;
 			Canvas.Layout.ItemHeight = 64;
-			Canvas.OnCreateCell = ( cell, data ) => {
+			Canvas.OnCreateCell = ( cell, data ) =>
+			{
 				var entry = (DynPlateDimensions)data;
 				var btn = cell.Add.Button( $"{entry.x}x{entry.y}" );
 				btn.AddClass( "icon" );
@@ -74,11 +76,13 @@ namespace Sandbox
 				);
 			};
 
-			var storedSpawnListSerialized = FileSystem.Data.ReadAllText("dynplate_spawnlist.json");
-			if ( storedSpawnListSerialized != null ) {
+			var storedSpawnListSerialized = FileSystem.Data.ReadAllText( "dynplate_spawnlist.json" );
+			if ( storedSpawnListSerialized != null )
+			{
 				plates = JsonSerializer.Deserialize<HashSet<DynPlateDimensions>>( storedSpawnListSerialized );
 			}
-			else {
+			else
+			{
 				plates.Add( new DynPlateDimensions( 12, 12, 1, 64 ) );
 				plates.Add( new DynPlateDimensions( 12, 24, 1, 64 ) );
 				plates.Add( new DynPlateDimensions( 24, 24, 1, 64 ) );
@@ -110,17 +114,20 @@ namespace Sandbox
 			textureSizeContainer.Add.Label( "Texture Size", "input-label" );
 			var textureSizeEntry = textureSizeContainer.Add.MenuTextEntry( "64" );
 
-			var spawnButton = dimensionsContainer.Add.Button( "Spawn DynPlate", () => {
+			var spawnButton = dimensionsContainer.Add.Button( "Spawn DynPlate", () =>
+			{
 				if ( !int.TryParse( lengthEntry.Text, out int x )
 					|| !int.TryParse( widthEntry.Text, out int y )
 					|| !int.TryParse( heightEntry.Text, out int z )
-					|| !int.TryParse( textureSizeEntry.Text, out int texSize ) ) {
+					|| !int.TryParse( textureSizeEntry.Text, out int texSize ) )
+				{
 					return;
 				}
 				ConsoleSystem.Run( "spawn_dynplate", x, y, z, texSize );
 				var added = plates.Add( new DynPlateDimensions( x, y, z, texSize ) );
-				if ( added ) {
-					FileSystem.Data.WriteAllText("dynplate_spawnlist.json", JsonSerializer.Serialize( plates ));
+				if ( added )
+				{
+					FileSystem.Data.WriteAllText( "dynplate_spawnlist.json", JsonSerializer.Serialize( plates ) );
 					Canvas.SetItems( GetOrderedPlates() );
 				}
 			} );

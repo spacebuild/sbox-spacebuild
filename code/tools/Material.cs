@@ -10,7 +10,8 @@ namespace Sandbox.Tools
 		public static string _ { get; set; } = "";
 		public override void Simulate()
 		{
-			using ( Prediction.Off() ) {
+			using ( Prediction.Off() )
+			{
 
 				var tr = DoTrace();
 
@@ -20,14 +21,17 @@ namespace Sandbox.Tools
 				if ( tr.Entity is not ModelEntity modelEnt )
 					return;
 
-				if ( Input.Pressed( "attack1" ) ) {
+				if ( Input.Pressed( "attack1" ) )
+				{
 					modelEnt.SetClientMaterialOverride( GetConvarValue( "tool_material_material" ) );
 
 					CreateHitEffects( tr.EndPosition, tr.Normal );
 				}
-				else if ( Input.Pressed( "attack2" ) ) {
+				else if ( Input.Pressed( "attack2" ) )
+				{
 					modelEnt.SetMaterialGroup( modelEnt.GetMaterialGroup() + 1 );
-					if ( modelEnt.GetMaterialGroup() == 0 ) {
+					if ( modelEnt.GetMaterialGroup() == 0 )
+					{
 						// cycle back to start
 						modelEnt.SetMaterialGroup( 0 );
 					}
@@ -40,7 +44,8 @@ namespace Sandbox.Tools
 		[ClientRpc]
 		public static void SetEntityMaterialOverride( ModelEntity modelEnt, string material )
 		{
-			if ( Game.IsClient ) {
+			if ( Game.IsClient )
+			{
 				modelEnt?.SceneObject?.SetMaterialOverride( Material.Load( material ) );
 			}
 		}
