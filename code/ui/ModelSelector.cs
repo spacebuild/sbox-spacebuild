@@ -9,7 +9,7 @@ namespace Sandbox.UI
 	[Library]
 	public partial class ModelSelector : Panel
 	{
-		private static Dictionary<string, List<string>> SpawnLists = new();
+		private static Dictionary<string, HashSet<string>> SpawnLists = new();
 		private static bool spawnListsLoaded = false;
 		VirtualScrollPanel Canvas;
 
@@ -59,7 +59,7 @@ namespace Sandbox.UI
 		}
 		public static void AddToSpawnlist( string list, IEnumerable<string> models )
 		{
-			SpawnLists.GetOrCreate( list ).AddRange( models );
+			SpawnLists.GetOrCreate( list ).UnionWith( models );
 		}
 
 		public static IEnumerable<string> GetSpawnList( string list )
@@ -79,7 +79,7 @@ namespace Sandbox.UI
 				var match = reSpawnlistFile.Match( file );
 				var listName = match.Groups[1].Value;
 				var models = FileSystem.Mounted.ReadAllText( file ).Trim().Split( '\n' ).Select( x => x.Trim() );
-				SpawnLists.GetOrCreate( listName ).AddRange( models );
+				AddToSpawnlist( listName, models );
 			}
 		}
 	}
