@@ -7,7 +7,7 @@
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
-  "Resources": "*.vmdl_c.png\nentity/*.png",
+  "Resources": "*.vmdl_c.png\nentity/*.png\n*.spawnlist\n",
   "MenuResources": "/menu/*",
   "HasCode": true,
   "CodePath": "code",
