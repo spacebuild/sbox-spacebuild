@@ -3,7 +3,7 @@
   "Type": "game",
   "Org": "wiremod",
   "Ident": "sandboxplus",
-  "Tags": "sandbox spawnmenu tools constraints",
+  "Tags": "sandbox spawnmenu tools constraints wirebox",
   "Schema": 1,
   "HasAssets": true,
   "AssetsPath": "",
