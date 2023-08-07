@@ -14,8 +14,7 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 ### Extensiblility
 
 - `IStopUsing` entity interface
-- `SandboxPlayer.OnSimulate` event, so ents can subscribe to keypresses
-- Sandbox.Hooks.Entities.OnSpawned event, Sandbox.Hooks.Undos.OnAddUndo event
+- [Many new events](EVENTS.md) (aiming to reproduce many of Gmod 1's), including "entity.spawned" event, "undo.add" event
 
 ## Addons for SandboxPlus
 
@@ -26,3 +25,4 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 ## Contributing
 
 PR's are appreciated!
+Message @Nebual on Discord with any questions :)

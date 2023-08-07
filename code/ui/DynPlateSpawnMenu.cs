@@ -10,31 +10,6 @@ using Sandbox.UI.Tests;
 namespace Sandbox
 {
 	[Library]
-	public class DynPlateSpawnMenu
-	{
-		public DynPlateSpawnMenu()
-		{
-			if ( Game.IsClient )
-			{
-				Log.Info( "[Client] DynPlateSpawnMenu created" );
-
-				SandboxHud.OnHudLoaded -= Initialize;
-				SandboxHud.OnHudLoaded += Initialize;
-			}
-		}
-		public void Initialize()
-		{
-			var plateList = SpawnMenu.Instance.SpawnMenuLeftBody.AddChild<PlateList>();
-			SpawnMenu.Instance.SpawnMenuLeftTabs
-				.AddButtonActive( "DynPlates", ( b ) => plateList.SetClass( "active", b ) );
-		}
-
-		public void Dispose()
-		{
-		}
-	}
-
-	[Library]
 	public partial class PlateList : Panel
 	{
 		private struct DynPlateDimensions
@@ -57,6 +32,15 @@ namespace Sandbox
 		}
 		private VirtualScrollPanel Canvas;
 		private HashSet<DynPlateDimensions> plates = new();
+
+		[Event( "sandbox.hud.loaded" )]
+		public static void Initialize()
+		{
+			Log.Info( "DynPlateSpawnMenu created" );
+			var plateList = SpawnMenu.Instance.SpawnMenuLeftBody.AddChild<PlateList>();
+			SpawnMenu.Instance.SpawnMenuLeftTabs
+				.AddButtonActive( "DynPlates", ( b ) => plateList.SetClass( "active", b ) );
+		}
 
 		public PlateList()
 		{

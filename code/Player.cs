@@ -137,7 +137,8 @@ public partial class SandboxPlayer : Player
 
 		TickPlayerUse();
 		SimulateActiveChild( cl, ActiveChild );
-		OnSimulate?.Invoke(this);
+		OnSimulate?.Invoke( this );
+		Event.Run( "player.simulate", this );
 
 		if ( Input.Pressed( "view" ) )
 		{

@@ -86,7 +86,7 @@ namespace Sandbox.Tools
 
 				ent.SetModel( GetConvarValue( "tool_thruster_model" ) );
 
-				Sandbox.Hooks.Entities.TriggerOnSpawned( ent, Owner );
+				Event.Run( "entity.spawned", ent, Owner );
 			}
 		}
 

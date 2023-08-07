@@ -6,8 +6,6 @@ using Sandbox.UI;
 public partial class SandboxHud : HudEntity<RootPanel>
 {
 	public static SandboxHud Instance;
-
-	public static event Action OnHudLoaded;
 	public SandboxHud()
 	{
 		if ( !Game.IsClient )
@@ -26,7 +24,7 @@ public partial class SandboxHud : HudEntity<RootPanel>
 		RootPanel.AddChild<CurrentTool>();
 		RootPanel.AddChild<SpawnMenu>();
 		RootPanel.AddChild<Crosshair>();
-		OnHudLoaded?.Invoke();
+		Event.Run( "sandbox.hud.loaded" );
 		HotReloadTool();
 	}
 

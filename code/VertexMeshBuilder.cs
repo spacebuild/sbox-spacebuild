@@ -45,7 +45,7 @@ namespace Sandbox
 			TraceResult trace = Trace.Ray( pawn.EyePosition, pawn.EyePosition + pawn.EyeRotation.Forward * 5000.0f ).UseHitboxes().Ignore( pawn ).Run();
 
 			entity.Position = trace.EndPosition + trace.Normal;
-			Sandbox.Hooks.Entities.TriggerOnSpawned( entity, ConsoleSystem.Caller.Pawn );
+			Event.Run( "entity.spawned", entity, ConsoleSystem.Caller.Pawn );
 		}
 
 		public static MeshEntity SpawnEntity( int length, int width, int height, int texScale = 64 )

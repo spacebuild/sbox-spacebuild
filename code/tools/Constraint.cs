@@ -308,7 +308,7 @@ namespace Sandbox.Tools
 		{
 			joint.OnBreak += () => { undo(); };
 
-			Sandbox.Hooks.Undos.AddUndo( undo, Owner );
+			Event.Run( "undo.add", undo, Owner );
 
 			if ( WireboxSupport && Input.Down( "walk" ) )
 			{

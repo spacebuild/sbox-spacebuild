@@ -101,7 +101,7 @@ public partial class LightTool : BaseTool
 				spring.Remove();
 			};
 
-			Sandbox.Hooks.Entities.TriggerOnSpawned( light, Owner );
+			Event.Run( "entity.spawned", light, Owner );
 		}
 	}
 }
