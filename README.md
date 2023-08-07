@@ -8,6 +8,7 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 - Constraint tool: an omni-tool with all your classic Gmod constraints (weld/axis/rope/elastic/slider/ballsocket)
 - Material tool
 - Toolgun model (wip)
+- Undo/Redo System
 - DynPlates spawnmenu: like PHX, but dynamic, fully customizable sizes using procedural meshes
 - UI tool panels, including ModelSelector with extendable `.spawnlist`'s
 
@@ -19,7 +20,7 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 ## Addons for SandboxPlus
 
 - [Wirebox](https://github.com/wiremod/wirebox), playable as [Sandbox With Wirebox](https://asset.party/wiremod/sandboxpluswire)
-- [Undo Manager](https://github.com/Nebual/undo-manager) (outdated, will probably just add to the base gamemode)
+- ~~[Undo Manager](https://github.com/Nebual/undo-manager) (outdated, will probably just add to the base gamemode)~~ now part of SandboxPlus
 - [Napkins-Chat](https://github.com/Nebual/napkins-chat) (outdated)
 
 ## Contributing
