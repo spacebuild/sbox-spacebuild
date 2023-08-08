@@ -39,7 +39,7 @@ public partial class SandboxPlayer : Player
 	{
 		SetModel( "models/citizen/citizen.vmdl" );
 
-		Controller = new WalkController
+		Controller = new PlayerWalkController
 		{
 			WalkSpeed = 60f,
 			DefaultSpeed = 180.0f

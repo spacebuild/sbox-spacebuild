@@ -5,6 +5,7 @@ It closely follows [Facepunch's Sandbox gamemode](https://github.com/Facepunch/s
 ## Improvements over Facepunch/sandbox:
 
 ### Gameplay
+
 - Constraint tool: an omni-tool with all your classic Gmod constraints (weld/axis/rope/elastic/slider/ballsocket)
 - Material tool
 - Toolgun model (wip)

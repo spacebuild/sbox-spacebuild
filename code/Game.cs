@@ -32,7 +32,7 @@ partial class SandboxGame : GameManager
 		}
 
 		ReloadManager.ReloadAutoload();
-
+		Event.Run( "game.init" );
 	}
 	~SandboxGame()
 	{

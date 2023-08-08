@@ -144,7 +144,7 @@ public partial class Weapon : BaseWeapon, IUse
 
 		var trace = Trace.Ray( start, end )
 				.UseHitboxes()
-				.WithAnyTags( "solid", "player", "npc", "glass" )
+				.WithAnyTags( "solid", "player", "npc", "glass", "eventhorizon" )
 				.Ignore( this )
 				.Size( radius );
 
@@ -168,7 +168,7 @@ public partial class Weapon : BaseWeapon, IUse
 	{
 		var trace = Trace.Ray( start, end )
 				.UseHitboxes()
-				.WithAnyTags( "solid", "player", "npc", "glass" )
+				.WithAnyTags( "solid", "player", "npc", "glass", "eventhorizon" )
 				.Ignore( this );
 
 		var tr = trace.Run();
@@ -205,6 +205,10 @@ public partial class Weapon : BaseWeapon, IUse
 		//
 		foreach ( var tr in TraceBullet( pos, pos + forward * 5000, bulletSize ) )
 		{
+			var eventParams = new ShootBulletParams { weapon = this, tr = tr, pos = pos, dir = dir, spread = spread, force = force, damage = damage, bulletSize = bulletSize };
+			Event.Run( "weapon.shootbullet", eventParams );
+			if ( eventParams.preventDefault ) continue;
+
 			tr.Surface.DoBulletImpact( tr );
 
 			if ( !Game.IsServer ) continue;
@@ -248,4 +252,17 @@ public partial class Weapon : BaseWeapon, IUse
 			ShootBullet( ray.Position, ray.Forward, spread, force / numBullets, damage, bulletSize );
 		}
 	}
+}
+
+public class ShootBulletParams
+{
+	public Weapon weapon;
+	public TraceResult tr;
+	public Vector3 pos;
+	public Vector3 dir;
+	public float spread;
+	public float force;
+	public float damage;
+	public float bulletSize;
+	public bool preventDefault;
 }

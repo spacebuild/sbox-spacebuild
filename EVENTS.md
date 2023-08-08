@@ -1,5 +1,7 @@
 # Custom Events provided by SandboxPlus
 
+- "game.init": run on initial addon load
+- "sandbox.hud.loaded": run after the Sandbox.Hud has loaded, eg. for extending the spawnmenu
 - "entity.spawned"
   - `Event.Run( "entity.spawned", IEntity spawned, IEntity owner )`
 - "undo.add"
@@ -10,6 +12,14 @@
   - Takes no parameters; you're expected to call `ModelSelector.AddToSpawnlist( "screen", string[] models)`
 - "player.simulate"
   - `Event.Run( "player.simulate", SandboxPlayer player )`
-- "sandbox.hud.loaded"
+- "trace.prepare": used to modify Player movement traces
+  - ```
+    [Event( "trace.prepare" )]
+    public static void OnTracePrepare( Trace trace, Entity ent, Action<Trace> returnFn ) {
+        returnFn(trace.WithoutTags( StargateTags.InBufferFront ) );
+    }
+    ```
+- "weapon.shootbullet": used to allow overriding bullet behaviour, such as when shooting through a Stargate
+  - Takes a single ShootBulletParams parameter. Writing `params.preventDefault = true` will disable the default bullet behaviour.
 
 For more usage examples, see [Wirebox](https://github.com/wiremod/wirebox).
