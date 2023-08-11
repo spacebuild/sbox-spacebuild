@@ -119,8 +119,6 @@ public partial class SpawnMenu : Panel
 
 		Parent.SetClass( "spawnmenuopen", Input.Down( "menu" ) );
 
-
-
 	}
 
 	void UpdateActiveTool()
