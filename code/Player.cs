@@ -66,8 +66,6 @@ public partial class SandboxPlayer : Player
 		Inventory.Add( new Flashlight() );
 		Inventory.Add( new Fists() );
 
-        Sandbox.Services.Stats.Increment( Client, "respawn", 1 );
-
 		base.Respawn();
 	}
 

@@ -112,7 +112,6 @@ partial class SandboxGame : GameManager
 			ent.SetupPhysicsFromOBB( PhysicsMotionType.Dynamic, ent.CollisionBounds.Mins, ent.CollisionBounds.Maxs );
 		}
 		Event.Run( "entity.spawned", ent, owner );
-		Sandbox.Services.Stats.Increment( owner.Client, "spawn.model", 1, modelname );
 	}
 
 	static async Task<string> SpawnPackageModel( string packageName, Vector3 pos, Rotation rotation, Entity source )

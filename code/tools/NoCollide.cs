@@ -2,7 +2,7 @@
 
 namespace Sandbox.Tools
 {
-	[Library( "no_collide", Title = "No Collide", Description = "Removes Collison for props tag with the tool", Group = "construction" )]
+	[Library( "no_collide", Title = "No Collide All", Description = "Removes Collison for props tag with the tool", Group = "construction" )]
 	public partial class NoCollide : BaseTool
 	{
 		public override void Simulate()
