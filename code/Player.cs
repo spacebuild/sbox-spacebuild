@@ -62,8 +62,11 @@ public partial class SandboxPlayer : Player
 		Inventory.Add( new GravGun() );
 		Inventory.Add( new Tool() );
 		Inventory.Add( new Pistol() );
+		Inventory.Add( new MP5() );
 		Inventory.Add( new Flashlight() );
 		Inventory.Add( new Fists() );
+
+        Sandbox.Services.Stats.Increment( Client, "respawn", 1 );
 
 		base.Respawn();
 	}
@@ -148,12 +151,17 @@ public partial class SandboxPlayer : Player
 		if ( Input.Pressed( "drop" ) )
 		{
 			var dropped = Inventory.DropActive();
-			if ( dropped != null )
+			if ( dropped.IsValid() )
 			{
-				dropped.PhysicsGroup.ApplyImpulse( Velocity + EyeRotation.Forward * 500.0f + Vector3.Up * 100.0f, true );
-				dropped.PhysicsGroup.ApplyAngularImpulse( Vector3.Random * 100.0f, true );
-
 				timeSinceDropped = 0;
+
+				if ( dropped.PhysicsGroup.IsValid() )
+				{
+					dropped.PhysicsGroup.Velocity = 0;
+					dropped.PhysicsGroup.AngularVelocity = 0;
+					dropped.PhysicsGroup.ApplyImpulse( Velocity + EyeRotation.Forward * 500.0f + Vector3.Up * 100.0f, true );
+					dropped.PhysicsGroup.ApplyAngularImpulse( Vector3.Random * 100.0f, true );
+				}
 			}
 		}
 

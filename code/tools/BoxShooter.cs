@@ -47,6 +47,7 @@
 			ent.Velocity = Owner.EyeRotation.Forward * 1000;
 
 			Event.Run( "entity.spawned", ent, Owner );
+			Services.Stats.Increment( Owner.Client, "box.shoot", 1 );
 		}
 	}
 }
