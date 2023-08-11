@@ -94,6 +94,8 @@ public partial class SandboxPlayer : Player
 
 		Inventory.DropActive();
 		Inventory.DeleteContents();
+
+		Event.Run( "player.killed", this );
 	}
 
 	public override void TakeDamage( DamageInfo info )
