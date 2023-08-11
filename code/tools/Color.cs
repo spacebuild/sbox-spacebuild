@@ -15,19 +15,37 @@ namespace Sandbox.Tools
 				var startPos = Owner.EyePosition;
 				var dir = Owner.EyeRotation.Forward;
 
-				if ( !Input.Pressed( "attack1" ) ) return;
+				var color = Color.Random;
 
-				var tr = DoTrace();
+				if ( Input.Pressed( "attack1" ) )
+				{
+					var tr = DoTrace();
 
-				if ( !tr.Hit || !tr.Entity.IsValid() )
-					return;
+					if ( !tr.Hit || !tr.Entity.IsValid() )
+						return;
 
-				if ( tr.Entity is not ModelEntity modelEnt )
-					return;
+					if ( tr.Entity is not ModelEntity modelEnt )
+						return;
 
-				modelEnt.RenderColor = Color.Random;
+					modelEnt.RenderColor = Color.Random;
 
-				CreateHitEffects( tr.EndPosition );
+					CreateHitEffects( tr.EndPosition );
+				}
+				//prob awful way of doing it.
+				if ( Input.Pressed( "attack2" ) )
+				{
+					var tr = DoTrace();
+
+					if ( !tr.Hit || !tr.Entity.IsValid() )
+						return;
+
+					if ( tr.Entity is not ModelEntity modelEnt )
+						return;
+
+					modelEnt.RenderColor = Color.White;
+
+					CreateHitEffects( tr.EndPosition );
+				}
 			}
 		}
 	}

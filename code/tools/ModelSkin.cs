@@ -27,7 +27,6 @@ namespace Sandbox.Tools
 
 				if ( modelEnt.MaterialGroupCount == 0 )
 				{
-
 					return;
 				}
 				else
