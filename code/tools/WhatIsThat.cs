@@ -26,11 +26,20 @@ namespace Sandbox.Tools
 
 					if ( attached && tr.Entity is not Prop )
 						return;
-					var prop = tr.Entity as Prop;
 
 					CreateHitEffects( tr.EndPosition, tr.Normal );
+					var message = $"That is a: {tr.Entity.ClassName} ({tr.Entity.NetworkIdent})";
+					var prop = tr.Entity as Prop;
+					if ( prop.IsValid() )
+					{
+						message += $" {prop.Model.Name}";
+						if ( prop.PhysicsBody.IsValid() )
+						{
+							message += $" weighing {prop.PhysicsBody.Mass}";
+						}
+					}
 					// todo: how do print to chat/etc?
-					Log.Info( "That is a: " + prop.Model + " (" + prop.NetworkIdent + ") weighing " + prop.PhysicsBody.Mass );
+					Log.Info( message );
 				}
 			}
 		}
