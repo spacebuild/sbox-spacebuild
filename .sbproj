@@ -143,7 +143,10 @@
     "Public": true,
     "ReplaceTags": "sandbox game dynamic spawnmenu physgun",
     "CsProjName": "",
-    "ControlModes": {},
+    "ControlModes": {
+      "Keyboard": true,
+      "Gamepad": true
+    },
     "InputSettings": {
       "Actions": [
         {
@@ -316,6 +319,11 @@
           "Name": "Noclip",
           "KeyboardCode": "N",
           "GroupName": "Movement"
+        },
+        {
+          "Name": "Undo",
+          "KeyboardCode": "Z",
+          "GroupName": "Other"
         }
       ]
     },
