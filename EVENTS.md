@@ -10,6 +10,8 @@
     Should return the string to show in the toast, or empty string if the undoable is redundant and should be skipped over (eg. if the weld was already removed)
 - "spawnlists.initialize"
   - Takes no parameters; you're expected to call `ModelSelector.AddToSpawnlist( "screen", string[] models)`
+- "player.cantool": called by traces.
+  - Takes a single CanToolParams parameter. Writing `params.preventDefault = true` will prevent the tool action.
 - "player.simulate"
   - `Event.Run( "player.simulate", SandboxPlayer player )`
 - "player.killed"

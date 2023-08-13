@@ -113,6 +113,7 @@ public partial class PhysGun : Carriable
 			.Ignore( this )
 			.OnTraceEvent( Owner ) // SandboxPlus addition for Stargate support
 			.Run();
+		tr = CanToolParams.RunCanTool( Owner as Player, ClassName, tr );
 
 		if ( !tr.Hit || !tr.Entity.IsValid() || tr.Entity.IsWorld ) return;
 		if ( tr.Entity.Tags.Has( PhysgunBlockTag ) ) return;
@@ -152,6 +153,7 @@ public partial class PhysGun : Carriable
 			.Ignore( this )
 			.OnTraceEvent( Owner ) // SandboxPlus addition for Stargate support
 			.Run();
+		tr = CanToolParams.RunCanTool( Owner as Player, ClassName, tr );
 
 		if ( !tr.Hit || !tr.Entity.IsValid() || tr.Entity.IsWorld || tr.StartedSolid ) return;
 		if ( tr.Entity.Tags.Has( PhysgunBlockTag ) ) return;

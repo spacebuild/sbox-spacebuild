@@ -11,6 +11,7 @@ public static class EntityOwnershipExtensions
 	}
 	public static void SetPlayerOwner( this Entity ent, Player player )
 	{
+		Game.AssertServer();
 		PlayerOwners[ent] = player;
 	}
 }
