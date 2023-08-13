@@ -37,6 +37,10 @@ namespace Sandbox.Tools
 						{
 							message += $" weighing {prop.PhysicsBody.Mass}";
 						}
+						if ( prop.GetPlayerOwner().IsValid() )
+						{
+							message += $" owned by {prop.GetPlayerOwner()}";
+						}
 					}
 					// todo: how do print to chat/etc?
 					Log.Info( message );
