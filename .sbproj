@@ -339,6 +339,16 @@
         "Addons": "katka.stargateaddon#local; wiremod.wireboxaddon;",
         "PreLaunchCommand": "",
         "PostLaunchCommand": ""
+      },
+      {
+        "Name": "No Addons",
+        "GameIdent": "wiremod.sandboxplus#local",
+        "MapName": "facepunch.square",
+        "MaxPlayers": 1,
+        "GameSettings": {},
+        "Addons": "",
+        "PreLaunchCommand": "",
+        "PostLaunchCommand": ""
       }
     ]
   }

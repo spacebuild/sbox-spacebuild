@@ -1,6 +1,7 @@
 # Custom Events provided by SandboxPlus
 
 - "game.init": run on initial addon load
+- "package.mounted": run when a package is async mounted via `spawnpackage`
 - "sandbox.hud.loaded": run after the Sandbox.Hud has loaded, eg. for extending the spawnmenu
 - "entity.spawned"
   - `Event.Run( "entity.spawned", IEntity spawned, IEntity owner )`
