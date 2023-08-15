@@ -27,8 +27,9 @@ CurrentTool
     left: 0;
     margin-top: 100px;
     margin-left: 100px;
+    min-width: 440px;
     background-color: rgba(#111, 0.5);
-    border-left: 10px solid $blue;
+    border-left: 8px solid $blue;
     padding: 20px 50px;
     flex-direction: column;
     opacity: 0.0;
