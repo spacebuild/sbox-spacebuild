@@ -3,7 +3,7 @@ using Sandbox;
 
 public static class EntityOwnershipExtensions
 {
-	private static Dictionary<Entity, Player> PlayerOwners { get; set; } = new();
+	public static Dictionary<Entity, Player> PlayerOwners { get; set; } = new();
 	public static Player GetPlayerOwner( this Entity ent )
 	{
 		Game.AssertServer();

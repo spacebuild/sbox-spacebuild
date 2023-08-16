@@ -27,4 +27,11 @@
 - "weapon.shootbullet": used to allow overriding bullet behaviour, such as when shooting through a Stargate
   - Takes a single ShootBulletParams parameter. Writing `params.preventDefault = true` will disable the default bullet behaviour.
 
+# Custom Concommands
+
+- `weapon_switch physgun`
+- `spawnpackage wiremod.sbox_tool_auto` - extended to work on runtime addons beyond just 'npc' + 'entity', see `Event("package.mounted")`
+- `undo` + `redo`
+- `reload_hud`, though it typically hotreloads nicely in the editor
+
 For more usage examples, see [Wirebox](https://github.com/wiremod/wirebox).

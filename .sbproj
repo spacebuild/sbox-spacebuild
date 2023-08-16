@@ -205,6 +205,11 @@
           "GroupName": "Actions"
         },
         {
+          "Name": "attack3",
+          "KeyboardCode": "mouse3",
+          "GroupName": "Actions"
+        },
+        {
           "Name": "reload",
           "KeyboardCode": "r",
           "GamepadCode": "X",

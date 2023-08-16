@@ -123,6 +123,12 @@ partial class Tool : Carriable
 		anim.Handedness = CitizenAnimationHelper.Hand.Right;
 		anim.AimBodyWeight = 1.0f;
 	}
+
+	public static void SetActiveTool( string toolId )
+	{
+		ConsoleSystem.Run( "tool_current", toolId );
+		InventoryBar.SetActiveSlot( "weapon_tool" );
+	}
 }
 
 namespace Sandbox.Tools
