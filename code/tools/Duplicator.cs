@@ -1,4 +1,5 @@
-﻿using Sandbox.UI;
+﻿using Sandbox.Physics;
+using Sandbox.UI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Text.Json;
 
 namespace Sandbox
 {
-	public interface Duplicatable
+	public interface IDuplicatable
 	{
 		// Called while copying to store entity data
 		public virtual List<object> PreDuplicatorCopy() { return new List<object>(); }
@@ -235,26 +236,26 @@ namespace Sandbox
 			public DuplicatorItem( Entity ent, Transform origin )
 			{
 				index = ent.NetworkIdent;
-				className = ent.ClassInfo.Name;
+				className = ent.ClassName;
 				if ( ent is Prop p )
-					model = p.GetModel().Name;
+					model = p.Model.Name;
 				else
 					model = "";
 				position = origin.PointToLocal( ent.Position );
 				rotation = origin.RotationToLocal( ent.Rotation );
-				if ( ent is Duplicatable dupe )
+				if ( ent is IDuplicatable dupe )
 					userData = dupe.PreDuplicatorCopy();
 			}
 
 			public Entity Spawn( Transform origin )
 			{
-				Entity ent = Library.Create<Entity>( className );
+				Entity ent = TypeLibrary.Create<Entity>( className );
 				ent.Position = origin.PointToWorld( position );
 				ent.Rotation = origin.RotationToWorld( rotation );
 				//ent.PhysicsEnabled = ;
 				//ent.EnableSolidCollisions =;
 				//ent.Massless = ;
-				if ( ent is Duplicatable dupe )
+				if ( ent is IDuplicatable dupe )
 					dupe.PostDuplicatorPaste( userData );
 				return ent;
 			}
@@ -271,10 +272,10 @@ namespace Sandbox
 			public DuplicatorConstraint() { }
 			public DuplicatorConstraint( PhysicsJoint joint )
 			{
-				anchor1 = joint.Anchor1;
-				anchor2 = joint.Anchor2;
-				entIndex1 = joint.Body1.Entity.NetworkIdent;
-				entIndex2 = joint.Body2.Entity.NetworkIdent;
+				anchor1 = joint.Point1.LocalPosition;
+				anchor2 = joint.Point2.LocalPosition;
+				entIndex1 = joint.Body1.GetEntity().NetworkIdent;
+				entIndex2 = joint.Body2.GetEntity().NetworkIdent;
 			}
 
 			public void Spawn( Dictionary<int, Entity> spawnedEnts )
@@ -290,7 +291,7 @@ namespace Sandbox
 		public List<DuplicatorConstraint> joints = new List<DuplicatorConstraint>();
 		public void Add( Entity ent, Transform origin )
 		{
-			if ( ent is Duplicatable || AllowedClasses.Contains( ent.ClassInfo.Name ) )
+			if ( ent is IDuplicatable || AllowedClasses.Contains( ent.ClassName ) )
 				entities.Add( new DuplicatorItem( ent, origin ) );
 		}
 		public void Add( PhysicsJoint joint )
@@ -300,7 +301,7 @@ namespace Sandbox
 		public List<DuplicatorGhost> getGhosts()
 		{
 			List<DuplicatorGhost> ret = new();
-			foreach(DuplicatorItem item in entities)
+			foreach ( DuplicatorItem item in entities )
 			{
 				ret.Add( new DuplicatorGhost( item.position, item.rotation, item.model ) );
 			}
@@ -349,7 +350,7 @@ namespace Sandbox
 				{
 					foreach ( Entity ent in entList.Values )
 					{
-						if ( ent is Duplicatable dupe )
+						if ( ent is IDuplicatable dupe )
 							dupe.PostDuplicatorPasteEntities( entList );
 					}
 				}
@@ -372,7 +373,7 @@ namespace Sandbox
 			{
 				foreach ( Entity ent in entList.Values )
 				{
-					if ( ent is Duplicatable dupe )
+					if ( ent is IDuplicatable dupe )
 						dupe.PostDuplicatorPasteDone();
 				}
 				return false;
@@ -401,7 +402,7 @@ namespace Sandbox
 		public Vector3 position;
 		public Rotation rotation;
 		public string model;
-		public DuplicatorGhost(Vector3 pos, Rotation rot, string model_)
+		public DuplicatorGhost( Vector3 pos, Rotation rot, string model_ )
 		{
 			position = pos;
 			rotation = rot;
@@ -417,11 +418,11 @@ namespace Sandbox.Tools
 	{
 		// Default behavior will be restoring the freeze state of entities to what they were when copied
 		[ConVar.ClientData( "tool_duplicator_freeze_all", Help = "Freeze all entities during pasting", Saved = true )]
-		public bool FreezeAllAfterPaste { get; set; } = false;
+		public static bool FreezeAllAfterPaste { get; set; } = false;
 		[ConVar.ClientData( "tool_duplicator_unfreeze_all", Help = "Unfreeze all entities after pasting", Saved = true )]
-		public bool UnfreezeAllAfterPaste { get; set; } = false;
+		public static bool UnfreezeAllAfterPaste { get; set; } = false;
 		[ConVar.ClientData( "tool_duplicator_area_size", Help = "Area copy size", Saved = true )]
-		public float AreaSize { get; set; } = 250;
+		public static float AreaSize { get; set; } = 250;
 
 		public static Dictionary<Player, DuplicatorPasteJob> Pasting = new Dictionary<Player, DuplicatorPasteJob>();
 
@@ -453,18 +454,18 @@ namespace Sandbox.Tools
 				{
 					for ( int i = 0, end = ent.PhysicsGroup.BodyCount; i < end; ++i )
 					{
-						Entity e = ent.PhysicsGroup.GetBody( i ).Entity;
+						Entity e = ent.PhysicsGroup.GetBody( i ).GetEntity();
 						if ( entsChecked.Add( e ) )
 							entsToCheck.Push( e );
 					}
-					foreach(PhysicsJoint j in GetJoints(ent))
+					foreach ( PhysicsJoint j in GetJoints( ent ) )
 					{
-						if( jointsChecked.Add(j) )
+						if ( jointsChecked.Add( j ) )
 						{
-							if ( entsChecked.Add( j.Body1.Entity ) )
-								entsToCheck.Push( j.Body1.Entity );
-							if ( entsChecked.Add( j.Body2.Entity ) )
-								entsToCheck.Push( j.Body2.Entity );
+							if ( entsChecked.Add( j.Body1.GetEntity() ) )
+								entsToCheck.Push( j.Body1.GetEntity() );
+							if ( entsChecked.Add( j.Body2.GetEntity() ) )
+								entsToCheck.Push( j.Body2.GetEntity() );
 						}
 					}
 				}
@@ -475,16 +476,7 @@ namespace Sandbox.Tools
 
 		List<PhysicsJoint> GetJoints( Entity ent )
 		{
-			List<PhysicsJoint> ret = new();
-			PhysicsGroup group = ent.PhysicsGroup;
-			if ( group is not null )
-			{
-				for ( int i = 0, end = group.JointCount; i < end; ++i )
-				{
-					ret.Add( group.GetJoint( i ) );
-				}
-			}
-			return ret;
+			return ent.PhysicsGroup.Joints.ToList();
 		}
 		List<PhysicsJoint> GetJoints( List<Entity> ents )
 		{
@@ -494,9 +486,9 @@ namespace Sandbox.Tools
 				PhysicsGroup group = ent.PhysicsGroup;
 				if ( group is not null )
 				{
-					for ( int i = 0, end = group.JointCount; i < end; ++i )
+					foreach ( PhysicsJoint j in group.Joints )
 					{
-						jointsChecked.Add( group.GetJoint( i ) );
+						jointsChecked.Add( j );
 					}
 				}
 			}
@@ -509,10 +501,10 @@ namespace Sandbox.Tools
 		[Net, Predicted] bool AreaCopy { get; set; } = false;
 		[Net, Predicted] Transform Origin { get; set; }
 
-		static DuplicatorTool getTool( Entity player )
+		static DuplicatorTool getTool( IEntity player )
 		{
 			if ( player == null ) return null;
-			var inventory = player.Inventory;
+			var inventory = (player as Player).Inventory;
 			if ( inventory == null ) return null;
 			if ( inventory.Active is not Tool tool ) return null;
 			if ( tool == null ) return null;
@@ -523,7 +515,7 @@ namespace Sandbox.Tools
 		[ClientRpc]
 		public static void SetupGhostsRpc( List<DuplicatorGhost> ghosts )
 		{
-			getTool( Local.Pawn )?.SetupGhosts( ghosts );
+			getTool( Game.LocalPawn )?.SetupGhosts( ghosts );
 		}
 		public void SetupGhosts( List<DuplicatorGhost> ghosts )
 		{
@@ -539,33 +531,33 @@ namespace Sandbox.Tools
 			}
 		}
 
-		[ClientCmd( "tool_duplicator_openfile", Help = "Loads a duplicator file" )]
+		[ConCmd.Client( "tool_duplicator_openfile", Help = "Loads a duplicator file" )]
 		static void OpenFile( string path )
 		{
 			ReceiveDuplicatorDataCmd( FileSystem.Data.ReadAllText( path ) );
 		}
 
-		[ClientCmd( "tool_duplicator_savefile", Help = "Saves a duplicator file" )]
+		[ConCmd.Client( "tool_duplicator_savefile", Help = "Saves a duplicator file" )]
 		static void SaveFile( string path )
 		{
 			SaveDuplicatorDataCmd( path );
 		}
 
 		[ClientRpc]
-		public static void SaveFileData(string path, byte[] data)
+		public static void SaveFileData( string path, byte[] data )
 		{
-			using (Stream s = FileSystem.Data.OpenWrite( path ))
+			using ( Stream s = FileSystem.Data.OpenWrite( path ) )
 			{
 				s.Write( data, 0, data.Length );
 			}
 		}
 
-		[ServerCmd]
+		[ConCmd.Server]
 		static void SaveDuplicatorDataCmd( string path )
 		{
 			getTool( ConsoleSystem.Caller.Pawn )?.SaveDuplicatorData( path );
 		}
-		[ServerCmd]
+		[ConCmd.Server]
 		static void ReceiveDuplicatorDataCmd( string data )
 		{
 			getTool( ConsoleSystem.Caller.Pawn )?.ReceiveDuplicatorData( data );
@@ -602,8 +594,8 @@ namespace Sandbox.Tools
 		{
 			DuplicatorData copied = new DuplicatorData();
 
-			var floorTr = Trace.Ray( tr.EndPos, tr.EndPos + new Vector3( 0, 0, -1e6f ) ).WorldOnly().Run();
-			Transform origin = new Transform( floorTr.Hit ? floorTr.EndPos : tr.EndPos );
+			var floorTr = Trace.Ray( tr.EndPosition, tr.EndPosition + new Vector3( 0, 0, -1e6f ) ).WorldOnly().Run();
+			Transform origin = new Transform( floorTr.Hit ? floorTr.EndPosition : tr.EndPosition );
 			PasteRotationOffset = 0;
 			PasteHeightOffset = 0;
 
@@ -611,7 +603,7 @@ namespace Sandbox.Tools
 			{
 				AreaCopy = false;
 				List<Entity> ents = new List<Entity>();
-				foreach ( Entity ent in Physics.GetEntitiesInBox( new BBox( new Vector3( -AreaSize ), new Vector3( AreaSize ) ) ) )
+				foreach ( Entity ent in Entity.FindInBox( new BBox( new Vector3( -AreaSize ), new Vector3( AreaSize ) ) ) )
 				{
 					ents.Add( ent );
 					copied.Add( ent, origin );
@@ -646,32 +638,32 @@ namespace Sandbox.Tools
 
 		void Paste( TraceResult tr )
 		{
-			Pasting[Owner] = new DuplicatorPasteJob( Owner, Selected, new Transform( tr.EndPos + new Vector3( 0, 0, PasteHeightOffset ) ) );
+			Pasting[Owner] = new DuplicatorPasteJob( Owner, Selected, new Transform( tr.EndPosition + new Vector3( 0, 0, PasteHeightOffset ) ) );
 		}
 
-		void OnTool( InputButton input )
+		void OnTool( string input )
 		{
 			if ( Pasting.ContainsKey( Owner ) ) return;
 
-			var startPos = Owner.EyePos;
-			var dir = Owner.EyeRot.Forward;
+			var startPos = Owner.EyePosition;
+			var dir = Owner.EyeRotation.Forward;
 			var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance ).Ignore( Owner ).Run();
 
 			switch ( input )
 			{
-				case InputButton.Attack1:
+				case "attack1":
 					if ( tr.Hit && Selected is not null )
 					{
 						Paste( tr );
-						CreateHitEffects( tr.EndPos, tr.Normal );
+						CreateHitEffects( tr.EndPosition, tr.Normal );
 					}
 					break;
 
-				case InputButton.Attack2:
+				case "attack2":
 					if ( tr.Hit && tr.Entity.IsValid() )
 					{
 						Copy( tr );
-						CreateHitEffects( tr.EndPos, tr.Normal );
+						CreateHitEffects( tr.EndPosition, tr.Normal );
 					}
 					break;
 			}
@@ -679,47 +671,47 @@ namespace Sandbox.Tools
 
 		public override void Simulate()
 		{
-			if ( Input.Down( InputButton.Use ) )
+			if ( Input.Down( "use" ) )
 			{
-				PasteRotationOffset += Input.MouseDelta[0];
+				PasteRotationOffset += Input.MouseDelta.x;
 				Input.MouseDelta = new Vector3();
 			}
-			if ( Input.Pressed( InputButton.Attack2 ) && Input.Down( InputButton.Run ) )
+			if ( Input.Pressed( "attack2" ) && Input.Down( "run" ) )
 			{
 				AreaCopy = !AreaCopy;
 			}
-			if ( Input.Pressed( InputButton.Next ) && Input.Down( InputButton.Use ) )
+			if ( Input.Pressed( "SlotNext" ) && Input.Down( "use" ) )
 			{
 				PasteHeightOffset += 5;
 			}
-			if ( Input.Pressed( InputButton.Prev ) && Input.Down( InputButton.Use ) )
+			if ( Input.Pressed( "SlotPrev" ) && Input.Down( "use" ) )
 			{
 				PasteHeightOffset -= 5;
 			}
 
-			if ( !Host.IsServer )
+			if ( !Game.IsServer )
 				return;
 
 			using ( Prediction.Off() )
 			{
-				if ( Input.Pressed( InputButton.Attack1 ) )
-					OnTool( InputButton.Attack1 );
-				if ( Input.Pressed( InputButton.Attack2 ) )
+				if ( Input.Pressed( "attack1" ) )
+					OnTool( "attack1" );
+				if ( Input.Pressed( "attack2" ) )
 				{
-					if ( Input.Down( InputButton.Run ) )
+					if ( Input.Down( "run" ) )
 					{
 						AreaCopy = !AreaCopy;
 					}
 					else
 					{
-						OnTool( InputButton.Attack2 );
+						OnTool( "attack2" );
 					}
 				}
-				if ( Input.Pressed( InputButton.Next ) && Input.Down( InputButton.Use ) )
+				if ( Input.Pressed( "SlotNext" ) && Input.Down( "use" ) )
 				{
 					PasteHeightOffset += 5;
 				}
-				if ( Input.Pressed( InputButton.Prev ) && Input.Down( InputButton.Use ) )
+				if ( Input.Pressed( "SlotPrev" ) && Input.Down( "use" ) )
 				{
 					PasteHeightOffset -= 5;
 				}
@@ -729,7 +721,7 @@ namespace Sandbox.Tools
 		public override void Activate()
 		{
 			base.Activate();
-			if ( Host.IsClient )
+			if ( Game.IsClient )
 			{
 				//SpawnMenu.Instance?.ToolPanel?.AddChild( fileSelector );
 			}
