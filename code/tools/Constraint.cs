@@ -87,14 +87,17 @@ namespace Sandbox.Tools
 						{
 							return; // can't both be world
 						}
+						var point1 = PhysicsPoint.World( trace1.Body, trace1.EndPosition, Rotation.LookAt( -trace1.Normal, trace1.Direction ) );
+						var point2 = PhysicsPoint.World( trace2.Body, trace2.EndPosition, Rotation.LookAt( trace2.Normal, trace2.Direction ) );
 
 						if ( Type == ConstraintType.Weld )
 						{
 							var joint = PhysicsJoint.CreateFixed(
-								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
-								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
+								point1,
+								point2
 							);
 							joint.Collisions = true;
+							trace1.Body.Sleeping = false;
 
 							FinishConstraintCreation( joint, () =>
 							{
@@ -109,8 +112,8 @@ namespace Sandbox.Tools
 						else if ( Type == ConstraintType.Nocollide )
 						{
 							var joint = PhysicsJoint.CreateFixed(
-								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
-								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) )
+								point1,
+								point2
 							);
 							joint.EnableAngularConstraint = false;
 							joint.EnableLinearConstraint = false;
@@ -129,8 +132,8 @@ namespace Sandbox.Tools
 						{
 							var length = trace1.EndPosition.Distance( trace2.EndPosition );
 							var joint = PhysicsJoint.CreateSpring(
-								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
-								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								point1,
+								point2,
 								length,
 								length
 							);
@@ -154,8 +157,8 @@ namespace Sandbox.Tools
 						else if ( Type == ConstraintType.Rope )
 						{
 							var joint = PhysicsJoint.CreateLength(
-								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
-								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								point1,
+								point2,
 								trace1.EndPosition.Distance( trace2.EndPosition )
 							);
 							joint.SpringLinear = new( 1000.0f, 0.7f );
@@ -188,6 +191,7 @@ namespace Sandbox.Tools
 								trace1.Normal
 							);
 							joint.Collisions = true;
+							trace1.Body.Sleeping = false;
 
 							FinishConstraintCreation( joint, () =>
 							{
@@ -202,8 +206,8 @@ namespace Sandbox.Tools
 						else if ( Type == ConstraintType.Slider )
 						{
 							var joint = PhysicsJoint.CreateSlider(
-								trace1.Body.LocalPoint( trace1.Body.Transform.PointToLocal( trace1.EndPosition ) ),
-								trace2.Body.LocalPoint( trace2.Body.Transform.PointToLocal( trace2.EndPosition ) ),
+								point1,
+								point2,
 								0,
 								0 // can be used like a rope hybrid, to limit max length
 							);
