@@ -331,6 +331,7 @@ namespace Sandbox.Tools
 		{
 			joint.OnBreak += () => { undo(); };
 
+			Event.Run( "joint.spawned", joint, Owner );
 			Event.Run( "undo.add", undo, Owner );
 
 			if ( WireboxSupport && Input.Down( "walk" ) )

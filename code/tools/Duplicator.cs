@@ -53,7 +53,7 @@ namespace Sandbox
 				{
 					new Encoder( bn ).Encode( entityData );
 				}
-				return stream.GetBuffer();
+				return stream.ToArray();
 			}
 		}
 
@@ -93,6 +93,12 @@ namespace Sandbox
 			{
 				bn.Write( r.x ); bn.Write( r.y ); bn.Write( r.z ); bn.Write( r.w );
 			}
+			void writeTransform( Transform t )
+			{
+				writeVector( t.Position );
+				writeRotation( t.Rotation );
+				bn.Write( t.Scale );
+			}
 			void writeObject( object o )
 			{
 				switch ( o )
@@ -125,12 +131,39 @@ namespace Sandbox
 				writeString( ent.model );
 				writeVector( ent.position );
 				writeRotation( ent.rotation );
+				bn.Write( ent.frozen );
 				bn.Write( ent.userData.Count );
 				foreach ( object o in ent.userData ) writeObject( o );
 			}
 
 			void writeConstraint( DuplicatorData.DuplicatorConstraint constr )
 			{
+				bn.Write( (byte)constr.type );
+				bn.Write( constr.entIndex1 );
+				bn.Write( constr.entIndex2 );
+				bn.Write( constr.bone1 );
+				bn.Write( constr.bone2 );
+				writeTransform( constr.anchor1 );
+				writeTransform( constr.anchor2 );
+				bn.Write( constr.collisions );
+				bn.Write( constr.enableAngularConstraint );
+				bn.Write( constr.enableLinearConstraint );
+				switch ( constr.type )
+				{
+					case Tools.ConstraintType.Spring:
+						bn.Write( constr.maxLength );
+						bn.Write( constr.minLength );
+						writeVector( constr.springLinear );
+						break;
+					case Tools.ConstraintType.Axis:
+						bn.Write( constr.minAngle );
+						bn.Write( constr.maxAngle );
+						break;
+					case Tools.ConstraintType.Slider:
+						bn.Write( constr.maxLength );
+						bn.Write( constr.minLength );
+						break;
+				}
 			}
 		}
 
@@ -168,6 +201,10 @@ namespace Sandbox
 				ret.x = bn.ReadSingle(); ret.y = bn.ReadSingle(); ret.z = bn.ReadSingle(); ret.w = bn.ReadSingle();
 				return ret;
 			}
+			protected Transform readTransform()
+			{
+				return new Transform( readVector(), readRotation(), bn.ReadSingle() );
+			}
 			protected object readObject()
 			{
 				byte type = bn.ReadByte();
@@ -193,6 +230,7 @@ namespace Sandbox
 				ret.model = readString();
 				ret.position = readVector();
 				ret.rotation = readRotation();
+				ret.frozen = bn.ReadBoolean();
 				for ( int i = 0, end = Math.Min( bn.ReadInt32(), 1024 ); i < end; ++i )
 				{
 					ret.userData.Add( readObject() );
@@ -202,16 +240,42 @@ namespace Sandbox
 			protected DuplicatorData.DuplicatorConstraint readConstraint()
 			{
 				DuplicatorData.DuplicatorConstraint ret = new DuplicatorData.DuplicatorConstraint();
+				ret.type = (Tools.ConstraintType)bn.ReadByte();
+				ret.entIndex1 = bn.ReadInt32();
+				ret.entIndex2 = bn.ReadInt32();
+				ret.bone1 = bn.ReadInt32();
+				ret.bone2 = bn.ReadInt32();
+				ret.anchor1 = readTransform();
+				ret.anchor2 = readTransform();
+				ret.collisions = bn.ReadBoolean();
+				ret.enableAngularConstraint = bn.ReadBoolean();
+				ret.enableLinearConstraint = bn.ReadBoolean();
+				switch ( ret.type )
+				{
+					case Tools.ConstraintType.Spring:
+						ret.maxLength = bn.ReadSingle();
+						ret.minLength = bn.ReadSingle();
+						ret.springLinear = (PhysicsSpring)readVector();
+						break;
+					case Tools.ConstraintType.Axis:
+						ret.minAngle = bn.ReadSingle();
+						ret.maxAngle = bn.ReadSingle();
+						break;
+					case Tools.ConstraintType.Slider:
+						ret.maxLength = bn.ReadSingle();
+						ret.minLength = bn.ReadSingle();
+						break;
+				}
 				return ret;
 			}
 		}
 
-		static string EncodeJson( DuplicatorData entityData )
+		public static string EncodeJson( DuplicatorData entityData )
 		{
 			return JsonSerializer.Serialize( entityData, new JsonSerializerOptions { WriteIndented = true, IncludeFields = true } );
 		}
 
-		static DuplicatorData DecodeJsonV0( string data )
+		public static DuplicatorData DecodeJsonV0( string data )
 		{
 			return (DuplicatorData)JsonSerializer.Deserialize( data, typeof( DuplicatorData ) );
 		}
@@ -231,28 +295,35 @@ namespace Sandbox
 			public string model;
 			public Vector3 position;
 			public Rotation rotation;
+			public bool frozen;
 			public List<object> userData = new List<object>();
 			public DuplicatorItem() { }
 			public DuplicatorItem( Entity ent, Transform origin )
 			{
 				index = ent.NetworkIdent;
 				className = ent.ClassName;
-				if ( ent is Prop p )
+				if ( ent is ModelEntity p )
 					model = p.Model.Name;
 				else
 					model = "";
 				position = origin.PointToLocal( ent.Position );
 				rotation = origin.RotationToLocal( ent.Rotation );
+				frozen = ent.PhysicsGroup?.GetBody( 0 )?.BodyType == PhysicsBodyType.Static;
 				if ( ent is IDuplicatable dupe )
 					userData = dupe.PreDuplicatorCopy();
 			}
 
 			public Entity Spawn( Transform origin )
 			{
-				Entity ent = TypeLibrary.Create<Entity>( className );
+				ModelEntity ent = TypeLibrary.Create<ModelEntity>( className );
 				ent.Position = origin.PointToWorld( position );
 				ent.Rotation = origin.RotationToWorld( rotation );
-				//ent.PhysicsEnabled = ;
+				ent.SetModel( model );
+				ent.PhysicsEnabled = false;
+				if ( frozen )
+				{
+					ent.PhysicsBody.BodyType = PhysicsBodyType.Static;
+				}
 				//ent.EnableSolidCollisions =;
 				//ent.Massless = ;
 				if ( ent is IDuplicatable dupe )
@@ -262,26 +333,146 @@ namespace Sandbox
 		}
 		public class DuplicatorConstraint
 		{
-			public Vector3 anchor1;
-			public Vector3 anchor2;
+			public Tools.ConstraintType type;
 			public int entIndex1;
 			public int entIndex2;
 			public int bone1;
 			public int bone2;
-			public string type;
+			public Transform anchor1;
+			public Transform anchor2;
+			public bool collisions;
+			public bool enableAngularConstraint;
+			public bool enableLinearConstraint;
+
+			// spring
+			public float maxLength;
+			public float minLength;
+			public PhysicsSpring springLinear;
+			// hinge
+			public float minAngle;
+			public float maxAngle;
+			// public float friction; // no getter :(
+
 			public DuplicatorConstraint() { }
 			public DuplicatorConstraint( PhysicsJoint joint )
 			{
-				anchor1 = joint.Point1.LocalPosition;
-				anchor2 = joint.Point2.LocalPosition;
+				anchor1 = joint.Point1.LocalTransform;
+				anchor2 = joint.Point2.LocalTransform;
 				entIndex1 = joint.Body1.GetEntity().NetworkIdent;
 				entIndex2 = joint.Body2.GetEntity().NetworkIdent;
+				collisions = joint.Collisions;
+				enableAngularConstraint = joint.EnableAngularConstraint;
+				enableLinearConstraint = joint.EnableLinearConstraint;
+				if ( joint is FixedJoint fixedJoint )
+				{
+					type = Tools.ConstraintType.Weld;
+				}
+				else if ( joint is SpringJoint springJoint )
+				{
+					type = Tools.ConstraintType.Spring;
+					maxLength = springJoint.MaxLength;
+					minLength = springJoint.MinLength;
+					springLinear = springJoint.SpringLinear;
+				}
+				else if ( joint is HingeJoint hingeJoint )
+				{
+					type = Tools.ConstraintType.Axis;
+					minAngle = hingeJoint.MinAngle;
+					maxAngle = hingeJoint.MaxAngle;
+				}
+				else if ( joint is BallSocketJoint ballJoint )
+				{
+					type = Tools.ConstraintType.BallSocket;
+				}
+				else if ( joint is SliderJoint sliderJoint )
+				{
+					type = Tools.ConstraintType.Slider;
+					maxLength = sliderJoint.MaxLength;
+					minLength = sliderJoint.MinLength;
+				}
+				else
+				{
+					Log.Warning( $"Duplicator: Unknown joint type {joint.GetType()}" );
+					return;
+				}
 			}
 
 			public void Spawn( Dictionary<int, Entity> spawnedEnts )
 			{
-
+				var ent1 = spawnedEnts[entIndex1];
+				var ent2 = spawnedEnts[entIndex2];
+				var body1 = ent1.PhysicsGroup.GetBody( 0 );
+				var body2 = ent2.PhysicsGroup.GetBody( 0 );
+				var point1 = PhysicsPoint.Local( body1, anchor1.Position, anchor1.Rotation );
+				var point2 = PhysicsPoint.Local( body2, anchor2.Position, anchor2.Rotation );
+				PhysicsJoint joint;
+				if ( type == Tools.ConstraintType.Weld || type == Tools.ConstraintType.Nocollide )
+				{
+					joint = PhysicsJoint.CreateFixed(
+						point1,
+						point2
+					);
+				}
+				else if ( type == Tools.ConstraintType.Spring )
+				{
+					joint = PhysicsJoint.CreateSpring(
+						point1,
+						point2,
+						minLength,
+						maxLength
+					);
+					((SpringJoint)joint).SpringLinear = springLinear;
+					var rope = MakeRope( point1, point2 );
+					joint.OnBreak += () => { rope?.Destroy( true ); };
+				}
+				else if ( type == Tools.ConstraintType.Axis )
+				{
+					joint = PhysicsJoint.CreateHinge(
+						 body1,
+						 body2,
+						anchor1.Position,
+						anchor1.Rotation.Up
+					);
+					((HingeJoint)joint).MinAngle = minAngle;
+					((HingeJoint)joint).MaxAngle = maxAngle;
+				}
+				else if ( type == Tools.ConstraintType.BallSocket )
+				{
+					joint = PhysicsJoint.CreateBallSocket(
+						 body1,
+						 body2,
+						anchor1.Position
+					);
+				}
+				else if ( type == Tools.ConstraintType.Slider )
+				{
+					joint = PhysicsJoint.CreateSlider(
+						 point1,
+						 point2,
+						minLength,
+						maxLength
+					);
+					var rope = MakeRope( point1, point2 );
+					joint.OnBreak += () => { rope?.Destroy( true ); };
+				}
+				else
+				{
+					Log.Warning( $"Duplicator: Unknown joint type {type}" );
+					return;
+				}
+				joint.Collisions = collisions;
+				joint.EnableAngularConstraint = enableAngularConstraint;
+				joint.EnableLinearConstraint = enableLinearConstraint;
+				Event.Run( "joint.spawned", joint, (Player)null );
 			}
+		}
+
+		private static Particles MakeRope( PhysicsPoint point1, PhysicsPoint point2 )
+		{
+			var rope = Particles.Create( "particles/rope.vpcf" );
+			rope.SetEntity( 0, point1.Body.GetEntity(), point1.LocalPosition );
+			rope.SetEntity( 1, point2.Body.GetEntity(), point2.LocalPosition );
+			return rope;
 		}
 
 		public string name = "";
@@ -317,6 +508,7 @@ namespace Sandbox
 		Stopwatch timeUsed = new Stopwatch();
 		Stopwatch timeElapsed = new Stopwatch();
 		Dictionary<int, Entity> entList = new Dictionary<int, Entity>();
+		Dictionary<int, DuplicatorData.DuplicatorItem> entData = new();
 		public DuplicatorPasteJob( Player owner_, DuplicatorData data_, Transform origin_ )
 		{
 			owner = owner_;
@@ -340,6 +532,7 @@ namespace Sandbox
 				DuplicatorData.DuplicatorItem item = data.entities[spawnedEnts++];
 				try
 				{
+					entData[item.index] = item;
 					entList[item.index] = item.Spawn( origin );
 				}
 				catch ( Exception e )
@@ -371,16 +564,34 @@ namespace Sandbox
 			}
 			else
 			{
-				foreach ( Entity ent in entList.Values )
+				foreach ( int index in entList.Keys )
 				{
+					Entity ent = entList[index];
 					if ( ent is IDuplicatable dupe )
 						dupe.PostDuplicatorPasteDone();
+					if ( ent is ModelEntity modelEnt )
+					{
+						if ( !entData[index].frozen )
+						{
+							// Enable physics after all entities are spawned, except for saved-as-frozen ents
+							modelEnt.PhysicsEnabled = true;
+						}
+					}
 				}
+
+				Event.Run( "undo.add", () =>
+				{
+					foreach ( Entity ent in entList.Values )
+					{
+						ent.Delete();
+					}
+					return $"Removed duplicator paste {data.name}";
+				}, owner );
 				return false;
 			}
 		}
 
-		[Event.Tick]
+		[GameEvent.Tick]
 		public void Tick()
 		{
 			timeUsed.Start();
@@ -413,7 +624,11 @@ namespace Sandbox
 
 namespace Sandbox.Tools
 {
-	[Library( "tool_duplicator", Title = "Duplicator", Description = "Save and load contraptions", Group = "construction" )]
+	[Library( "tool_duplicator", Title = "Duplicator", Description =
+@"Save and load contraptions
+Mouse1: Paste contraption
+Mouse2: Copy contraption (shift for area copy)
+Use 'tool_duplicator_savefile filename' + 'tool_duplicator_openfile filename' to write to disk, until we get a UI", Group = "construction" )]
 	public partial class DuplicatorTool : BaseTool
 	{
 		// Default behavior will be restoring the freeze state of entities to what they were when copied
@@ -424,7 +639,7 @@ namespace Sandbox.Tools
 		[ConVar.ClientData( "tool_duplicator_area_size", Help = "Area copy size", Saved = true )]
 		public static float AreaSize { get; set; } = 250;
 
-		public static Dictionary<Player, DuplicatorPasteJob> Pasting = new Dictionary<Player, DuplicatorPasteJob>();
+		public static Dictionary<Player, DuplicatorPasteJob> Pasting = new();
 
 		void GetAttachedEntities( Entity baseEnt, List<Entity> ents, List<PhysicsJoint> joints )
 		{
@@ -474,22 +689,35 @@ namespace Sandbox.Tools
 			joints.AddRange( jointsChecked );
 		}
 
-		List<PhysicsJoint> GetJoints( Entity ent )
+		static List<PhysicsJoint> GetJoints( Entity ent )
 		{
-			return ent.PhysicsGroup.Joints.ToList();
+			var joints = new List<PhysicsJoint>();
+			if ( ent.PhysicsGroup is not null )
+			{
+				joints.AddRange( ent.PhysicsGroup.Joints );
+			}
+
+			// ent.PhysicsGroup.Joints only appears to work for ModelDoc joints (eg. within a ragdoll), not for PhysicsJoint.Create
+			var jointTracker = ent.Components.Get<JointTrackerComponent>();
+			if ( jointTracker is not null )
+			{
+				joints.AddRange( jointTracker.Joints );
+			}
+			return joints;
 		}
-		List<PhysicsJoint> GetJoints( List<Entity> ents )
+		static List<PhysicsJoint> GetJoints( List<Entity> ents )
 		{
 			HashSet<PhysicsJoint> jointsChecked = new();
 			foreach ( Entity ent in ents )
 			{
-				PhysicsGroup group = ent.PhysicsGroup;
-				if ( group is not null )
+				if ( ent.PhysicsGroup is not null )
 				{
-					foreach ( PhysicsJoint j in group.Joints )
-					{
-						jointsChecked.Add( j );
-					}
+					jointsChecked.UnionWith( ent.PhysicsGroup.Joints );
+				}
+				var jointTracker = ent.Components.Get<JointTrackerComponent>();
+				if ( jointTracker is not null )
+				{
+					jointsChecked.UnionWith( jointTracker.Joints );
 				}
 			}
 			return jointsChecked.ToList();
@@ -499,7 +727,6 @@ namespace Sandbox.Tools
 		[Net, Predicted] float PasteRotationOffset { get; set; } = 0;
 		[Net, Predicted] float PasteHeightOffset { get; set; } = 0;
 		[Net, Predicted] bool AreaCopy { get; set; } = false;
-		[Net, Predicted] Transform Origin { get; set; }
 
 		static DuplicatorTool getTool( IEntity player )
 		{
@@ -512,21 +739,18 @@ namespace Sandbox.Tools
 			return dupe;
 		}
 
-		[ClientRpc]
-		public static void SetupGhostsRpc( List<DuplicatorGhost> ghosts )
+		void DisplayGhosts( List<DuplicatorGhost> ghosts )
 		{
-			getTool( Game.LocalPawn )?.SetupGhosts( ghosts );
-		}
-		public void SetupGhosts( List<DuplicatorGhost> ghosts )
-		{
-			foreach ( DuplicatorGhost ghost in ghosts )
+			DeletePreviews();
+			foreach ( var ghost in ghosts )
 			{
 				PreviewEntity previewModel = null;
 				if ( TryCreatePreview( ref previewModel, ghost.model ) )
 				{
 					previewModel.RelativeToNormal = false;
-					previewModel.OffsetBounds = true;
-					previewModel.PositionOffset = -previewModel.CollisionBounds.Center;
+					previewModel.OffsetBounds = false;
+					previewModel.PositionOffset = ghost.position;
+					previewModel.RotationOffset = ghost.rotation;
 				}
 			}
 		}
@@ -534,7 +758,7 @@ namespace Sandbox.Tools
 		[ConCmd.Client( "tool_duplicator_openfile", Help = "Loads a duplicator file" )]
 		static void OpenFile( string path )
 		{
-			ReceiveDuplicatorDataCmd( FileSystem.Data.ReadAllText( path ) );
+			NData.Client.SendToServer( "duplicator", FileSystem.OrganizationData.ReadAllBytes( "dupes/" + path ).ToArray() );
 		}
 
 		[ConCmd.Client( "tool_duplicator_savefile", Help = "Saves a duplicator file" )]
@@ -546,7 +770,8 @@ namespace Sandbox.Tools
 		[ClientRpc]
 		public static void SaveFileData( string path, byte[] data )
 		{
-			using ( Stream s = FileSystem.Data.OpenWrite( path ) )
+			FileSystem.OrganizationData.CreateDirectory( "dupes" );
+			using ( Stream s = FileSystem.OrganizationData.OpenWrite( "dupes/" + path ) )
 			{
 				s.Write( data, 0, data.Length );
 			}
@@ -557,24 +782,24 @@ namespace Sandbox.Tools
 		{
 			getTool( ConsoleSystem.Caller.Pawn )?.SaveDuplicatorData( path );
 		}
-		[ConCmd.Server]
-		static void ReceiveDuplicatorDataCmd( string data )
+
+		[Event( "ndata.received.duplicator" )]
+		static void ReceiveDuplicatorDataCmd( IClient client, byte[] data )
 		{
-			getTool( ConsoleSystem.Caller.Pawn )?.ReceiveDuplicatorData( data );
+			getTool( client.Pawn )?.ReceiveDuplicatorData( data );
 		}
 
-		void ReceiveDuplicatorData( string data )
+		void ReceiveDuplicatorData( byte[] data )
 		{
 			try
 			{
-				Selected = DuplicatorEncoder.Decode( Encoding.ASCII.GetBytes( data ) );
-				// Ghosts are set up on the client already when they load the file
+				Selected = DuplicatorEncoder.Decode( data );
+				DisplayGhosts( Selected.getGhosts() );
 			}
-			catch
+			catch ( Exception e )
 			{
-				// Reset and clear the ghosts
-				Selected = null;
-				SetupGhostsRpc( To.Single( Owner ), new DuplicatorData().getGhosts() );
+				Reset();
+				Log.Warning( $"Failed to load duplicator file: {e}" );
 			}
 		}
 		void SaveDuplicatorData( string path )
@@ -582,19 +807,32 @@ namespace Sandbox.Tools
 			if ( Selected is null ) return;
 			try
 			{
-				byte[] data = DuplicatorEncoder.Encode( Selected );
+				byte[] data;
+				if ( path.EndsWith( ".json" ) )
+				{
+					data = Encoding.UTF8.GetBytes( DuplicatorEncoder.EncodeJson( Selected ) );
+				}
+				else
+				{
+					data = DuplicatorEncoder.Encode( Selected );
+				}
 				SaveFileData( To.Single( Owner ), path, data );
 			}
-			catch
+			catch ( Exception e )
 			{
+				Log.Warning( $"Failed to save duplicator file: {e}" );
 			}
 		}
 
 		void Copy( TraceResult tr )
 		{
-			DuplicatorData copied = new DuplicatorData();
+			DuplicatorData copied = new()
+			{
+				author = Owner.Client.Name,
+				date = DateTime.Now.ToString( "yyyy-MM-ddTHH:mm:sszz" )
+			};
 
-			var floorTr = Trace.Ray( tr.EndPosition, tr.EndPosition + new Vector3( 0, 0, -1e6f ) ).WorldOnly().Run();
+			var floorTr = Trace.Ray( tr.EndPosition, tr.EndPosition + new Vector3( 0, 0, -1e6f ) ).StaticOnly().Run();
 			Transform origin = new Transform( floorTr.Hit ? floorTr.EndPosition : tr.EndPosition );
 			PasteRotationOffset = 0;
 			PasteHeightOffset = 0;
@@ -602,42 +840,36 @@ namespace Sandbox.Tools
 			if ( AreaCopy )
 			{
 				AreaCopy = false;
+				var areaSize = new Vector3( int.Parse( GetConvarValue( "tool_duplicator_area_size", "250" ) ) );
 				List<Entity> ents = new List<Entity>();
-				foreach ( Entity ent in Entity.FindInBox( new BBox( new Vector3( -AreaSize ), new Vector3( AreaSize ) ) ) )
+				foreach ( Entity ent in Entity.FindInBox( new BBox( origin.Position - areaSize, origin.Position + areaSize ) ) )
 				{
+					// todo: should this also grab AttachedEntities?
 					ents.Add( ent );
 					copied.Add( ent, origin );
 				}
 				foreach ( PhysicsJoint j in GetJoints( ents ) )
 					copied.Add( j );
 			}
-			else
+			else if ( tr.Entity.IsValid() )
 			{
-				if ( tr.Entity.IsValid() )
-				{
-					List<Entity> ents = new();
-					List<PhysicsJoint> joints = new();
-					GetAttachedEntities( tr.Entity, ents, joints );
-					foreach ( Entity e in ents )
-						copied.Add( e, origin );
-					foreach ( PhysicsJoint j in joints )
-						copied.Add( j );
-				}
-				else
-				{
-					if ( Selected is null )
-					{
-						// Select all entities you own
-					}
-				}
+				List<Entity> ents = new();
+				List<PhysicsJoint> joints = new();
+				GetAttachedEntities( tr.Entity, ents, joints );
+				foreach ( Entity e in ents )
+					copied.Add( e, origin );
+				foreach ( PhysicsJoint j in joints )
+					copied.Add( j );
 			}
 
-			SetupGhostsRpc( To.Single( Owner ), copied.getGhosts() );
+			DisplayGhosts( copied.getGhosts() );
 			Selected = copied.entities.Count > 0 ? copied : null;
 		}
 
 		void Paste( TraceResult tr )
 		{
+			// We can add rotation back in once the ghosts also rotate
+			// var modelRotation = Rotation.From( new Angles( 0, Owner.EyeRotation.Angles().yaw, 0 ) );
 			Pasting[Owner] = new DuplicatorPasteJob( Owner, Selected, new Transform( tr.EndPosition + new Vector3( 0, 0, PasteHeightOffset ) ) );
 		}
 
@@ -645,13 +877,11 @@ namespace Sandbox.Tools
 		{
 			if ( Pasting.ContainsKey( Owner ) ) return;
 
-			var startPos = Owner.EyePosition;
-			var dir = Owner.EyeRotation.Forward;
-			var tr = Trace.Ray( startPos, startPos + dir * MaxTraceDistance ).Ignore( Owner ).Run();
-
+			TraceResult tr;
 			switch ( input )
 			{
 				case "attack1":
+					tr = DoTrace( false );
 					if ( tr.Hit && Selected is not null )
 					{
 						Paste( tr );
@@ -660,6 +890,7 @@ namespace Sandbox.Tools
 					break;
 
 				case "attack2":
+					tr = DoTrace();
 					if ( tr.Hit && tr.Entity.IsValid() )
 					{
 						Copy( tr );
@@ -697,16 +928,7 @@ namespace Sandbox.Tools
 				if ( Input.Pressed( "attack1" ) )
 					OnTool( "attack1" );
 				if ( Input.Pressed( "attack2" ) )
-				{
-					if ( Input.Down( "run" ) )
-					{
-						AreaCopy = !AreaCopy;
-					}
-					else
-					{
-						OnTool( "attack2" );
-					}
-				}
+					OnTool( "attack2" );
 				if ( Input.Pressed( "SlotNext" ) && Input.Down( "use" ) )
 				{
 					PasteHeightOffset += 5;
@@ -716,6 +938,12 @@ namespace Sandbox.Tools
 					PasteHeightOffset -= 5;
 				}
 			}
+		}
+
+		public void Reset()
+		{
+			Selected = null;
+			DisplayGhosts( new List<DuplicatorGhost>() );
 		}
 
 		public override void Activate()
