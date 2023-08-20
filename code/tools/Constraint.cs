@@ -203,6 +203,30 @@ namespace Sandbox.Tools
 								return "";
 							} );
 						}
+						else if ( Type == ConstraintType.BallSocket )
+						{
+							var pivot = Input.Down( "run" )
+								? trace1.Body.MassCenter
+								: trace1.EndPosition;
+
+							var joint = PhysicsJoint.CreateBallSocket(
+								trace1.Body,
+								trace2.Body,
+								pivot
+							);
+							joint.Collisions = true;
+							trace1.Body.Sleeping = false;
+
+							FinishConstraintCreation( joint, () =>
+							{
+								if ( joint.IsValid() )
+								{
+									joint.Remove();
+									return $"Removed {Type} constraint";
+								}
+								return "";
+							} );
+						}
 						else if ( Type == ConstraintType.Slider )
 						{
 							var joint = PhysicsJoint.CreateSlider(
@@ -376,12 +400,11 @@ namespace Sandbox.Tools
 	{
 		Weld,
 		Nocollide, // Generic
-		Spring, // Winch/Hydraulic
-		Rope,
 		Axis, // Revolute
 		BallSocket, // Spherical
+		Rope,
+		Spring, // Winch/Hydraulic
 		Slider, // Prismatic
-		Conical,
 	}
 
 	[Library]
