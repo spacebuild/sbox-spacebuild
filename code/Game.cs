@@ -230,6 +230,7 @@ partial class SandboxGame : GameManager
 
 		ent.Position = tr.EndPosition;
 		ent.Rotation = Rotation.From( new Angles( 0, owner.EyeRotation.Angles().yaw, 0 ) );
+		Event.Run( "entity.spawned", ent, owner );
 	}
 
 	[ClientRpc]
