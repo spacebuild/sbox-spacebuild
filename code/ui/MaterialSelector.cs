@@ -11,7 +11,6 @@ namespace Sandbox.UI
 		public MaterialSelector()
 		{
 			AddClass( "modelselector" );
-			AddClass( "active" );
 			AddChild( out Canvas, "canvas" );
 
 			Canvas.Layout.AutoColumns = true;
@@ -49,6 +48,8 @@ namespace Sandbox.UI
 				}
 				Canvas.AddItem( file );
 			}
+			// VirtualScrollPanel doesn't have a valid height (subsequent children overlap it within flex-direction: column) so calculate it manually
+			Style.Height = (64 + 6) * (int)Math.Ceiling( spawnList.Count() / 5f );
 		}
 	}
 }

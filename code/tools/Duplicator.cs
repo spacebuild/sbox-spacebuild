@@ -28,8 +28,14 @@ namespace Sandbox
 
 	public class DuplicatorEncoder
 	{
+		private static byte LeftBracket = 123;
 		public static DuplicatorData Decode( byte[] data )
 		{
+			if ( data[0] == LeftBracket )
+			{
+				// not working yet
+				// return DecodeJsonV0( Encoding.ASCII.GetString( data ) );
+			}
 			using ( var stream = new MemoryStream( data ) )
 			using ( var bn = new BinaryReader( stream ) )
 			{
@@ -626,9 +632,8 @@ namespace Sandbox.Tools
 {
 	[Library( "tool_duplicator", Title = "Duplicator", Description =
 @"Save and load contraptions
-Mouse1: Paste contraption
-Mouse2: Copy contraption (shift for area copy)
-Use 'tool_duplicator_savefile filename' + 'tool_duplicator_openfile filename' to write to disk, until we get a UI", Group = "construction" )]
+Primary: Paste contraption
+Secondary: Copy contraption (shift for area copy)", Group = "construction" )]
 	public partial class DuplicatorTool : BaseTool
 	{
 		// Default behavior will be restoring the freeze state of entities to what they were when copied
@@ -952,6 +957,15 @@ Use 'tool_duplicator_savefile filename' + 'tool_duplicator_openfile filename' to
 			if ( Game.IsClient )
 			{
 				//SpawnMenu.Instance?.ToolPanel?.AddChild( fileSelector );
+			}
+		}
+
+		public override void CreateToolPanel()
+		{
+			if ( Game.IsClient )
+			{
+				var toolConfigUi = new DuplicatorToolConfig();
+				SpawnMenu.Instance?.ToolPanel?.AddChild( toolConfigUi );
 			}
 		}
 	}

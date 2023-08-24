@@ -1,7 +1,8 @@
-using System.Threading.Tasks;
-using Sandbox;
-using System;
-using System.Linq;
+global using System.Threading.Tasks;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System;
+global using Sandbox;
 
 partial class SandboxGame : GameManager
 {
