@@ -342,7 +342,7 @@
         "MapName": "facepunch.square",
         "MaxPlayers": 1,
         "GameSettings": {},
-        "Addons": "wiremod.wireboxaddon#local; wirebox.sbox_tool_auto",
+        "Addons": "wiremod.wireboxaddon#local; wiremod.sbox_tool_auto",
         "PreLaunchCommand": "",
         "PostLaunchCommand": ""
       },
