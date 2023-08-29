@@ -20,6 +20,12 @@
     /// Text indicating the purpose of the switch.
     /// </summary>
     public string Label { get; set; } = "";
+
+    /// <summary>
+    /// The convar to bind to. Handles Value/OnValueChanged
+    /// </summary>
+    public string Convar { get; set; } = "";
+
     public Action<bool> OnValueChanged { get; set; }
 
     private string StateClass => Value ? "active" : "inactive";
@@ -39,11 +45,23 @@
         }
     }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Convar != "")
+        {
+            Value = ConsoleSystem.GetValue(Convar, "0") != "0";
+        }
+    }
+
     protected override void OnMouseDown( MousePanelEvent e )
     {
         base.OnMouseDown( e );
 
         Value = !Value;
+        if (Convar != "")
+        {
+            ConsoleSystem.Run( Convar, Value ? "1" : "0" );
+        }
         OnValueChanged?.Invoke( Value );
         e.StopPropagation();
     }

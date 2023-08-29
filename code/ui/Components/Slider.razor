@@ -38,6 +38,11 @@
     /// </summary>
     public string Label { get; set; } = "";
 
+    /// <summary>
+    /// The convar to bind to. Handles Value/OnValueChanged
+    /// </summary>
+    public string Convar { get; set; } = "";
+
     public float Max { get; set; } = 100;
     public float Min { get; set; } = 0;
 
@@ -75,9 +80,12 @@
     private Panel ThumbPanel { get; set; }
     private TextEntry TextEntryPanel { get; set; }
 
-    public Slider()
+    protected override async Task OnParametersSetAsync()
     {
-
+        if (Convar != "")
+        {
+            Value = float.Parse(ConsoleSystem.GetValue(Convar, Min.ToString()));
+        }
     }
 
     /// <summary>
@@ -120,6 +128,10 @@
     {
         base.OnMouseUp(e);
 
+        if (Convar != "")
+        {
+            ConsoleSystem.Run(Convar, ((float)Value).ToString());
+        }
         OnValueChanged?.Invoke(Value);
     }
 
