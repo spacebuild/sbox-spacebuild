@@ -32,7 +32,7 @@ namespace Sandbox.UI
 						return;
 					}
 				}
-				panel.Tooltip = file;
+				panel.Tooltip = file; // this doesn't seem to work, appears to be broken Facepunch side. We can probably implement our own tooltip system eventually instead
 
 				panel.AddEventListener( "onclick", () =>
 				{

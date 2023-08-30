@@ -8,6 +8,8 @@ namespace Sandbox.Tools
 	{
 		[ConVar.ClientData( "tool_material_material" )]
 		public static string _ { get; set; } = "";
+
+		[ConVar.ClientData( "tool_material_materialindex" )] public static string _2 { get; set; } = "-1";
 		public override void Simulate()
 		{
 			using ( Prediction.Off() )
@@ -23,7 +25,7 @@ namespace Sandbox.Tools
 
 				if ( Input.Pressed( "attack1" ) )
 				{
-					modelEnt.SetClientMaterialOverride( GetConvarValue( "tool_material_material" ) );
+					modelEnt.SetClientMaterialOverride( GetConvarValue( "tool_material_material" ), int.Parse( GetConvarValue( "tool_material_materialindex" ) ) );
 
 					CreateHitEffects( tr.EndPosition, tr.Normal );
 				}
@@ -44,6 +46,10 @@ namespace Sandbox.Tools
 				}
 				else if ( Input.Pressed( "reload" ) )
 				{
+					if ( Game.IsClient )
+					{
+						ConsoleSystem.Run( "tool_material_materialindex", "-1" ); // for now, until there's ui
+					}
 					modelEnt.SetClientMaterialOverride( "" );
 
 					CreateHitEffects( tr.EndPosition, tr.Normal );
@@ -52,7 +58,7 @@ namespace Sandbox.Tools
 		}
 
 		[ClientRpc]
-		public static async void SetEntityMaterialOverride( ModelEntity modelEnt, string material )
+		public static async void SetEntityMaterialOverride( ModelEntity modelEnt, string material, int materialIndex = -1 )
 		{
 			if ( Game.IsClient )
 			{
@@ -81,8 +87,21 @@ namespace Sandbox.Tools
 				}
 				else
 				{
-					modelEnt?.SetMaterialOverride( material );
-					modelEnt?.SceneObject?.SetMaterialOverride( Material.Load( material ) );
+					if ( materialIndex == -1 || modelEnt.Model == null )
+					{
+						modelEnt?.SetMaterialOverride( material );
+						modelEnt?.SceneObject?.SetMaterialOverride( Material.Load( material ) );
+					}
+					else
+					{
+						var mats = modelEnt.Model.Materials.ToList();
+						for ( int i = 0; i < mats.Count; i++ )
+						{
+							mats[i].Attributes.Set( "materialIndex" + i, 1 );
+						}
+						modelEnt?.SetMaterialOverride( Material.Load( material ), "materialIndex" + materialIndex );
+						modelEnt?.SceneObject?.SetMaterialOverride( Material.Load( material ), "materialIndex" + materialIndex, 1 );
+					}
 				}
 			}
 		}
@@ -108,8 +127,8 @@ namespace Sandbox.Tools
 
 public static partial class ModelEntityExtensions
 {
-	public static void SetClientMaterialOverride( this ModelEntity instance, string material )
+	public static void SetClientMaterialOverride( this ModelEntity instance, string material, int materialIndex = -1 )
 	{
-		Sandbox.Tools.MaterialTool.SetEntityMaterialOverride( instance, material );
+		Sandbox.Tools.MaterialTool.SetEntityMaterialOverride( instance, material, materialIndex );
 	}
 }
