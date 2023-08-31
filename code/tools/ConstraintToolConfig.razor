@@ -28,17 +28,15 @@
 		Label="Nudge as Percent (%) of prop width"
 		Convar="tool_constraint_nudge_percent"
 	/>
-	<ToolCheckbox
-		Label="Move Target?"
-		Convar="tool_constraint_move_target"
-	/>
-	@if ( ConsoleSystem.GetValue( "tool_constraint_move_target", "0" ) != "0" )
+	*@
+	<ToolCheckbox Label="Move Target?" Convar="tool_constraint_move_target" />
+	@if (ConsoleSystem.GetValue("tool_constraint_move_target", "0") != "0")
 	{
 		<Slider
 			Label="Movement Offset"
 			Min=@(-100f)
 			Max=@(100f)
-			Step=@(1f)
+			Step=@(5f)
 			Convar="tool_constraint_move_offset"
 		/>
 		<ToolCheckbox
@@ -47,6 +45,7 @@
 			style="margin-bottom: 20px;"
 		/>
 	}
+	@*
 	<ToolCheckbox
 		Label="Rotate Target? (after moving)"
 		Convar="tool_constraint_rotate_target"

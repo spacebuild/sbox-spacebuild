@@ -96,8 +96,34 @@ namespace Sandbox.Tools
 						{
 							return; // can't both be world
 						}
-						var point1 = PhysicsPoint.World( trace1.Body, trace1.EndPosition, Rotation.LookAt( -trace1.Normal, trace1.Direction ) );
-						var point2 = PhysicsPoint.World( trace2.Body, trace2.EndPosition, Rotation.LookAt( trace2.Normal, trace2.Direction ) );
+						PhysicsPoint point1;
+						PhysicsPoint point2;
+						if ( GetConvarValue( "tool_constraint_move_target" ) != "0" )
+						{
+							var offset = float.Parse( GetConvarValue( "tool_constraint_move_offset" ) );
+							if ( GetConvarValue( "tool_constraint_move_percent" ) != "0" )
+							{
+								if ( Math.Abs( trace1.Normal.Dot( trace1.Entity.Rotation.Forward ) ) > 0.8f )
+								{
+									offset = trace1.Entity.WorldSpaceBounds.Size.x * offset / 100;
+								}
+								else if ( Math.Abs( trace1.Normal.Dot( trace1.Entity.Rotation.Left ) ) > 0.8f )
+								{
+									offset = trace1.Entity.WorldSpaceBounds.Size.y * offset / 100;
+								}
+								else
+								{
+									offset = trace1.Entity.WorldSpaceBounds.Size.z * offset / 100;
+								}
+							}
+							point1 = PhysicsPoint.World( trace1.Body, trace1.EndPosition + trace1.Normal * offset, Rotation.LookAt( -trace1.Normal, trace1.Direction ) );
+							point2 = PhysicsPoint.World( trace2.Body, trace2.EndPosition, Rotation.LookAt( trace2.Normal, trace2.Direction ) );
+						}
+						else
+						{
+							point1 = PhysicsPoint.World( trace1.Body, trace2.EndPosition, trace2.Entity.Rotation );
+							point2 = PhysicsPoint.World( trace2.Body, trace2.EndPosition, trace2.Entity.Rotation );
+						}
 
 						trace1.Body.Sleeping = true;
 						if ( GetConvarValue( "tool_constraint_freeze_target" ) != "0" && !trace1.Entity.IsWorld )
@@ -314,30 +340,39 @@ namespace Sandbox.Tools
 
 		private string CalculateDescription()
 		{
-			var desc = $"Constraint entities together using a {Type} constraint";
+			var desc = $"Constraint entities together using {Type} constraint";
 			if ( Type == ConstraintType.Axis )
 			{
 				if ( stage == 0 )
 				{
-					desc += $"\nFirst, shoot the part that spins (eg. wheel).";
+					desc += $"\nFirst, {Input.GetButtonOrigin( "attack1" )} the part that spins (eg. wheel).";
 				}
 				else if ( stage == 1 )
 				{
-					desc += $"\nSecond, shoot the base. Hold shift to use wheel's center of mass.";
+					desc += $"\nSecond, {Input.GetButtonOrigin( "attack1" )} the base. Hold {Input.GetButtonOrigin( "run" )} to use wheel's center of mass.";
 				}
 			}
 			else
 			{
-				if ( stage == 1 )
+				if ( stage == 0 )
 				{
-					desc += $"\nSecond, shoot the base.";
+					desc += $"\nFirst, {Input.GetButtonOrigin( "attack1" )} the part to attach.";
 				}
+				else if ( stage == 1 )
+				{
+					desc += $"\nSecond, {Input.GetButtonOrigin( "attack1" )} the base.";
+				}
+			}
+			if ( stage == 0 )
+			{
+				desc += $"\n{Input.GetButtonOrigin( "reload" )} to remove {Type} constraint";
+				desc += $"\n{Input.GetButtonOrigin( "drop" )} to cycle to next constraint type";
 			}
 			if ( WireboxSupport )
 			{
 				if ( stage == 1 )
 				{
-					desc += $"\nHold alt to begin creating a Wire Constraint Controller";
+					desc += $"\nHold {Input.GetButtonOrigin( "walk" )} to begin creating a Wire Constraint Controller";
 				}
 				else if ( stage == 2 )
 				{
@@ -406,7 +441,6 @@ namespace Sandbox.Tools
 			base.Activate();
 
 			Reset();
-
 		}
 
 		public override void Deactivate()
