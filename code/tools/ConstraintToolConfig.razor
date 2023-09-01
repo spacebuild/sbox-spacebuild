@@ -15,7 +15,6 @@
 			</div>
 		}
 	</div>
-	@* todo: implement in tool
 	<Slider
 		Label="Nudge Distance"
 		Min=@(0.125f)
@@ -28,7 +27,6 @@
 		Label="Nudge as Percent (%) of prop width"
 		Convar="tool_constraint_nudge_percent"
 	/>
-	*@
 	<ToolCheckbox Label="Move Target?" Convar="tool_constraint_move_target" />
 	@if (ConsoleSystem.GetValue("tool_constraint_move_target", "0") != "0")
 	{

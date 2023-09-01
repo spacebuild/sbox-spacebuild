@@ -103,18 +103,7 @@ namespace Sandbox.Tools
 							var offset = float.Parse( GetConvarValue( "tool_constraint_move_offset" ) );
 							if ( GetConvarValue( "tool_constraint_move_percent" ) != "0" )
 							{
-								if ( Math.Abs( trace1.Normal.Dot( trace1.Entity.Rotation.Forward ) ) > 0.8f )
-								{
-									offset = trace1.Entity.WorldSpaceBounds.Size.x * offset / 100;
-								}
-								else if ( Math.Abs( trace1.Normal.Dot( trace1.Entity.Rotation.Left ) ) > 0.8f )
-								{
-									offset = trace1.Entity.WorldSpaceBounds.Size.y * offset / 100;
-								}
-								else
-								{
-									offset = trace1.Entity.WorldSpaceBounds.Size.z * offset / 100;
-								}
+								offset = GetEntityOffsetPercent( offset, trace1 );
 							}
 							point1 = PhysicsPoint.World( trace1.Body, trace1.EndPosition + trace1.Normal * offset, Rotation.LookAt( -trace1.Normal, trace1.Direction ) );
 							point2 = PhysicsPoint.World( trace2.Body, trace2.EndPosition, Rotation.LookAt( trace2.Normal, trace2.Direction ) );
@@ -138,7 +127,6 @@ namespace Sandbox.Tools
 								point2
 							);
 							joint.Collisions = GetConvarValue( "tool_constraint_nocollide_target" ) == "0";
-							trace1.Body.Sleeping = false;
 
 							FinishConstraintCreation( joint, () =>
 							{
@@ -232,7 +220,6 @@ namespace Sandbox.Tools
 								trace1.Normal
 							);
 							joint.Collisions = GetConvarValue( "tool_constraint_nocollide_target" ) == "0";
-							trace1.Body.Sleeping = false;
 
 							FinishConstraintCreation( joint, () =>
 							{
@@ -256,7 +243,6 @@ namespace Sandbox.Tools
 								pivot
 							);
 							joint.Collisions = GetConvarValue( "tool_constraint_nocollide_target" ) == "0";
-							trace1.Body.Sleeping = false;
 
 							FinishConstraintCreation( joint, () =>
 							{
@@ -306,18 +292,37 @@ namespace Sandbox.Tools
 				}
 				else if ( Input.Pressed( "attack2" ) )
 				{
+					Nudge( tr, Input.Down( "run" ) ? 1 : -1 );
+
 					Reset();
 				}
 				else if ( Input.Pressed( "reload" ) )
 				{
-					if ( tr.Entity is not Prop prop )
+					if ( !tr.Entity.IsValid() )
 					{
 						return;
 					}
-
-					// todo: how to remove all constraints from X, where are they stored?
-
-					Reset();
+					if ( stage == 0 )
+					{
+						trace1 = tr;
+						stage++;
+						if ( Input.Down( "walk" ) )
+						{
+							RemoveConstraints( Type, tr );
+							Reset();
+						}
+					}
+					else if ( stage == 1 )
+					{
+						trace2 = tr;
+						if ( !trace1.Entity.IsValid() )
+						{
+							Reset();
+							return;
+						}
+						RemoveConstraintBetweenEnts( Type, trace1, trace2 );
+						Reset();
+					}
 				}
 				else
 				{
@@ -326,6 +331,62 @@ namespace Sandbox.Tools
 
 				CreateHitEffects( tr.EndPosition, tr.Normal );
 			}
+		}
+
+		private void Nudge( TraceResult tr, int direction )
+		{
+			if ( !tr.Entity.IsValid() || tr.Entity.IsWorld )
+			{
+				return;
+			}
+			var offset = float.Parse( GetConvarValue( "tool_constraint_nudge_distance" ) );
+			if ( GetConvarValue( "tool_constraint_nudge_percent" ) != "0" )
+			{
+				offset = GetEntityOffsetPercent( offset, tr );
+			}
+			tr.Entity.Position += tr.Normal * offset * direction;
+			tr.Body.Sleeping = true;
+		}
+
+		private float GetEntityOffsetPercent( float percent, TraceResult tr )
+		{
+			if ( Math.Abs( tr.Normal.Dot( tr.Entity.Rotation.Forward ) ) > 0.8f )
+			{
+				return tr.Entity.WorldSpaceBounds.Size.x * percent / 100f;
+			}
+			else if ( Math.Abs( tr.Normal.Dot( tr.Entity.Rotation.Left ) ) > 0.8f )
+			{
+				return tr.Entity.WorldSpaceBounds.Size.y * percent / 100f;
+			}
+			else
+			{
+				return tr.Entity.WorldSpaceBounds.Size.z * percent / 100f;
+			}
+		}
+
+		private void RemoveConstraints( ConstraintType type, TraceResult tr )
+		{
+			tr.Entity.GetJoints().ForEach( j =>
+			{
+				if ( j.GetConstraintType() == type )
+				{
+					j.Remove();
+				}
+			} );
+		}
+
+		private void RemoveConstraintBetweenEnts( ConstraintType type, TraceResult trace1, TraceResult trace2 )
+		{
+			trace1.Entity.GetJoints().ForEach( j =>
+			{
+				if ( (j.Body1 == trace1.Body || j.Body2 == trace1.Body) && (j.Body1 == trace2.Body || j.Body2 == trace2.Body) )
+				{
+					if ( j.GetConstraintType() == type )
+					{
+						j.Remove();
+					}
+				}
+			} );
 		}
 
 		private void SelectNextType()
@@ -365,7 +426,8 @@ namespace Sandbox.Tools
 			}
 			if ( stage == 0 )
 			{
-				desc += $"\n{Input.GetButtonOrigin( "reload" )} to remove {Type} constraint";
+				desc += $"\n{Input.GetButtonOrigin( "attack2" )} to nudge ({Input.GetButtonOrigin( "run" )} for reverse)";
+				desc += $"\n{Input.GetButtonOrigin( "reload" )} to select an entity to remove {Type} constraint ({Input.GetButtonOrigin( "walk" )} to remove all {Type} constraints)";
 				desc += $"\n{Input.GetButtonOrigin( "drop" )} to cycle to next constraint type";
 			}
 			if ( WireboxSupport )
@@ -460,6 +522,5 @@ namespace Sandbox.Tools
 		Rope,
 		Spring, // Winch/Hydraulic
 		Slider, // Prismatic
-				// Nudge, // not a constraint, but something this tool can independently do
 	}
 }
