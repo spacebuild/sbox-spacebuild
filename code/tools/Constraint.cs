@@ -450,6 +450,7 @@ namespace Sandbox.Tools
 
 			Event.Run( "joint.spawned", joint, Owner );
 			Event.Run( "undo.add", undo, Owner );
+			Analytics.ServerIncrement( To.Single( Owner ), "constraint.created" );
 
 			if ( WireboxSupport && Input.Down( "walk" ) )
 			{
@@ -501,6 +502,17 @@ namespace Sandbox.Tools
 		public override void Activate()
 		{
 			base.Activate();
+			if ( Game.IsClient )
+			{
+				if ( CurrentTool.GetCurrentTool() is PrecisionTool )
+				{
+					Analytics.Increment( "ab.tool.constraint-precision.act", 1 );
+				}
+				else
+				{
+					Analytics.Increment( "ab.tool.constraint.activate", 1 );
+				}
+			}
 
 			Reset();
 		}
