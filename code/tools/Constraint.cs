@@ -58,6 +58,7 @@ namespace Sandbox.Tools
 		private bool wasFrozen;
 		private bool wasSleeping;
 		private bool wasMotionEnabled;
+		private float rotationBuildUp;
 		private const float RotateSpeed = 30.0f;
 
 		// Dynamic entrypoint for optional Wirebox support, if installed
@@ -91,9 +92,30 @@ namespace Sandbox.Tools
 						Reset();
 					}
 
-					var rotation = Rotation.FromAxis( trace2.Normal, Input.MouseDelta.x * RotateSpeed * Time.Delta );
+					var rotationAmount = Input.MouseDelta.x * RotateSpeed * Time.Delta;
+					var rotationSnap = float.Parse( GetConvarValue( "tool_constraint_rotate_snap", "0" ) );
+					if ( rotationSnap >= 0.001 )
+					{
+						rotationBuildUp += rotationAmount;
 
-					trace1.Entity.Transform = trace1.Entity.Transform.RotateAround( trace2.HitPosition, rotation );
+						if ( rotationBuildUp <= -rotationSnap )
+						{
+							rotationBuildUp = 0;
+							var rotation = Rotation.FromAxis( trace2.Normal, -rotationSnap );
+							trace1.Entity.Transform = trace1.Entity.Transform.RotateAround( trace2.HitPosition, rotation );
+						}
+						else if (rotationBuildUp >= rotationSnap)
+						{
+							rotationBuildUp = 0;
+							var rotation = Rotation.FromAxis( trace2.Normal, rotationSnap );
+							trace1.Entity.Transform = trace1.Entity.Transform.RotateAround( trace2.HitPosition, rotation );
+						}
+					}
+					else
+					{
+						var rotation = Rotation.FromAxis( trace2.Normal, rotationAmount );
+						trace1.Entity.Transform = trace1.Entity.Transform.RotateAround( trace2.HitPosition, rotation );
+					}
 				}
 
 				var tr = DoTrace();
@@ -171,6 +193,7 @@ namespace Sandbox.Tools
 							if ( wantsRotation )
 							{
 								stage = ConstraintToolStage.Rotating;
+								rotationBuildUp = 0;
 								CreateHitEffects( tr.EndPosition, tr.Normal );
 								return;
 							}
