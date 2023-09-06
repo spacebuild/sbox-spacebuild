@@ -108,6 +108,7 @@ namespace Sandbox.Tools
 					var rotationSnap = float.Parse( GetConvarValue( "tool_constraint_rotate_snap", "0" ) );
 					if ( rotationSnap >= 0.001 )
 					{
+						// todo: snap rotation relative to the base prop (or World angles I guess), rather than the target prop
 						rotationBuildUp += rotationAmount;
 
 						if ( rotationBuildUp <= -rotationSnap )
@@ -631,17 +632,6 @@ namespace Sandbox.Tools
 		public override void Activate()
 		{
 			base.Activate();
-			if ( Game.IsClient )
-			{
-				if ( CurrentTool.GetCurrentTool() is PrecisionTool )
-				{
-					Analytics.Increment( "ab.tool.constraint-precision.act", 1 );
-				}
-				else
-				{
-					Analytics.Increment( "ab.tool.constraint.activate", 1 );
-				}
-			}
 
 			Reset();
 		}
