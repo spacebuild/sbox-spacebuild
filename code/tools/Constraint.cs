@@ -35,7 +35,7 @@ namespace Sandbox.Tools
 		[ConVar.ClientData( "tool_constraint_rotate_snap" )] public static string _8 { get; set; } = "15";
 		[ConVar.ClientData( "tool_constraint_freeze_target" )] public static string _9 { get; set; } = "1";
 		[ConVar.ClientData( "tool_constraint_nocollide_target" )] public static string _10 { get; set; } = "1";
-		[ConVar.ClientData( "tool_constraint_rope_length" )] public static string _11 { get; set; } = "0";
+		[ConVar.ClientData( "tool_constraint_rope_extra_length" )] public static string _11 { get; set; } = "0";
 		[ConVar.ClientData( "tool_constraint_rope_rigid" )] public static string _12 { get; set; } = "0";
 
 		private enum ConstraintToolStage {
@@ -307,7 +307,7 @@ namespace Sandbox.Tools
 						}
 						else if ( Type == ConstraintType.Rope )
 						{
-							var lengthOffset = float.Parse( GetConvarValue( "tool_constraint_rope_length" ) );
+							var lengthOffset = float.Parse( GetConvarValue( "tool_constraint_rope_extra_length" ) );
 							var length = trace1.EndPosition.Distance( trace2.EndPosition ) + lengthOffset;
 							var joint = PhysicsJoint.CreateLength(
 								point1,

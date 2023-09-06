@@ -18,16 +18,16 @@
 	@if (ConsoleSystem.GetValue("tool_constraint_type", "Weld") == ConstraintType.Rope.ToString())
 	{
 		<Slider
-			Label="Rope Length"
+			Label="Rope Extra Length"
 			Min=@(0f)
 			Max=@(1000f)
 			Step=@(1f)
-			Convar="tool_constraint_rope_length"
+			Convar="tool_constraint_rope_extra_length"
 		/>
 		<ToolCheckbox
 			Label="Rigid Rope"
 			Convar="tool_constraint_rope_rigid"
-			style="margin-bottom: 20px;"
+			style="margin-bottom: 15px;"
 		/>
 	}
 	<Slider
@@ -36,11 +36,11 @@
 		Max=@(100f)
 		Step=@(0.125f)
 		Convar="tool_constraint_nudge_distance"
-		style="margin-top: 20px;"
 	/>
 	<ToolCheckbox
 		Label="Nudge as Percent (%) of prop width"
 		Convar="tool_constraint_nudge_percent"
+		style="margin-bottom: 15px;"
 	/>
 	<ToolCheckbox Label="Move Target?" Convar="tool_constraint_move_target" />
 	@if (ConsoleSystem.GetValue("tool_constraint_move_target", "0") != "0")
@@ -98,6 +98,7 @@ ConstraintToolConfig {
 	flex-direction: column;
 	.list {
 		flex-direction: column;
+		margin-bottom: 15px;
 		.list_option {
 			padding: 2px 0;
 			font-size: 12px;
