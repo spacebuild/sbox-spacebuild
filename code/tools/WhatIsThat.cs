@@ -1,4 +1,5 @@
 using Sandbox.UI;
+using System.Xml;
 
 namespace Sandbox.Tools
 {
@@ -37,15 +38,18 @@ namespace Sandbox.Tools
 						{
 							message += $" weighing {prop.PhysicsBody.Mass}";
 						}
-						if ( prop.GetPlayerOwner().IsValid() )
+
+						var playerOwner = prop.GetPlayerOwner();
+						if ( playerOwner.IsValid() )
 						{
-							message += $" owned by {prop.GetPlayerOwner()}";
+							var ownerClient = Game.Clients.FirstOrDefault( c => c.NetworkIdent == (playerOwner?.Owner?.NetworkIdent ?? playerOwner?.NetworkIdent) );
+							message += $" owned by {ownerClient?.Name ?? playerOwner.ToString()}";
 						}
 					}
 
-					// prints to console, and to chat (for us only)
+					// prints to console, and to hint feed (for us only)
 					Log.Info( message );
-					Chat.AddChatEntry( To.Single(Owner.Client), Owner.Client.Name, message, Owner.Client.SteamId );
+					HintFeed.AddHint( To.Single( Owner.Client ), "whatis", message );
 				}
 			}
 		}
