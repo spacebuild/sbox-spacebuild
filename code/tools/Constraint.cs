@@ -68,6 +68,18 @@ namespace Sandbox.Tools
 			get => CreateWireboxConstraintController != null;
 		}
 
+		public override void BuildInput()
+		{
+			if ( stage == ConstraintToolStage.Rotating )
+			{
+				// Lock view angles while we're using the mouse to rotate a prop
+				if ( Owner is Player pl )
+				{
+					pl.ViewAngles = pl.OriginalViewAngles;
+				}
+			}
+		}
+
 		public override void Simulate()
 		{
 			if ( Game.IsClient )
