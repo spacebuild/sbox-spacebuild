@@ -1,9 +1,5 @@
-﻿using Sandbox;
-using Sandbox.Tools;
-using Sandbox.UI;
+﻿using Sandbox.UI;
 using Sandbox.UI.Construct;
-using System;
-using System.Xml.Linq;
 
 public partial class HintFeed : Panel
 {
@@ -16,44 +12,25 @@ public partial class HintFeed : Panel
 	}
 
 	[ClientRpc]
-	public static void AddHint(string type, string msg )
+	public static void AddHint( string icon, string msg )
 	{
 		var e = Current.AddChild<HintFeedEntry>();
 
-		var iconName = GetIconName( type );
-		var iconClasses = GetIconClasses( type );
+		var iconClasses = GetIconClasses( icon );
 
-		if ( !string.IsNullOrEmpty( iconName ) )
+		if ( !string.IsNullOrEmpty( icon ) )
 		{
-			e.Icon = e.Add.Icon( iconName, iconClasses );
+			e.Icon = e.Add.Icon( icon, iconClasses );
 		}
 		e.Message = e.Add.Label( msg, "msg" );
 	}
 
-	private static string GetIconName( string type )
+	private static string GetIconClasses( string icon )
 	{
-		string name = type switch
-		{
-			"undo" => type,
-			"redo" => type,
-			"whatis" => "question_mark",
-			_ => null,
+		List<string> classes = new() {
+			"icon",
+			icon
 		};
-		return name;
-	}
-
-	private static string GetIconClasses(string type )
-	{
-		List<string> classes = new List<string> { "icon" };
-
-		if (type == "undo" || type == "redo")
-		{
-			classes.Add( type );
-		}
-		else if (type == "whatis")
-		{
-			classes.Add( "question" );
-		}
-		return string.Join(" ", classes);
+		return string.Join( " ", classes );
 	}
 }

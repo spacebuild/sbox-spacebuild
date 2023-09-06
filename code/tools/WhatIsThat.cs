@@ -49,7 +49,7 @@ namespace Sandbox.Tools
 
 					// prints to console, and to hint feed (for us only)
 					Log.Info( message );
-					HintFeed.AddHint( To.Single( Owner.Client ), "whatis", message );
+					HintFeed.AddHint( To.Single( Owner.Client ), "question_mark", message );
 				}
 			}
 		}

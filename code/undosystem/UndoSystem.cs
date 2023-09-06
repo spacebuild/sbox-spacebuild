@@ -61,8 +61,6 @@ namespace UndoManager
 					if ( undoMessage != "" )
 					{
 						HintFeed.AddHint( To.Single( creator ), "undo", undoMessage );
-
-						Undoer.AddUndoPopup( To.Single( creator ), undoMessage );
 						CreateUndoParticles( To.Single( creator ), Vector3.Zero );
 						break;
 					}
@@ -94,7 +92,6 @@ namespace UndoManager
 
 				undo.Avoid = true;
 
-				Undoer.OnTrashbin( To.Single( creator ) );
 				Undoer.HideProp( undo );
 
 				await prop.Task.DelaySeconds( Redoer.Duration );
@@ -168,17 +165,17 @@ namespace UndoManager
 		/// </summary>
 		/// <param name="e"></param>
 		/// <returns></returns>
-		private static string GetPropName(Entity e)
+		private static string GetPropName( Entity e )
 		{
 			var displayInfo = DisplayInfo.For( e );
 			var msg = displayInfo.Name;
 
 			// We can do better!
-			if (msg == "Prop")
+			if ( e.GetType() == typeof( Prop ) )
 			{
 				if ( e is ModelEntity model )
 				{
-					msg = model.Model?.ResourceName;
+					msg += $" ({model.Model?.ResourceName})";
 				}
 			}
 
