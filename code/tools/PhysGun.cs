@@ -7,7 +7,8 @@ using System.Linq;
 [Library( "physgun" )]
 public partial class PhysGun : Carriable
 {
-	public override string ViewModelPath => Cloud.Asset( "katka/gravitygun" );
+	private static int ViewModelIndex = 0;
+	public override string ViewModelPath => ViewModelIndex == 0 ? Cloud.Asset( "katka/gravitygun" ) : Cloud.Asset( "wiremod.v_gravity_gun2" );
 	private AnimatedEntity ViewModelArms { get; set; }
 	private AnimatedEntity ArmsAdapter { get; set; }
 	public List<CapsuleLightEntity> LightsWorld;
@@ -53,6 +54,18 @@ public partial class PhysGun : Carriable
 		Tags.Add( "weapon", "solid" );
 	}
 
+	[ConCmd.Client( "physgun_model" )]
+	public static void ChangeModelCmd( string cmd )
+	{
+		ViewModelIndex = int.Parse( cmd ) % 2;
+		var gun = (Game.LocalPawn as SandboxPlayer).ActiveChild;
+		if ( gun.IsValid() && gun is PhysGun physGun )
+		{
+			physGun.ActiveEnd( physGun, false );
+			physGun.ActiveStart( physGun );
+		}
+	}
+
 	public void CreateLights()
 	{
 		LightsWorld = new();
@@ -92,15 +105,22 @@ public partial class PhysGun : Carriable
 		base.CreateViewModel();
 
 		ViewModelEntity.EnableViewmodelRendering = true;
-		ViewModelEntity.SetBodyGroup( "crystal_inside", 1 );
+		if ( ViewModelIndex == 0 )
+		{
+			ViewModelEntity.SetBodyGroup( "crystal_inside", 1 );
 
-		ArmsAdapter = new AnimatedEntity( Cloud.Asset( "katka/hand_adapter_valvebiped_to_sbox" ) );
-		ArmsAdapter.SetParent( ViewModelEntity, true );
-		ArmsAdapter.EnableViewmodelRendering = ViewModelEntity.EnableViewmodelRendering;
+			ArmsAdapter = new AnimatedEntity( Cloud.Asset( "katka/hand_adapter_valvebiped_to_sbox" ) );
+			ArmsAdapter.SetParent( ViewModelEntity, true );
+			ArmsAdapter.EnableViewmodelRendering = ViewModelEntity.EnableViewmodelRendering;
 
-		ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
-		ViewModelArms.SetParent( ArmsAdapter, true );
-		ViewModelArms.EnableViewmodelRendering = ViewModelEntity.EnableViewmodelRendering;
+			ViewModelArms = new AnimatedEntity( "models/first_person/first_person_arms.vmdl" );
+			ViewModelArms.SetParent( ArmsAdapter, true );
+			ViewModelArms.EnableViewmodelRendering = ViewModelEntity.EnableViewmodelRendering;
+		}
+		else if ( ViewModelIndex == 1 )
+		{
+			ViewModelEntity.SetMaterialGroup( "physicsgun" );
+		}
 	}
 
 	public override void DestroyViewModel()
@@ -240,6 +260,11 @@ public partial class PhysGun : Carriable
 			else
 			{
 				StopBeamSound();
+			}
+
+			if ( Input.Pressed( "drop" ) && Input.Down( "run" ) )
+			{
+				ChangeModelCmd( ((ViewModelIndex + 1) % 2).ToString() );
 			}
 		}
 	}
@@ -401,7 +426,7 @@ public partial class PhysGun : Carriable
 
 		Activate();
 
-		if ( Game.IsClient )
+		if ( Game.IsClient && ViewModelIndex == 0 )
 		{
 			CreateLights();
 		}
@@ -572,6 +597,10 @@ public partial class PhysGun : Carriable
 
 	public override void OnCarryDrop( Entity dropper )
 	{
+		if ( Input.Pressed( "drop" ) && Input.Down( "run" ) )
+		{
+			return;
+		}
 		GrabEnd();
 
 		StopBeamSound( To.Single( dropper ) );
