@@ -12,7 +12,7 @@ public partial class GravGun : Carriable
 	private AnimatedEntity ArmsAdapter { get; set; }
 	public List<CapsuleLightEntity> LightsWorld;
 	public PointLightEntity LightView;
-	public Color CrystalColor { get; set; } = Color.White;
+	public Color CrystalColor { get; set; } = Color.FromBytes( 172, 64, 0 );
 
 	public PhysicsBody HeldBody { get; private set; }
 	public Vector3 HeldPos { get; private set; }
@@ -57,18 +57,11 @@ public partial class GravGun : Carriable
 	public override void Spawn()
 	{
 		base.Spawn();
-		
+
 		SetModel( ViewModelPath );
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 
 		Tags.Add( "weapon", "solid" );
-	}
-
-	public override void ClientSpawn()
-	{
-		base.ClientSpawn();
-
-		CrystalColor = Color.FromBytes( 172, 64, 0 );
 	}
 
 	public void CreateLights()
@@ -141,8 +134,8 @@ public partial class GravGun : Carriable
 		{
 			for ( var i = 1; i <= 6; i++ )
 			{
-				var t = (Transform) GetAttachment( $"glow{i}" );
-				if (LightsWorld.Count >= i)
+				var t = (Transform)GetAttachment( $"glow{i}" );
+				if ( LightsWorld.Count >= i )
 				{
 					var light = LightsWorld.ElementAt( i - 1 );
 
@@ -158,9 +151,9 @@ public partial class GravGun : Carriable
 
 		if ( LightView.IsValid() )
 		{
-			if (ViewModelEntity.IsValid())
+			if ( ViewModelEntity.IsValid() )
 			{
-				var m = (Transform) ViewModelEntity.GetAttachment( "muzzle" );
+				var m = (Transform)ViewModelEntity.GetAttachment( "muzzle" );
 				LightView.Color = CrystalColor;
 				LightView.Position = m.Position;
 				LightView.Rotation = m.Rotation;
@@ -299,7 +292,7 @@ public partial class GravGun : Carriable
 						hasPlayedTooHeavySound = true;
 					}
 				}
-				else if ( Input.Down("attack1") )
+				else if ( Input.Down( "attack1" ) )
 				{
 					if ( !hasPlayedDryFireSound )
 					{
@@ -414,7 +407,7 @@ public partial class GravGun : Carriable
 			Activate();
 		}
 
-		if (Game.IsClient)
+		if ( Game.IsClient )
 		{
 			CreateLights();
 		}
@@ -429,7 +422,7 @@ public partial class GravGun : Carriable
 			Deactivate();
 		}
 
-		if (Game.IsClient)
+		if ( Game.IsClient )
 		{
 			DestroyLights();
 		}

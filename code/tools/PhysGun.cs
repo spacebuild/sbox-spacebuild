@@ -12,7 +12,7 @@ public partial class PhysGun : Carriable
 	private AnimatedEntity ArmsAdapter { get; set; }
 	public List<CapsuleLightEntity> LightsWorld;
 	public PointLightEntity LightView;
-	public Color CrystalColor { get; set; } = Color.White;
+	public Color CrystalColor { get; set; } = Color.Cyan;
 
 	public PhysicsBody HeldBody { get; private set; }
 	public Vector3 HeldPos { get; private set; }
@@ -41,23 +41,16 @@ public partial class PhysGun : Carriable
 	[Net] public Vector3 GrabbedPos { get; set; }
 
 	private Sound BeamSound;
-	private int BeamSoundPlaying;
+	private bool BeamSoundPlaying;
 
 	public override void Spawn()
 	{
 		base.Spawn();
-		
+
 		SetModel( ViewModelPath );
 		SetupPhysicsFromModel( PhysicsMotionType.Dynamic );
 
 		Tags.Add( "weapon", "solid" );
-	}
-
-	public override void ClientSpawn()
-	{
-		base.ClientSpawn();
-
-		CrystalColor = Color.Cyan;
 	}
 
 	public void CreateLights()
@@ -232,20 +225,21 @@ public partial class PhysGun : Carriable
 			}
 		}
 
-		if (Game.IsClient)
+		if ( Game.IsClient )
 		{
 			if ( BeamActive )
 			{
 				Input.MouseWheel = 0;
 
-				if ( !BeamSound.IsPlaying )
+				if ( !BeamSound.IsPlaying && !BeamSoundPlaying )
 				{
 					BeamSound = PlaySound( "sounds/weapons/gravity_gun/superphys_small_zap1.sound" );
+					BeamSoundPlaying = true;
 				}
 			}
 			else
 			{
-				BeamSound.Stop();
+				StopBeamSound();
 			}
 		}
 	}
@@ -422,7 +416,7 @@ public partial class PhysGun : Carriable
 		if ( Game.IsClient )
 		{
 			DestroyLights();
-			BeamSound.Stop();
+			StopBeamSound();
 		}
 	}
 
@@ -431,8 +425,7 @@ public partial class PhysGun : Carriable
 		base.OnDestroy();
 
 		Deactivate();
-
-		BeamSound.Stop();
+		StopBeamSound();
 	}
 
 	private void GrabInit( PhysicsBody body, Vector3 startPos, Vector3 grabPos, Rotation rot )
@@ -574,6 +567,7 @@ public partial class PhysGun : Carriable
 	public void StopBeamSound()
 	{
 		BeamSound.Stop();
+		BeamSoundPlaying = false;
 	}
 
 	public override void OnCarryDrop( Entity dropper )
