@@ -49,6 +49,11 @@
 
 	void SpawnPackage(Package package)
 	{
+		if (Input.Down("run")) {
+			Clipboard.SetText(package.FullIdent);
+			Log.Info($"Copied to clipboard: {package.FullIdent}");
+			return;
+		}
 		ConsoleSystem.Run("spawn", package.FullIdent);
 	}
 
