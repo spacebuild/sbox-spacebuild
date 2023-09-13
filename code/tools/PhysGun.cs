@@ -18,6 +18,7 @@ public partial class PhysGun : Carriable
 	public PhysicsBody HeldBody { get; private set; }
 	public Vector3 HeldPos { get; private set; }
 	public Rotation HeldRot { get; private set; }
+	public float HeldMass { get; private set; }
 	public Vector3 HoldPos { get; private set; }
 	public Rotation HoldRot { get; private set; }
 	public float HoldDistance { get; private set; }
@@ -473,6 +474,9 @@ public partial class PhysGun : Carriable
 		HoldPos = HeldBody.Position;
 		HoldRot = HeldBody.Rotation;
 
+		HeldMass = HeldBody.Mass;
+		HeldBody.Mass = 10000f;
+
 		HeldBody.Sleeping = false;
 		HeldBody.AutoSleep = false;
 	}
@@ -482,6 +486,7 @@ public partial class PhysGun : Carriable
 		if ( HeldBody.IsValid() )
 		{
 			HeldBody.AutoSleep = true;
+			HeldBody.Mass = HeldMass;
 		}
 
 		Client?.Pvs.Remove( GrabbedEntity );
