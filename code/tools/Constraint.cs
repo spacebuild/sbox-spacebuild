@@ -341,13 +341,13 @@ namespace Sandbox.Tools
 						{
 							var pivot = Input.Down( "run" )
 								? trace1.Body.MassCenter
-								: trace1.EndPosition;
+								: trace2.EndPosition;
 
 							var joint = PhysicsJoint.CreateHinge(
 								trace1.Body,
 								trace2.Body,
 								pivot,
-								trace1.Normal
+								trace2.Normal
 							);
 							joint.Collisions = GetConvarValue( "tool_constraint_nocollide_target" ) == "0";
 
