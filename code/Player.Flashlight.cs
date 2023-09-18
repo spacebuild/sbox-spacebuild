@@ -5,7 +5,7 @@ partial class SandboxPlayer
 	private SpotLightEntity viewLight;
 	private SpotLightEntity worldLight;
 	private TimeSince timeSinceLightToggled;
-	[Net, Predicted] private bool LightEnabled { get; set; };
+	[Net, Predicted] private bool LightEnabled { get; set; }
 
 	private Entity PreviousActiveChild;
 

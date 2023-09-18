@@ -36,11 +36,11 @@ namespace Sandbox
 		}
 
 		[ConCmd.Server( "spawn_dynplate" )]
-		public static void SpawnEntityCmd( int length, int width, int height, int texScale = 100 )
+		public static void SpawnPlate( float length, float width, float height, int texSize = 100 )
 		{
 			if ( ConsoleSystem.Caller == null )
 				return;
-			var modelId = GenerateRectangleServer( length, width, height, texScale );
+			var modelId = GenerateRectangleServer( length, width, height, texSize );
 			var entity = SpawnEntity( modelId );
 			SandboxPlayer pawn = ConsoleSystem.Caller.Pawn as SandboxPlayer;
 			TraceResult trace = Trace.Ray( pawn.EyePosition, pawn.EyePosition + pawn.EyeRotation.Forward * 5000.0f ).UseHitboxes().Ignore( pawn ).Run();
@@ -57,17 +57,13 @@ namespace Sandbox
 		}
 
 		[ClientRpc]
-		public static void GenerateRectangleClient( int length, int width, int height, int texSize )
+		public static void GenerateRectangleClient( float length, float width, float height, int texSize )
 		{
-			GenerateRectangle( length, width, height, texSize );
+			CreateRectangleModel( new Vector3( length, width, height ), texSize );
 		}
-		public static string GenerateRectangleServer( int length, int width, int height, int texSize )
+		public static string GenerateRectangleServer( float length, float width, float height, int texSize )
 		{
 			GenerateRectangleClient( length, width, height, texSize );
-			return GenerateRectangle( length, width, height, texSize );
-		}
-		public static string GenerateRectangle( int length, int width, int height, int texSize )
-		{
 			return CreateRectangleModel( new Vector3( length, width, height ), texSize );
 		}
 
