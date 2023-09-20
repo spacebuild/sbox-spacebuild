@@ -15,7 +15,7 @@
     flex-grow: 1;
     flex-wrap: wrap;
     flex-direction: column;
-    flex-basis: 50%;
+    flex-basis: 40%;
     justify-content: space-between;
     margin: 10px;
     border-radius: 5px;
@@ -61,6 +61,25 @@
         color: #fff;
         background-color: rgba(black, 0.4);
       }
+    }
+  }
+
+  .spawnicon {
+    border-radius: 8px;
+    color: rgba( #fff, 0.5 );
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+    width: 128px;
+    height: 128px;
+    background-position: center;
+    background-size: cover;
+    background-color: rgba(black, 0.0);
+    background-image: url( /entity/spawnicon.png );
+
+    &:hover {
+      color: #fff;
+      background-color: rgba(black, 0.1);
     }
   }
 

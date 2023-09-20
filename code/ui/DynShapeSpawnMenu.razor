@@ -11,11 +11,20 @@
 
 <root>
 	<VirtualScrollPanel @ref=Canvas class="canvas" />
-	<DynShapeMaker OnCreateClicked=@SpawnShape TextureSize:bind=@TextureSize />
+	<DynShapeMaker OnCreateClicked=@SpawnShape OnUpdatePreview=@UpdatePreview TextureSize:bind=@TextureSize />
+	<ScenePanel @ref=previewScenePanel class="spawnicon" />
 </root>
 
 @code {
-	private float TextureSize { get; set; } = 64f;
+
+	private int TextureSize {
+		get => _textureSize;
+		set {
+			_textureSize = value;
+			if (previewShape.shape != "")
+				UpdatePreview(previewShape);
+		}
+	}
 
 	private VirtualScrollPanel Canvas;
 	private HashSet<DynShapeDimensions> shapes = new();
@@ -113,6 +122,53 @@
 			FileSystem.Data.WriteAllText( "dynshape_spawnlist.json", JsonSerializer.Serialize( shapes ) );
 			Canvas.SetItems( GetOrderedShapes() );
 		}
+	}
+
+	private Model GenerateShapeModel(DynShapeDimensions shape)
+	{
+		switch (shape.shape) {
+			case "plate":
+				return VertexMeshBuilder.Models[VertexMeshBuilder.CreateRectangleModel(shape.x, shape.y, shape.z, TextureSize )];
+			case "cylinder":
+				return VertexMeshBuilder.Models[VertexMeshBuilder.CreateCylinderModel( shape.radius, shape.z, shape.numSegments, TextureSize )];
+			case "sphere":
+				return VertexMeshBuilder.Models[VertexMeshBuilder.CreateSphereModel( shape.radius, shape.numSegments, TextureSize )];
+			case "gear":
+				return VertexMeshBuilder.Models[VertexMeshBuilder.CreateGearModel( shape.radius, shape.z, shape.numSegments, shape.cutDepth, shape.cutAngle, TextureSize )];
+		}
+		throw new Exception("Unknown shape type");
+	}
+
+	private SceneWorld previewSceneWorld;
+	private SceneLight previewSceneLight;
+	private SceneModel previewSceneModel;
+	private ScenePanel previewScenePanel;
+	private DynShapeDimensions previewShape;
+	private int _textureSize = 64;
+
+	private void UpdatePreview( DynShapeDimensions shape )
+	{
+		previewShape = shape;	
+		var model = GenerateShapeModel(previewShape);
+		if (!previewSceneWorld.IsValid()) {
+			previewSceneWorld = new SceneWorld();
+			previewSceneWorld.AmbientLightColor = Color.White * 0.8f;
+			// previewSceneLight = new SceneLight( previewSceneWorld, Vector3.Up * 75.0f, 200.0f, Color.White * 20.0f );
+			previewSceneModel = new SceneModel(previewSceneWorld, model, new Transform( Vector3.Zero, new Rotation( new Vector3( -0.25f, 0.25f, 0.7f ), 0f ) ) );
+			previewSceneModel.SetMaterialOverride(Cloud.Material("facepunch/corrugated_wall_a_doublesided"));
+			
+			previewScenePanel.World = previewSceneWorld;
+			previewScenePanel.Camera.Angles = Angles.Zero;
+			previewScenePanel.Camera.FieldOfView = 20.0f;
+			previewScenePanel.Camera.ZFar = 5000.0f;
+			previewScenePanel.AddEventListener( "onclick", () =>
+				SpawnShape( previewShape )
+			);
+		}
+		previewSceneModel.Model = model;
+		var distance = model.RenderBounds.Size.Length * 2 + 50;
+		previewScenePanel.Camera.Position = model.RenderBounds.Center + Vector3.Forward * -distance;
+		// previewSceneLight.Position = previewScenePanel.Camera.Position;
 	}
 
 	private IEnumerable<object> GetOrderedShapes()
