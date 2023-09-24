@@ -23,6 +23,7 @@ public partial class Chat
 		if ( message.Contains( '\n' ) || message.Contains( '\r' ) )
 			return;
 
+		Event.Run( "client.say", ConsoleSystem.Caller, message );
 		Log.Info( $"{ConsoleSystem.Caller}: {message}" );
 		AddChatEntry( To.Everyone, ConsoleSystem.Caller.Name, message, ConsoleSystem.Caller.SteamId );
 	}

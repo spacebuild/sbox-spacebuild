@@ -13,10 +13,13 @@
   - Takes no parameters; you're expected to call `ModelSelector.AddToSpawnlist( "screen", string[] models)`
 - "player.cantool": called by traces.
   - Takes a single CanToolParams parameter. Writing `params.preventDefault = true` will prevent the tool action.
+  - This may be better handled via the tool.{toolName} permission, see below.
 - "player.simulate"
   - `Event.Run( "player.simulate", SandboxPlayer player )`
 - "player.killed"
   - `void OnKilled( SandboxPlayer player )`
+- "client.say"
+  - `Event.Run( "client.say", IClient client, string message )`
 - "trace.prepare": used to modify Player movement traces
   - ```
     [Event( "trace.prepare" )]
