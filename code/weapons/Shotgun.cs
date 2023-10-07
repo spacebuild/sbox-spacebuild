@@ -9,6 +9,13 @@ partial class Shotgun : Weapon
 	public override float SecondaryRate => 1;
 	public override float ReloadTime => 0.5f;
 
+	public Shotgun()
+	{
+		HoldType = CariableHoldTypes.Shotgun;
+		Handedness = CariableHandedness.Both;
+		AimBodyWeight = 1.0f;
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -90,11 +97,5 @@ partial class Shotgun : Weapon
 	{
 		ViewModelEntity?.SetAnimParameter( "reload_finished", true );
 	}
-
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.Shotgun;
-		anim.Handedness = CitizenAnimationHelper.Hand.Both;
-		anim.AimBodyWeight = 1.0f;
-	}
+	
 }

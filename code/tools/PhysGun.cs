@@ -2,6 +2,7 @@ using Sandbox;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sandbox.Systems.Player;
 
 [Spawnable]
 [Library( "physgun" )]
@@ -278,7 +279,7 @@ public partial class PhysGun : Carriable
 			.Ignore( this )
 			.OnTraceEvent( Owner ) // SandboxPlus addition for Stargate support
 			.Run();
-		tr = CanToolParams.RunCanTool( Owner as Player, ClassName, tr );
+		tr = CanToolParams.RunCanTool( Owner as BasePlayer, ClassName, tr );
 
 		if ( !tr.Hit || !tr.Entity.IsValid() || tr.Entity.IsWorld ) return;
 		if ( tr.Entity.Tags.Has( PhysgunBlockTag ) ) return;
@@ -320,7 +321,7 @@ public partial class PhysGun : Carriable
 			.Ignore( this )
 			.OnTraceEvent( Owner ) // SandboxPlus addition for Stargate support
 			.Run();
-		tr = CanToolParams.RunCanTool( Owner as Player, ClassName, tr );
+		tr = CanToolParams.RunCanTool( Owner as BasePlayer, ClassName, tr );
 
 		if ( !tr.Hit || !tr.Entity.IsValid() || tr.Entity.IsWorld || tr.StartedSolid ) return;
 		if ( tr.Entity.Tags.Has( PhysgunBlockTag ) ) return;
@@ -600,7 +601,7 @@ public partial class PhysGun : Carriable
 		BeamSoundPlaying = false;
 	}
 
-	public override void OnCarryDrop( Entity dropper )
+	public override void OnDrop( Entity dropper )
 	{
 		if ( Input.Pressed( "drop" ) && Input.Down( "run" ) )
 		{
@@ -610,6 +611,6 @@ public partial class PhysGun : Carriable
 
 		StopBeamSound( To.Single( dropper ) );
 
-		base.OnCarryDrop( dropper );
+		base.OnDrop( dropper );
 	}
 }

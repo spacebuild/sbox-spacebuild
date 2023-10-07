@@ -4,6 +4,7 @@ using System;
 using Sandbox.UI;
 using Sandbox.UI.Construct;
 using Sandbox.Physics;
+using Sandbox.Systems.Player;
 
 namespace Sandbox.Tools
 {
@@ -66,7 +67,7 @@ namespace Sandbox.Tools
 		private const float RotateSpeed = 30.0f;
 
 		// Dynamic entrypoint for optional Wirebox support, if installed
-		public static Action<Player, TraceResult, ConstraintType, PhysicsJoint, Func<string>> CreateWireboxConstraintController;
+		public static Action<BasePlayer, TraceResult, ConstraintType, PhysicsJoint, Func<string>> CreateWireboxConstraintController;
 		private static bool WireboxSupport
 		{
 			get => CreateWireboxConstraintController != null;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sandbox.Systems.Player;
 
 [Spawnable]
 [Library( "gravgun" )]
@@ -178,7 +179,7 @@ public partial class GravGun : Carriable
 
 	public override void Simulate( IClient client )
 	{
-		if ( Owner is not Player owner ) return;
+		if ( Owner is not BasePlayer owner ) return;
 
 		SetAnimParameter( "prongs", ProngsState );
 		ViewModelEntity?.SetAnimParameter( "prongs", ProngsState );
@@ -529,10 +530,10 @@ public partial class GravGun : Carriable
 		return Owner == null || HeldBody.IsValid();
 	}
 
-	public override void OnCarryDrop( Entity dropper )
+	public override void OnDrop( Entity dropper )
 	{
 		GrabEnd();
 
-		base.OnCarryDrop( dropper );
+		base.OnDrop( dropper );
 	}
 }

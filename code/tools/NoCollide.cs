@@ -1,4 +1,5 @@
 ﻿using System;
+using Sandbox.Systems.Player;
 
 namespace Sandbox.Tools
 {
@@ -22,7 +23,7 @@ namespace Sandbox.Tools
 					if ( !tr.Hit || !tr.Entity.IsValid() )
 						return;
 
-					if ( tr.Entity is Player )
+					if ( tr.Entity is BasePlayer )
 						return;
 
 					if ( tr.Entity is not ModelEntity modelEnt )
@@ -40,7 +41,7 @@ namespace Sandbox.Tools
 					if ( !tr.Hit || !tr.Entity.IsValid() )
 						return;
 
-					if ( tr.Entity is Player )
+					if ( tr.Entity is BasePlayer )
 						return;
 
 					if ( tr.Entity is not ModelEntity modelEnt )

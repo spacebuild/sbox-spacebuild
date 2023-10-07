@@ -1,4 +1,4 @@
-﻿using Sandbox;
+﻿using Sandbox.Systems.Player;
 using Sandbox.Tools;
 using Sandbox.UI;
 
@@ -75,7 +75,7 @@ partial class Tool : Carriable
 		if ( CurrentTool != null )
 		{
 			CurrentTool.Parent = this;
-			CurrentTool.Owner = owner.Pawn as Player;
+			CurrentTool.Owner = owner.Pawn as BasePlayer;
 			CurrentTool.Activate();
 		}
 	}
@@ -166,7 +166,7 @@ partial class Tool : Carriable
 		CurrentTool?.BuildInput();
 	}
 
-	public override void OnCarryDrop( Entity dropper )
+	public override void OnDrop( Entity dropper )
 	{
 	}
 
@@ -195,13 +195,6 @@ partial class Tool : Carriable
 		}
 	}
 
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.Pistol;
-		anim.Handedness = CitizenAnimationHelper.Hand.Right;
-		anim.AimBodyWeight = 1.0f;
-	}
-
 	public static void SetActiveTool( string toolId )
 	{
 		ConsoleSystem.Run( "tool_current", toolId );
@@ -217,7 +210,7 @@ namespace Sandbox.Tools
 		public Tool Parent { get; set; }
 
 		[Net]
-		public Player Owner { get; set; }
+		public BasePlayer Owner { get; set; }
 
 		protected virtual float MaxTraceDistance => 10000.0f;
 
@@ -264,15 +257,8 @@ namespace Sandbox.Tools
 			Parent?.CreateHitEffects( pos, normal, continuous );
 		}
 
-		public virtual TraceResult DoTrace( bool checkCanTool = true )
-		{
-			var startPos = Owner.EyePosition;
-			var dir = Owner.EyeRotation.Forward;
-
-			var tr = Trace.Ray( startPos, startPos + (dir * MaxTraceDistance) )
-				.WithAnyTags( "solid", "nocollide" )
-				.Ignore( Owner )
-				.Run();
+		public virtual TraceResult DoTrace( bool checkCanTool = true ) {
+			var tr = Owner.TraceRay( MaxTraceDistance );
 
 			if ( checkCanTool && tr.Entity.IsValid() && !tr.Entity.IsWorld )
 			{

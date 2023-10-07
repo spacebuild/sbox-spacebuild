@@ -1,4 +1,6 @@
 ﻿using Sandbox;
+using Sandbox.Systems.Inventory;
+using BaseCarriable = Sandbox.Base.BaseCarriable;
 
 public partial class Carriable : BaseCarriable, IUse
 {
@@ -27,5 +29,21 @@ public partial class Carriable : BaseCarriable, IUse
 	public virtual bool IsUsable( Entity user )
 	{
 		return Owner == null;
+	}
+
+	public virtual bool CanUnequip( Entity owner ) {
+		return true;
+	}
+
+	public void OnUnEquip( Entity owner ) {
+		OnDrop(owner);
+	}
+
+	public bool CanEquip( Entity owner ) {
+		return CanCarry( owner );
+	}
+
+	public void OnEquip( Entity owner ) {
+		OnCarry( owner );
 	}
 }

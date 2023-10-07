@@ -17,6 +17,13 @@ partial class Flashlight : Weapon
 
 	TimeSince timeSinceLightToggled;
 
+	public Flashlight()
+	{
+		HoldType = CariableHoldTypes.Pistol;
+		Handedness = CariableHandedness.Right;
+		AimBodyWeight = 1.0f;
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -200,11 +207,5 @@ partial class Flashlight : Weapon
 			}
 		}
 	}
-
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.Pistol;
-		anim.Handedness = CitizenAnimationHelper.Hand.Right;
-		anim.AimBodyWeight = 1.0f;
-	}
+	
 }

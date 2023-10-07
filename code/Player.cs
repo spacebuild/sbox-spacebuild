@@ -1,6 +1,7 @@
 ﻿using Sandbox;
 using Sandmod.Permission;
 using System.Numerics;
+using BaseCarriable = Sandbox.Base.BaseCarriable;
 
 public partial class SandboxPlayer : Player
 {
@@ -24,7 +25,7 @@ public partial class SandboxPlayer : Player
 
 	public SandboxPlayer()
 	{
-		Inventory = new Inventory( this );
+
 	}
 
 	/// <summary>
@@ -67,53 +68,6 @@ public partial class SandboxPlayer : Player
 		Inventory.Add( new Fists() );
 
 		base.Respawn();
-	}
-
-	public override void OnKilled()
-	{
-		base.OnKilled();
-
-		if ( lastDamage.HasTag( "vehicle" ) )
-		{
-			Particles.Create( "particles/impact.flesh.bloodpuff-big.vpcf", lastDamage.Position );
-			Particles.Create( "particles/impact.flesh-big.vpcf", lastDamage.Position );
-			PlaySound( "kersplat" );
-		}
-
-		BecomeRagdollOnClient( Velocity, lastDamage.Position, lastDamage.Force, lastDamage.BoneIndex, lastDamage.HasTag( "bullet" ), lastDamage.HasTag( "blast" ) );
-
-		Controller = null;
-
-		EnableAllCollisions = false;
-		EnableDrawing = false;
-
-		foreach ( var child in Children )
-		{
-			child.EnableDrawing = false;
-		}
-
-		Inventory.DropActive();
-		Inventory.DeleteContents();
-
-		Event.Run( "player.killed", this );
-	}
-
-	public override void TakeDamage( DamageInfo info )
-	{
-		if ( info.Attacker.IsValid() )
-		{
-			if ( info.Attacker.Tags.Has( $"{PhysGun.GrabbedTag}{Client.SteamId}" ) )
-				return;
-		}
-
-		if ( info.Hitbox.HasTag( "head" ) )
-		{
-			info.Damage *= 10.0f;
-		}
-
-		lastDamage = info;
-
-		base.TakeDamage( info );
 	}
 
 	public override PawnController GetActiveController()
@@ -208,15 +162,6 @@ public partial class SandboxPlayer : Player
 		}
 	}
 
-	[ConCmd.Admin( "kill" )]
-	static void DoPlayerSuicide()
-	{
-		if ( ConsoleSystem.Caller.Pawn is SandboxPlayer basePlayer )
-		{
-			basePlayer.TakeDamage( new DamageInfo { Damage = basePlayer.Health * 99 } );
-		}
-	}
-
 
 	Entity lastWeapon;
 
@@ -269,7 +214,7 @@ public partial class SandboxPlayer : Player
 		}
 		else
 		{
-			animHelper.HoldType = CitizenAnimationHelper.HoldTypes.None;
+			animHelper.HoldType = CariableHoldTypes.None;
 			animHelper.AimBodyWeight = 0.5f;
 		}
 
@@ -338,13 +283,5 @@ public partial class SandboxPlayer : Player
 			Camera.Main.SetViewModelCamera( 90f );
 		}
 	}
-
-	[Event( "entity.spawned" )]
-	public static void OnSpawned( Entity spawned, Entity owner )
-	{
-		if ( owner is Player player )
-		{
-			spawned.SetPlayerOwner( player );
-		}
-	}
+	
 }

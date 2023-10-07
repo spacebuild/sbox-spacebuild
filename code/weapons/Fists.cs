@@ -8,6 +8,13 @@ partial class Fists : Weapon
 	public override float PrimaryRate => 2.0f;
 	public override float SecondaryRate => 2.0f;
 
+	public Fists()
+	{
+		HoldType = CariableHoldTypes.Punch;
+		Handedness = CariableHandedness.Both;
+		AimBodyWeight = 1.0f;
+	}
+
 	public override bool CanReload()
 	{
 		return false;
@@ -37,15 +44,8 @@ partial class Fists : Weapon
 		Attack( false );
 	}
 
-	public override void OnCarryDrop( Entity dropper )
+	public override void OnDrop( Entity dropper )
 	{
-	}
-
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.Punch;
-		anim.Handedness = CitizenAnimationHelper.Hand.Both;
-		anim.AimBodyWeight = 1.0f;
 	}
 
 	public override void CreateViewModel()

@@ -1,5 +1,7 @@
-﻿using Sandbox;
-using System.Collections.Generic;
+﻿
+using Sandbox.Systems.Inventory;
+using Sandbox.Systems.Player;
+using BaseWeapon = Sandbox.Base.BaseWeapon;
 
 public partial class Weapon : BaseWeapon, IUse
 {
@@ -120,12 +122,12 @@ public partial class Weapon : BaseWeapon, IUse
 
 	public virtual bool IsUsable( Entity user )
 	{
-		var player = user as Player;
+		var player = user as BasePlayer;
 		if ( Owner != null ) return false;
 
-		if ( player.Inventory is Inventory inventory )
+		if ( player.Inventory is BasePlayerInventory inventory )
 		{
-			return inventory.CanAdd( this );
+			return inventory.CanAddToEntity( this );
 		}
 
 		return true;
