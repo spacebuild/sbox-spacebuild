@@ -9,6 +9,13 @@ partial class MP5 : Weapon
 	public override float ReloadTime => 2.5f;
 	private ParticleSystem EjectBrass;
 
+	public MP5()
+	{
+		HoldType = CariableHoldTypes.Rifle;
+		Handedness = CariableHandedness.Both;
+		AimBodyWeight = 1.0f;
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -77,10 +84,4 @@ partial class MP5 : Weapon
 		}
 	}
 
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.Rifle;
-		anim.Handedness = CitizenAnimationHelper.Hand.Both;
-		anim.AimBodyWeight = 1.0f;
-	}
 }

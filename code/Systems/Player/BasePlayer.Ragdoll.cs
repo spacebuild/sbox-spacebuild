@@ -1,9 +1,10 @@
-﻿using Sandbox;
+﻿namespace Sandbox.Systems.Player;
 
-partial class SandboxPlayer
+public partial class BasePlayer
 {
+
 	[ClientRpc]
-	private void BecomeRagdollOnClient( Vector3 velocity, Vector3 forcePos, Vector3 force, int bone, bool impulse, bool blast )
+	private void CreateRagdoll( Vector3 velocity, Vector3 forcePos, Vector3 force, int bone, bool bullet, bool blast )
 	{
 		var ent = new ModelEntity();
 		ent.Tags.Add( "ragdoll", "solid", "debris" );
@@ -39,7 +40,7 @@ partial class SandboxPlayer
 			clothing.CopyMaterialGroup( e );
 		}
 
-		if ( impulse )
+		if ( bullet )
 		{
 			PhysicsBody body = bone > 0 ? ent.GetBonePhysicsBody( bone ) : null;
 
@@ -57,17 +58,13 @@ partial class SandboxPlayer
 		{
 			if ( ent.PhysicsGroup != null )
 			{
-				ent.PhysicsGroup.AddVelocity( (Position - (forcePos + Vector3.Down * 100.0f)).Normal * (force.Length * 0.2f) );
+				ent.PhysicsGroup.AddVelocity( (Position - (forcePos + GravityDirection * 100.0f)).Normal * (force.Length * 0.2f) );
 				var angularDir = (Rotation.FromYaw( 90 ) * force.WithZ( 0 ).Normal).Normal;
 				ent.PhysicsGroup.AddAngularVelocity( angularDir * (force.Length * 0.02f) );
 			}
 		}
 
-		Corpse = ent;
-
-		if ( IsLocalPawn )
-			Corpse.EnableDrawing = false;
-
 		ent.DeleteAsync( 10.0f );
 	}
+	
 }

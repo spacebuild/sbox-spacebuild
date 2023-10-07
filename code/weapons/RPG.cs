@@ -10,6 +10,13 @@ partial class RPG : Weapon
 	public override float SecondaryRate => 1.0f;
 	public override float ReloadTime => 5.0f;
 
+	public RPG()
+	{
+		HoldType = CariableHoldTypes.RPG;
+		Handedness = CariableHandedness.Both;
+		AimBodyWeight = 1.0f;
+	}
+
 	public override void Spawn()
 	{
 		base.Spawn();
@@ -51,11 +58,5 @@ partial class RPG : Weapon
 
 		ViewModelEntity?.SetAnimParameter( "fire", true );
 	}
-
-	public override void SimulateAnimator( CitizenAnimationHelper anim )
-	{
-		anim.HoldType = CitizenAnimationHelper.HoldTypes.RPG;
-		anim.Handedness = CitizenAnimationHelper.Hand.Both;
-		anim.AimBodyWeight = 1.0f;
-	}
+	
 }

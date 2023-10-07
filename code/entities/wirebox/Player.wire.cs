@@ -6,6 +6,7 @@ partial class SandboxPlayer
 	[GameEvent.Client.Frame]
 	public void OnFrame()
 	{
+		//TODO user player.traceRay(200)
 
 		var startPos = EyePosition;
 		var dir = EyeRotation.Forward;

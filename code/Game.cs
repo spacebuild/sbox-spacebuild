@@ -4,6 +4,8 @@ global using System.Linq;
 global using System;
 global using Sandbox;
 using Sandmod.Permission;
+using Sandbox.Systems.Player;
+using BaseCarriable = Sandbox.Base.BaseCarriable;
 
 partial class SandboxGame : GameManager
 {
@@ -53,7 +55,7 @@ partial class SandboxGame : GameManager
 	[ConCmd.Admin( "giveall" )]
 	public static void GiveAll()
 	{
-		var player = ConsoleSystem.Caller.Pawn as SandboxPlayer;
+		var player = ConsoleSystem.Caller.Pawn as BasePlayer;
 
 		player.Inventory.Add( new Pistol() );
 		player.Inventory.Add( new MP5() );
@@ -64,7 +66,7 @@ partial class SandboxGame : GameManager
 	[ConCmd.Server( "spawn" )]
 	public static async Task Spawn( string modelname )
 	{
-		var owner = ConsoleSystem.Caller?.Pawn as Player;
+		var owner = ConsoleSystem.Caller?.Pawn as BasePlayer;
 
 		if ( ConsoleSystem.Caller == null )
 			return;

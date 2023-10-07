@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using Sandbox.Systems.Player;
 
 namespace Sandbox
 {
@@ -469,7 +470,7 @@ namespace Sandbox
 				joint.Collisions = collisions;
 				joint.EnableAngularConstraint = enableAngularConstraint;
 				joint.EnableLinearConstraint = enableLinearConstraint;
-				Event.Run( "joint.spawned", joint, (Player)null );
+				Event.Run( "joint.spawned", joint, (BasePlayer)null );
 			}
 		}
 
@@ -508,14 +509,14 @@ namespace Sandbox
 
 	public class DuplicatorPasteJob
 	{
-		Player owner;
+		BasePlayer owner;
 		DuplicatorData data;
 		Transform origin;
 		Stopwatch timeUsed = new Stopwatch();
 		Stopwatch timeElapsed = new Stopwatch();
 		Dictionary<int, Entity> entList = new Dictionary<int, Entity>();
 		Dictionary<int, DuplicatorData.DuplicatorItem> entData = new();
-		public DuplicatorPasteJob( Player owner_, DuplicatorData data_, Transform origin_ )
+		public DuplicatorPasteJob( BasePlayer owner_, DuplicatorData data_, Transform origin_ )
 		{
 			owner = owner_;
 			data = data_;
@@ -644,7 +645,7 @@ Secondary: Copy contraption (shift for area copy)", Group = "construction" )]
 		[ConVar.ClientData( "tool_duplicator_area_size", Help = "Area copy size", Saved = true )]
 		public static float AreaSize { get; set; } = 250;
 
-		public static Dictionary<Player, DuplicatorPasteJob> Pasting = new();
+		public static Dictionary<BasePlayer, DuplicatorPasteJob> Pasting = new();
 
 		void GetAttachedEntities( Entity baseEnt, List<Entity> ents, List<PhysicsJoint> joints )
 		{
@@ -736,9 +737,9 @@ Secondary: Copy contraption (shift for area copy)", Group = "construction" )]
 		static DuplicatorTool getTool( IEntity player )
 		{
 			if ( player == null ) return null;
-			var inventory = (player as Player).Inventory;
+			var inventory = (player as BasePlayer).Inventory;
 			if ( inventory == null ) return null;
-			if ( inventory.Active is not Tool tool ) return null;
+			if ( inventory.ActiveCariable is not Tool tool ) return null;
 			if ( tool == null ) return null;
 			if ( tool.CurrentTool is not DuplicatorTool dupe ) return null;
 			return dupe;

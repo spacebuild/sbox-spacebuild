@@ -1,16 +1,17 @@
 using Sandmod.Permission;
+using Sandbox.Systems.Player;
 
 namespace Sandbox
 {
 	public class CanToolParams
 	{
-		public Player player;
+		public BasePlayer player;
 		public string toolName;
 		public TraceResult tr;
 		public Entity entity;
 		public bool preventDefault = false;
 
-		public static TraceResult RunCanTool( Player player, string toolName, TraceResult tr )
+		public static TraceResult RunCanTool( BasePlayer player, string toolName, TraceResult tr )
 		{
 			if ( Game.IsClient )
 			{
